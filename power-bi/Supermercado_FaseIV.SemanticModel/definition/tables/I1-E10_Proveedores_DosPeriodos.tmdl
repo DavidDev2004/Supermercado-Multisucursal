@@ -1,0 +1,26 @@
+table I1-E10_Proveedores_DosPeriodos
+	lineageTag: 766ca49a-4b86-54e4-a927-bb4a71769b32
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: f450bc01-0b23-5eb2-b3c3-25a86cd4efd9
+		summarizeBy: none
+		sourceColumn: CodigoProveedor
+
+	column Proveedor
+		dataType: string
+		lineageTag: 70ee43e8-0077-585b-be26-6d9d336c73de
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	partition I1-E10_Proveedores_DosPeriodos = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH Comunes AS (#(lf)    SELECT CodigoProveedor FROM dbo.Tbl_Compras#(lf)    WHERE Estado = 'Recibida' AND FechaCompra >= '20260101' AND FechaCompra < '20260701'#(lf)    INTERSECT#(lf)    SELECT CodigoProveedor FROM dbo.Tbl_Compras#(lf)    WHERE Estado = 'Recibida' AND FechaCompra >= '20260701' AND FechaCompra < '20261001'#(lf))#(lf)SELECT p.CodigoProveedor, p.Nombre AS Proveedor#(lf)FROM Comunes AS c#(lf)JOIN dbo.Tbl_Proveedores AS p ON p.CodigoProveedor = c.CodigoProveedor#(lf)ORDER BY Proveedor;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

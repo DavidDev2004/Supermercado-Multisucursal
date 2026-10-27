@@ -1,0 +1,317 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "f93480705cbc4f329087",
+  "position": {
+    "x": 45,
+    "y": 205,
+    "z": 1,
+    "height": 265,
+    "width": 900,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "CodigoProveedor"
+                }
+              },
+              "queryRef": "Sum(I1-E01_Proveedores_Credito.CodigoProveedor)",
+              "nativeQueryRef": "CodigoProveedor"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "Proveedor"
+                }
+              },
+              "queryRef": "I1-E01_Proveedores_Credito.Proveedor",
+              "nativeQueryRef": "Proveedor"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "Departamento"
+                }
+              },
+              "queryRef": "I1-E01_Proveedores_Credito.Departamento",
+              "nativeQueryRef": "Departamento"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "DiasCredito"
+                }
+              },
+              "queryRef": "Sum(I1-E01_Proveedores_Credito.DiasCredito)",
+              "nativeQueryRef": "DiasCredito"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "Correo"
+                }
+              },
+              "queryRef": "I1-E01_Proveedores_Credito.Correo",
+              "nativeQueryRef": "Correo"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "I1-E01_Proveedores_Credito"
+                    }
+                  },
+                  "Property": "AntiguedadAnios"
+                }
+              },
+              "queryRef": "Sum(I1-E01_Proveedores_Credito.AntiguedadAnios)",
+              "nativeQueryRef": "AntiguedadAnios"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "I1-E01_Proveedores_Credito"
+                      }
+                    },
+                    "Property": "DiasCredito"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Ascending"
+          },
+          {
+            "field": {
+              "Aggregation": {
+                "Expression": {
+                  "Column": {
+                    "Expression": {
+                      "SourceRef": {
+                        "Entity": "I1-E01_Proveedores_Credito"
+                      }
+                    },
+                    "Property": "DiasCredito"
+                  }
+                },
+                "Function": 0
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'E01 · Proveedores con crédito'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#12304A'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "15D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#19A7A0'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "9472869801df50d953dd",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "I1-E01_Proveedores_Credito"
+              }
+            },
+            "Property": "Proveedor"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "6532a11eb328f9966b65",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "I1-E01_Proveedores_Credito"
+              }
+            },
+            "Property": "Departamento"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "be0577cae67233ccb486",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "I1-E01_Proveedores_Credito"
+              }
+            },
+            "Property": "AntiguedadAnios"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "d455e55c6183856282f5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "I1-E01_Proveedores_Credito"
+              }
+            },
+            "Property": "DiasCredito"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

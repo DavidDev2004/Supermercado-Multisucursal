@@ -1,0 +1,51 @@
+table I2-E09_BI
+	lineageTag: 68347e8d-21aa-5e08-8679-5ef209ae68e5
+
+	column Fecha
+		dataType: dateTime
+		lineageTag: 7fcbc13d-addd-5166-841b-956234f28977
+		summarizeBy: none
+		sourceColumn: Fecha
+
+	column Documento
+		dataType: string
+		lineageTag: 369bf56b-4141-5f51-a75f-7bdcf3225e8c
+		summarizeBy: none
+		sourceColumn: Documento
+
+	column TipoEvento
+		dataType: string
+		lineageTag: de2d11ec-bac0-5c2c-abd8-5f732c77e483
+		summarizeBy: none
+		sourceColumn: TipoEvento
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 495e6282-c0d7-58d3-b169-03d8231c9a9b
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Monto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 89f6e929-00c4-5bd1-b1fd-fc85ae9d37fe
+		summarizeBy: sum
+		sourceColumn: Monto
+
+	column Estado
+		dataType: string
+		lineageTag: 911b612a-b304-5d8d-9d6d-10ec5180f679
+		summarizeBy: none
+		sourceColumn: Estado
+
+	partition I2-E09_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    V.FechaVenta AS Fecha,#(lf)    V.NumeroVenta AS Documento,#(lf)    'Venta' AS TipoEvento,#(lf)    V.CodigoSucursal,#(lf)    CAST(ROUND(SUM(D.Cantidad*D.PrecioUnitario-D.Descuento),2) AS DECIMAL(18,2)) AS Monto,#(lf)    V.Estado#(lf)FROM Tbl_Ventas V#(lf)INNER JOIN Tbl_VentasDetalle D ON D.CodigoVenta=V.CodigoVenta#(lf)WHERE V.Estado='Confirmada'#(lf)    AND V.FechaVenta>='20260901' AND V.FechaVenta<'20261001'#(lf)GROUP BY V.FechaVenta,V.NumeroVenta,V.CodigoSucursal,V.Estado#(lf)#(lf)UNION ALL#(lf)#(lf)SELECT#(lf)    P.FechaPago,#(lf)    P.Comprobante,#(lf)    'Pago',#(lf)    V.CodigoSucursal,#(lf)    CAST(ROUND(P.Monto,2) AS DECIMAL(18,2)),#(lf)    P.Estado#(lf)FROM Tbl_Pagos P#(lf)INNER JOIN Tbl_Ventas V ON V.CodigoVenta=P.CodigoVenta#(lf)WHERE P.Estado='Aplicado'#(lf)    AND P.FechaPago>='20260901' AND P.FechaPago<'20261001'#(lf)ORDER BY Fecha ASC, TipoEvento ASC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

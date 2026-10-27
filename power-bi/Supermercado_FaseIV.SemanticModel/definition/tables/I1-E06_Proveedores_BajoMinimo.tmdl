@@ -1,0 +1,44 @@
+table I1-E06_Proveedores_BajoMinimo
+	lineageTag: f59845df-64bc-55b8-8d4e-e8754f8e7520
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 0b1535b2-0fa8-5711-8999-8af2e7424fa4
+		summarizeBy: none
+		sourceColumn: CodigoProveedor
+
+	column Proveedor
+		dataType: string
+		lineageTag: f7573346-7642-5691-b187-a917b4ce8ad7
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	column Contacto
+		dataType: string
+		lineageTag: 60b9dc79-1bbb-5623-b80a-d973d46d051f
+		summarizeBy: none
+		sourceColumn: Contacto
+
+	column Telefono
+		dataType: string
+		lineageTag: 600afe84-f4aa-5a2c-bcf7-dd996a602709
+		summarizeBy: none
+		sourceColumn: Telefono
+
+	column Departamento
+		dataType: string
+		lineageTag: 58eae76c-870c-51bc-a306-0e740dc40afe
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	partition I1-E06_Proveedores_BajoMinimo = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT pr.CodigoProveedor, pr.Nombre AS Proveedor, pr.Contacto,#(lf)       pr.Telefono, pr.Departamento#(lf)FROM dbo.Tbl_Proveedores AS pr#(lf)WHERE pr.Estado = 'Activo'#(lf)  AND EXISTS (#(lf)      SELECT 1#(lf)      FROM dbo.Tbl_ProductoProveedor AS pp#(lf)      WHERE pp.CodigoProveedor = pr.CodigoProveedor#(lf)        AND pp.Estado = 'Activo'#(lf)        AND pp.CodigoProducto IN (#(lf)            SELECT i.CodigoProducto FROM dbo.Tbl_Inventario AS i#(lf)            WHERE i.Existencia < i.ExistenciaMinima#(lf)        )#(lf)  )#(lf)ORDER BY pr.Departamento, Proveedor;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

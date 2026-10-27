@@ -1,0 +1,109 @@
+@model ProductosPage
+@using System.Globalization
+@{
+    ViewData["Title"]="Productos";
+    Layout="_AppLayout";
+    string Amount(decimal value)=>value.ToString("0.00",CultureInfo.InvariantCulture);
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">CATÁLOGO NACIONAL</div><h1>Productos</h1><p>Administra productos, categorías y proveedores relacionados.</p></div>
+    <a class="button-primary" asp-action="Index" asp-route-nuevo="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@Model.Page">＋ Agregar producto</a>
+</section>
+@if(Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+@if(Model.Notice is not null) { <div class="notice-success" role="status">@Model.Notice</div> }
+<section class="catalog-kpis products-kpis" aria-label="Indicadores de todo el catálogo">
+    <article class="mini-kpi"><div><small>Productos · todos</small><strong>@Model.TotalProductos</strong></div></article>
+    <article class="mini-kpi"><div><small>Activos · todos</small><strong>@Model.Activos</strong></div></article>
+    <article class="mini-kpi"><div><small>Inactivos · todos</small><strong>@Model.Inactivos</strong></div></article>
+    <article class="mini-kpi"><div><small>Relaciones con proveedores · todas</small><strong>@Model.TotalRelaciones</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form method="get" asp-action="Index" class="filter-bar">
+        <label class="search-box"><input type="search" name="buscar" value="@Model.Search" maxlength="100" placeholder="Código de barras, nombre, marca o categoría" aria-label="Buscar productos" /></label>
+        <select name="estado" class="filter-select" aria-label="Estado"><option value="">Todos los estados</option>@foreach(var state in new[]{"Activo","Inactivo"}) { <option value="@state" selected="@(Model.State==state)">@state</option> }</select>
+        <select name="categoria" class="filter-select" aria-label="Categoría"><option value="">Todas las categorías</option>@foreach(var item in Model.Categorias) { <option value="@item.Id" selected="@(Model.Category==item.Id)">@item.Nombre</option> }</select>
+        <button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading"><h2>Listado de productos</h2><span>Página @Model.Page de @Model.PageCount · @Model.Total resultados</span></div>
+    <div class="table-responsive"><table class="table data-table"><thead><tr><th>Código de barras</th><th>Producto</th><th>Marca</th><th>Categoría</th><th>Unidad</th><th>Precio</th><th>Estado</th><th>Proveedores</th><th>Acciones</th></tr></thead><tbody>
+    @if(Model.Rows.Count==0) { <tr><td colspan="9">No hay productos para mostrar.</td></tr> }
+    @foreach(var row in Model.Rows)
+    {
+        <tr><td>@row.CodigoBarra</td><td><strong>@row.Nombre</strong></td><td>@row.Marca</td><td>@row.Categoria</td><td>@row.UnidadMedida</td><td>Q @Amount(row.PrecioVenta)</td><td>@row.Estado</td><td>@row.Proveedores</td><td class="products-actions">
+            <a class="button-secondary" asp-action="Index" asp-route-producto="@row.Id" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@Model.Page">Editar / consultar</a>
+            <a class="button-secondary" asp-action="Index" asp-route-producto="@row.Id" asp-route-proveedores="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@Model.Page">Proveedores</a>
+            <form asp-action="Delete" asp-route-id="@row.Id" method="post" class="products-delete" onsubmit="return confirm('¿Eliminar exclusivamente este producto de práctica sin dependencias? Los productos con movimientos deben inactivarse.');">
+                <partial name="_Filters" model="Model" />
+                <label class="products-practice"><input type="checkbox" name="practica" value="true" required /> Es un registro de práctica</label><button type="submit" class="button-secondary">Eliminar</button>
+            </form>
+        </td></tr>
+    }
+    </tbody></table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.Total productos</span><div class="pagination-controls">
+        @if(Model.Page>1) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@(Model.Page-1)">← Anterior</a> }
+        <span>@Model.Page / @Model.PageCount</span>
+        @if(Model.Page<Model.PageCount) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@(Model.Page+1)">Siguiente →</a> }
+    </div></nav>
+</section>
+@if(Model.OpenProduct)
+{
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productTitle" aria-hidden="true" data-product-modal>
+<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><h2 class="modal-title" id="productTitle">@(Model.Input.CodigoProducto.HasValue?"Editar producto":"Agregar producto")</h2><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+    <form asp-action="Save" asp-route-id="@Model.Input.CodigoProducto" method="post" class="products-form">
+    <partial name="_Filters" model="Model" />
+    <div class="modal-body"><div asp-validation-summary="All" class="validation-errors" role="alert"></div><div class="form-grid">
+        <div class="form-field"><label asp-for="Input.CodigoBarra">Código de barras *</label><input asp-for="Input.CodigoBarra" class="form-control" required maxlength="30" /><span asp-validation-for="Input.CodigoBarra" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.Nombre">Nombre *</label><input asp-for="Input.Nombre" class="form-control" required maxlength="150" /><span asp-validation-for="Input.Nombre" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.Marca">Marca *</label><input asp-for="Input.Marca" class="form-control" required maxlength="100" /><span asp-validation-for="Input.Marca" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.CodigoCategoria">Categoría *</label><select asp-for="Input.CodigoCategoria" class="form-control" required><option value="">Selecciona categoría</option>@foreach(var item in Model.Categorias) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoCategoria" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.UnidadMedida">Unidad de medida *</label><input asp-for="Input.UnidadMedida" class="form-control" required maxlength="30" /><span asp-validation-for="Input.UnidadMedida" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.PrecioVenta">Precio de venta (Q) *</label><input asp-for="Input.PrecioVenta" type="number" step="0.01" min="0.01" max="9999999999.99" class="form-control" required /><span asp-validation-for="Input.PrecioVenta" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.FechaRegistro">Fecha de registro *</label><input asp-for="Input.FechaRegistro" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" required /><span asp-validation-for="Input.FechaRegistro" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.Estado">Estado *</label><select asp-for="Input.Estado" class="form-control" required><option value="Activo">Activo</option><option value="Inactivo">Inactivo</option></select><span asp-validation-for="Input.Estado" class="field-error"></span></div>
+        <div class="form-field"><label asp-for="Input.Descripcion">Descripción</label><textarea asp-for="Input.Descripcion" class="form-control" maxlength="200"></textarea><span asp-validation-for="Input.Descripcion" class="field-error"></span></div>
+    </div><p class="required-note">Los productos con movimientos se conservan y pueden inactivarse. Los proveedores se administran por separado desde el listado. Este formulario no crea inventarios.</p></div>
+    <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button><button type="submit" class="button-primary">Guardar producto</button></div>
+    </form>
+</div></div></div>
+}
+@if(Model.OpenSuppliers)
+{
+<div class="modal fade" id="productSuppliersModal" tabindex="-1" aria-labelledby="suppliersTitle" aria-hidden="true" data-product-modal>
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><div class="eyebrow">@Model.Input.CodigoBarra</div><h2 class="modal-title" id="suppliersTitle">Proveedores · @Model.Input.Nombre</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+    <div class="modal-body products-suppliers-body">
+        <p class="required-note">Cada proveedor puede relacionarse una sola vez con el producto. Las relaciones con compras se conservan e inactivan. Plazo de entrega en días.</p>
+        <div class="table-responsive"><table class="table data-table products-suppliers"><thead><tr><th>Proveedor</th><th>Código externo</th><th>Costo referencia</th><th>Plazo</th><th>Fecha</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+        @if(Model.Relaciones.Count==0) { <tr><td colspan="7">No hay proveedores relacionados.</td></tr> }
+        @foreach(var row in Model.Relaciones)
+        {
+            <tr><td>@row.Proveedor</td><td>@row.CodigoExterno</td><td>Q @Amount(row.CostoReferencia)</td><td>@row.PlazoEntrega días</td><td>@row.FechaRegistro.ToString("dd/MM/yyyy")</td><td>@row.Estado</td><td class="products-actions">
+                <a class="button-secondary" asp-action="Index" asp-route-producto="@Model.Input.CodigoProducto" asp-route-proveedores="true" asp-route-relacion="@row.Id" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@Model.Page">Editar</a>
+                <form asp-action="DeleteSupplier" asp-route-producto="@Model.Input.CodigoProducto" asp-route-id="@row.Id" method="post" class="products-delete" onsubmit="return confirm('¿Eliminar exclusivamente esta relación de práctica sin compras?');">
+                    <partial name="_Filters" model="Model" /><label class="products-practice"><input type="checkbox" name="practica" value="true" required /> Es de práctica</label><button type="submit" class="button-secondary">Eliminar</button>
+                </form>
+            </td></tr>
+        }
+        </tbody></table></div>
+        <h3 class="products-relation-title">@(Model.Relacion.CodigoProductoProveedor.HasValue?"Editar relación":"Agregar proveedor al producto")</h3>
+        <form asp-action="SaveSupplier" asp-route-producto="@Model.Input.CodigoProducto" asp-route-id="@Model.Relacion.CodigoProductoProveedor" method="post" class="products-relation-form">
+        <partial name="_Filters" model="Model" /><div asp-validation-summary="All" class="validation-errors" role="alert"></div>
+        <div class="form-grid">
+            <div class="form-field"><label asp-for="Relacion.CodigoProveedor">Proveedor *</label><select asp-for="Relacion.CodigoProveedor" class="form-control" required><option value="">Selecciona proveedor</option>@foreach(var item in Model.Proveedores) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Relacion.CodigoProveedor" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Relacion.CodigoExterno">Código externo *</label><input asp-for="Relacion.CodigoExterno" class="form-control" maxlength="50" required /><span asp-validation-for="Relacion.CodigoExterno" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Relacion.CostoReferencia">Costo de referencia (Q) *</label><input asp-for="Relacion.CostoReferencia" type="number" step="0.01" min="0.01" max="9999999999.99" class="form-control" required /><span asp-validation-for="Relacion.CostoReferencia" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Relacion.PlazoEntrega">Plazo de entrega (días) *</label><input asp-for="Relacion.PlazoEntrega" type="number" step="1" min="0" max="2147483647" class="form-control" required /><span asp-validation-for="Relacion.PlazoEntrega" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Relacion.FechaRegistro">Fecha de registro *</label><input asp-for="Relacion.FechaRegistro" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" required /><span asp-validation-for="Relacion.FechaRegistro" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Relacion.Estado">Estado *</label><select asp-for="Relacion.Estado" class="form-control" required><option value="Activo">Activo</option><option value="Inactivo">Inactivo</option></select><span asp-validation-for="Relacion.Estado" class="field-error"></span></div>
+        </div>
+        <div class="products-relation-buttons"><button type="submit" class="button-primary">Guardar relación</button>@if(Model.Relacion.CodigoProductoProveedor.HasValue) { <a class="button-secondary" asp-action="Index" asp-route-producto="@Model.Input.CodigoProducto" asp-route-proveedores="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-categoria="@Model.Category" asp-route-pagina="@Model.Page">Cancelar edición / agregar otro</a> }</div>
+        </form>
+    </div>
+    <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button></div>
+</div></div></div>
+}
+@section Scripts {
+    <script src="~/js/productos.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="~/css/productos.css" asp-append-version="true" />
+}

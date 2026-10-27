@@ -1,0 +1,73 @@
+table I3-E03_BI
+	lineageTag: 8c2e337b-2f5d-5d39-8ca0-d02bc16728a7
+
+	column CodigoInventario
+		dataType: int64
+		formatString: 0
+		lineageTag: a4d2fe01-8749-506a-9abe-1db5c3465041
+		summarizeBy: none
+		sourceColumn: CodigoInventario
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 67b63a60-d1eb-582b-ae97-e147cce4bdcb
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Sucursal
+		dataType: string
+		lineageTag: f0338baf-8781-5ba1-8bcd-eb0b69b2915c
+		summarizeBy: none
+		sourceColumn: Sucursal
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 35d33dfc-0875-5358-ab25-5a84be4bb948
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Producto
+		dataType: string
+		lineageTag: 2c182291-5cf4-58d4-b310-476f88fdd65c
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column Categoria
+		dataType: string
+		lineageTag: 4e7460fa-e37f-5abf-913d-f1aa1c2c9c22
+		summarizeBy: none
+		sourceColumn: Categoria
+
+	column Existencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 425c5a28-fa8c-59eb-8047-809f25b7ba74
+		summarizeBy: sum
+		sourceColumn: Existencia
+
+	column ValorCosto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 493ec20e-3e10-54de-9393-12fa708b351c
+		summarizeBy: sum
+		sourceColumn: ValorCosto
+
+	column ValorVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b5aab230-4bca-5f37-8391-68f79b14b153
+		summarizeBy: sum
+		sourceColumn: ValorVenta
+
+	partition I3-E03_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT i.CodigoInventario, s.CodigoSucursal, s.Nombre AS Sucursal,#(lf)       p.CodigoProducto, p.Nombre AS Producto, ca.Nombre AS Categoria,#(lf)       i.Existencia,#(lf)       CAST(ROUND(i.Existencia*i.CostoPromedio,2) AS decimal(18,2)) AS ValorCosto,#(lf)       CAST(ROUND(i.Existencia*p.PrecioVenta,2) AS decimal(18,2)) AS ValorVenta#(lf)FROM dbo.Tbl_Inventario AS i#(lf)JOIN dbo.Tbl_Sucursales AS s ON s.CodigoSucursal=i.CodigoSucursal AND s.Estado='Activo'#(lf)JOIN dbo.Tbl_Productos AS p ON p.CodigoProducto=i.CodigoProducto AND p.Estado='Activo'#(lf)JOIN dbo.Tbl_Categorias AS ca ON ca.CodigoCategoria=p.CodigoCategoria AND ca.Estado='Activo'#(lf)ORDER BY ValorCosto DESC, Sucursal, Producto;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

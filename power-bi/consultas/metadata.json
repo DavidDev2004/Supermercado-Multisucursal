@@ -1,0 +1,1090 @@
+[
+  {
+    "key": "I1-E02",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCompra",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroCompra",
+        "type": "String"
+      },
+      {
+        "name": "Anio",
+        "type": "Int32"
+      },
+      {
+        "name": "Mes",
+        "type": "Int32"
+      },
+      {
+        "name": "FechaEntregaProgramada",
+        "type": "DateTime"
+      },
+      {
+        "name": "FechaRecepcion",
+        "type": "DateTime"
+      },
+      {
+        "name": "DiasAtraso",
+        "type": "Int32"
+      },
+      {
+        "name": "LongitudNumero",
+        "type": "Int32"
+      }
+    ]
+  },
+  {
+    "key": "I1-E03",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCompra",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroCompra",
+        "type": "String"
+      },
+      {
+        "name": "FechaCompra",
+        "type": "DateTime"
+      },
+      {
+        "name": "Proveedor",
+        "type": "String"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "Empleado",
+        "type": "String"
+      },
+      {
+        "name": "ImporteCompra",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I1-E07",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProveedor",
+        "type": "Int32"
+      },
+      {
+        "name": "Proveedor",
+        "type": "String"
+      },
+      {
+        "name": "CantidadCompras",
+        "type": "Int32"
+      },
+      {
+        "name": "TotalComprado",
+        "type": "Decimal"
+      },
+      {
+        "name": "PromedioCompra",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I1-E08",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCategoria",
+        "type": "Int32"
+      },
+      {
+        "name": "Categoria",
+        "type": "String"
+      },
+      {
+        "name": "Anio",
+        "type": "Int32"
+      },
+      {
+        "name": "Mes",
+        "type": "Int32"
+      },
+      {
+        "name": "CantidadLineas",
+        "type": "Int32"
+      },
+      {
+        "name": "UnidadesCompradas",
+        "type": "Decimal"
+      },
+      {
+        "name": "CostoNeto",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I1-E09",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "Fecha",
+        "type": "DateTime"
+      },
+      {
+        "name": "Documento",
+        "type": "String"
+      },
+      {
+        "name": "TipoEvento",
+        "type": "String"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Monto",
+        "type": "Decimal"
+      },
+      {
+        "name": "Estado",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I1-E11",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProveedor",
+        "type": "Int32"
+      },
+      {
+        "name": "Proveedor",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I1-E12",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCompra",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroCompra",
+        "type": "String"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "DiasAtraso",
+        "type": "Int32"
+      },
+      {
+        "name": "NivelAtraso",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I1-E13",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Presupuesto",
+        "type": "Decimal"
+      },
+      {
+        "name": "TotalComprado",
+        "type": "Decimal"
+      },
+      {
+        "name": "Diferencia",
+        "type": "Decimal"
+      },
+      {
+        "name": "EstadoPresupuesto",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I1-E14",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "CodigoProductoProveedor",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoProveedor",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Proveedor",
+        "type": "String"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "CostoReferencia",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I1-E15",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "Decision",
+        "type": "String"
+      },
+      {
+        "name": "NumeroCompra",
+        "type": "String"
+      },
+      {
+        "name": "ExisteCompra",
+        "type": "Int32"
+      },
+      {
+        "name": "CantidadLineas",
+        "type": "Int32"
+      },
+      {
+        "name": "ImporteCompra",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E01",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      },
+      {
+        "name": "Departamento",
+        "type": "String"
+      },
+      {
+        "name": "Correo",
+        "type": "String"
+      },
+      {
+        "name": "LongitudNombre",
+        "type": "Int32"
+      },
+      {
+        "name": "AntiguedadAnios",
+        "type": "Int32"
+      }
+    ]
+  },
+  {
+    "key": "I2-E04",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      },
+      {
+        "name": "NumeroVenta",
+        "type": "String"
+      },
+      {
+        "name": "FechaVenta",
+        "type": "DateTime"
+      },
+      {
+        "name": "TotalVenta",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E05",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoVenta",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroVenta",
+        "type": "String"
+      },
+      {
+        "name": "FechaVenta",
+        "type": "DateTime"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "TotalVenta",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E06",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      },
+      {
+        "name": "Departamento",
+        "type": "String"
+      },
+      {
+        "name": "Telefono",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E10",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E02",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoPago",
+        "type": "Int32"
+      },
+      {
+        "name": "Comprobante",
+        "type": "String"
+      },
+      {
+        "name": "FechaPago",
+        "type": "DateTime"
+      },
+      {
+        "name": "Anio",
+        "type": "Int32"
+      },
+      {
+        "name": "Mes",
+        "type": "Int32"
+      },
+      {
+        "name": "MetodoPago",
+        "type": "String"
+      },
+      {
+        "name": "Autorizacion",
+        "type": "String"
+      },
+      {
+        "name": "Monto",
+        "type": "Decimal"
+      },
+      {
+        "name": "Comision",
+        "type": "Decimal"
+      },
+      {
+        "name": "MontoNeto",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E03",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoVenta",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroVenta",
+        "type": "String"
+      },
+      {
+        "name": "FechaVenta",
+        "type": "DateTime"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "Empleado",
+        "type": "String"
+      },
+      {
+        "name": "TotalVenta",
+        "type": "Decimal"
+      },
+      {
+        "name": "TotalPagado",
+        "type": "Decimal"
+      },
+      {
+        "name": "Saldo",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E07",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "CantidadVentas",
+        "type": "Int32"
+      },
+      {
+        "name": "TotalVendido",
+        "type": "Decimal"
+      },
+      {
+        "name": "TicketPromedio",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E08",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCategoria",
+        "type": "Int32"
+      },
+      {
+        "name": "Categoria",
+        "type": "String"
+      },
+      {
+        "name": "Anio",
+        "type": "Int32"
+      },
+      {
+        "name": "Mes",
+        "type": "Int32"
+      },
+      {
+        "name": "UnidadesVendidas",
+        "type": "Decimal"
+      },
+      {
+        "name": "VentaNeta",
+        "type": "Decimal"
+      },
+      {
+        "name": "Utilidad",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E09",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "Fecha",
+        "type": "DateTime"
+      },
+      {
+        "name": "Documento",
+        "type": "String"
+      },
+      {
+        "name": "TipoEvento",
+        "type": "String"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Monto",
+        "type": "Decimal"
+      },
+      {
+        "name": "Estado",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E11",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "Cliente",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E12",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoVenta",
+        "type": "Int32"
+      },
+      {
+        "name": "NumeroVenta",
+        "type": "String"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "TotalVenta",
+        "type": "Decimal"
+      },
+      {
+        "name": "NivelVenta",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E13",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Meta",
+        "type": "Decimal"
+      },
+      {
+        "name": "TotalVendido",
+        "type": "Decimal"
+      },
+      {
+        "name": "Faltante",
+        "type": "Decimal"
+      },
+      {
+        "name": "EstadoMeta",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I2-E14",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "CodigoEmpleado",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Empleado",
+        "type": "String"
+      },
+      {
+        "name": "Salario",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I2-E15",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "Decision",
+        "type": "String"
+      },
+      {
+        "name": "NIT",
+        "type": "String"
+      },
+      {
+        "name": "NumeroVenta",
+        "type": "String"
+      },
+      {
+        "name": "ExisteCliente",
+        "type": "Int32"
+      },
+      {
+        "name": "ExisteVenta",
+        "type": "Int32"
+      }
+    ]
+  },
+  {
+    "key": "I3-E01",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "Marca",
+        "type": "String"
+      },
+      {
+        "name": "PrecioVenta",
+        "type": "Decimal"
+      },
+      {
+        "name": "LongitudNombre",
+        "type": "Int32"
+      },
+      {
+        "name": "DiasRegistrado",
+        "type": "Int32"
+      }
+    ]
+  },
+  {
+    "key": "I3-E04",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Existencia",
+        "type": "Decimal"
+      },
+      {
+        "name": "ExistenciaMinima",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E05",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoCategoria",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "PrecioVenta",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E06",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "Municipio",
+        "type": "String"
+      },
+      {
+        "name": "Departamento",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E09",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "Municipio",
+        "type": "String"
+      },
+      {
+        "name": "Departamento",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E02",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoInventario",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Existencia",
+        "type": "Decimal"
+      },
+      {
+        "name": "ExistenciaMinima",
+        "type": "Decimal"
+      },
+      {
+        "name": "Faltante",
+        "type": "Decimal"
+      },
+      {
+        "name": "ValorFaltante",
+        "type": "Decimal"
+      },
+      {
+        "name": "DiasSinIngreso",
+        "type": "Int32"
+      },
+      {
+        "name": "SituacionIngreso",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E03",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoInventario",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "Categoria",
+        "type": "String"
+      },
+      {
+        "name": "Existencia",
+        "type": "Decimal"
+      },
+      {
+        "name": "ValorCosto",
+        "type": "Decimal"
+      },
+      {
+        "name": "ValorVenta",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E07",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Sucursal",
+        "type": "String"
+      },
+      {
+        "name": "CantidadProductos",
+        "type": "Int32"
+      },
+      {
+        "name": "TotalUnidades",
+        "type": "Decimal"
+      },
+      {
+        "name": "ValorInventario",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E08",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "Motivo",
+        "type": "String"
+      },
+      {
+        "name": "Anio",
+        "type": "Int32"
+      },
+      {
+        "name": "Mes",
+        "type": "Int32"
+      },
+      {
+        "name": "CantidadLineas",
+        "type": "Int32"
+      },
+      {
+        "name": "UnidadesPerdidas",
+        "type": "Decimal"
+      },
+      {
+        "name": "ValorPerdido",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E10",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E11",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Producto",
+        "type": "String"
+      },
+      {
+        "name": "Disponibilidad",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E12",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoInventario",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "FechaUltimoIngreso",
+        "type": "DateTime"
+      },
+      {
+        "name": "DiasSinIngreso",
+        "type": "Int32"
+      },
+      {
+        "name": "NivelAntiguedad",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E13",
+    "database": "SupermercadosGuate",
+    "columns": [
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "Tolerancia",
+        "type": "Int32"
+      },
+      {
+        "name": "ProductosBajoMinimo",
+        "type": "Int32"
+      },
+      {
+        "name": "EstadoReposicion",
+        "type": "String"
+      }
+    ]
+  },
+  {
+    "key": "I3-E14",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "CodigoInventario",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoSucursal",
+        "type": "Int32"
+      },
+      {
+        "name": "CodigoProducto",
+        "type": "Int32"
+      },
+      {
+        "name": "Existencia",
+        "type": "Decimal"
+      },
+      {
+        "name": "ExistenciaMinima",
+        "type": "Decimal"
+      }
+    ]
+  },
+  {
+    "key": "I3-E15",
+    "database": "SupermercadosGuate_PRUEBAS",
+    "columns": [
+      {
+        "name": "Decision",
+        "type": "String"
+      },
+      {
+        "name": "NumeroAjuste",
+        "type": "String"
+      },
+      {
+        "name": "ExisteAjuste",
+        "type": "Int32"
+      },
+      {
+        "name": "CantidadLineas",
+        "type": "Int32"
+      },
+      {
+        "name": "Antes",
+        "type": "Decimal"
+      },
+      {
+        "name": "Despues",
+        "type": "Decimal"
+      }
+    ]
+  }
+]

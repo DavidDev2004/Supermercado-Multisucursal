@@ -1,0 +1,52 @@
+table I2-E01_BI
+	lineageTag: 06b7a648-4fc4-559e-a254-7a4cf6a56d15
+
+	column CodigoCliente
+		dataType: int64
+		formatString: 0
+		lineageTag: 44b55cba-d212-51b3-b845-51bd689568cf
+		summarizeBy: none
+		sourceColumn: CodigoCliente
+
+	column Cliente
+		dataType: string
+		lineageTag: b4e1375d-97a5-59be-b150-57972f3a6d90
+		summarizeBy: none
+		sourceColumn: Cliente
+
+	column Departamento
+		dataType: string
+		lineageTag: 981dbd51-ceb5-5914-b82d-bb7afeaa50d2
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	column Correo
+		dataType: string
+		lineageTag: 7f2d34f7-b01e-5dbb-a1c2-f2dc7f6aadad
+		summarizeBy: none
+		sourceColumn: Correo
+
+	column LongitudNombre
+		dataType: int64
+		formatString: 0
+		lineageTag: 1ef385c1-d892-56de-a98f-31b2b13e4831
+		summarizeBy: none
+		sourceColumn: LongitudNombre
+
+	column AntiguedadAnios
+		dataType: int64
+		formatString: 0
+		lineageTag: 2e0b108b-d9d3-5060-b839-cc67d942b78a
+		summarizeBy: none
+		sourceColumn: AntiguedadAnios
+
+	partition I2-E01_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    CodigoCliente,#(lf)    Nombres+' '+Apellidos AS Cliente,#(lf)    Departamento,#(lf)    ISNULL(Correo,'No registrado') AS Correo,#(lf)    LEN(Nombres+' '+Apellidos) AS LongitudNombre,#(lf)    DATEDIFF(YEAR,FechaRegistro,'20260930')-#(lf)        CASE WHEN DATEADD(YEAR,DATEDIFF(YEAR,FechaRegistro,'20260930'),FechaRegistro)>'20260930'#(lf)             THEN 1 ELSE 0 END AS AntiguedadAnios#(lf)FROM Tbl_Clientes#(lf)WHERE Estado='Activo' AND FechaRegistro<'20260701'#(lf)    AND Departamento IN ('Guatemala','Quetzaltenango')#(lf)ORDER BY Departamento ASC, Cliente ASC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

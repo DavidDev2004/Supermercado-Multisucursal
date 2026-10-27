@@ -1,0 +1,46 @@
+table I1-E12_BI
+	lineageTag: 87ce0dbf-d168-58a7-a608-ce4691fd1e00
+
+	column CodigoCompra
+		dataType: int64
+		formatString: 0
+		lineageTag: 6a17793a-aa73-5bc5-acd2-b6c2414fb193
+		summarizeBy: none
+		sourceColumn: CodigoCompra
+
+	column NumeroCompra
+		dataType: string
+		lineageTag: 3322f6e6-a9cb-548c-b0cb-a2babf271d8f
+		summarizeBy: none
+		sourceColumn: NumeroCompra
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 9cd311fe-5d62-5d22-a237-bc0883ed1bfb
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column DiasAtraso
+		dataType: int64
+		formatString: 0
+		lineageTag: 09b4df00-2434-50a7-b922-bc500c1367ba
+		summarizeBy: none
+		sourceColumn: DiasAtraso
+
+	column NivelAtraso
+		dataType: string
+		lineageTag: f3b8ad63-2801-5d72-8488-7cb175d08d90
+		summarizeBy: none
+		sourceColumn: NivelAtraso
+
+	partition I1-E12_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT c.CodigoCompra, c.NumeroCompra, c.CodigoSucursal,#(lf)       DATEDIFF(DAY, c.FechaEntregaProgramada, c.FechaRecepcion) AS DiasAtraso,#(lf)       CASE WHEN c.FechaRecepcion <= c.FechaEntregaProgramada THEN 'A tiempo'#(lf)            WHEN DATEDIFF(DAY, c.FechaEntregaProgramada, c.FechaRecepcion) <= 2 THEN 'Leve'#(lf)            WHEN DATEDIFF(DAY, c.FechaEntregaProgramada, c.FechaRecepcion) <= 5 THEN 'Medio'#(lf)            ELSE 'Alto' END AS NivelAtraso#(lf)FROM dbo.Tbl_Compras AS c#(lf)WHERE c.Estado = 'Recibida' AND c.FechaRecepcion IS NOT NULL#(lf)ORDER BY DiasAtraso DESC, c.NumeroCompra;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

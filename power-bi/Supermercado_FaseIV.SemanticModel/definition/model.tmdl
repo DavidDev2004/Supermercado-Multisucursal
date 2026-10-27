@@ -1,0 +1,63 @@
+model Model
+	culture: es-MX
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: es-MX
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["I1-E01_Proveedores_Credito", "I1-E04_Proveedores_Compras", "I1-E05_Productos_CostoReferencia", "I1-E06_Proveedores_BajoMinimo", "I1-E10_Proveedores_DosPeriodos", "I1-E02_BI", "I1-E03_BI", "I1-E07_BI", "I1-E08_BI", "I1-E09_BI", "I1-E11_BI", "I1-E12_BI", "I1-E13_BI", "I1-E14_BI", "I1-E15_BI", "I2-E01_BI", "I2-E04_BI", "I2-E05_BI", "I2-E06_BI", "I2-E10_BI", "I2-E02_BI", "I2-E03_BI", "I2-E07_BI", "I2-E08_BI", "I2-E09_BI", "I2-E11_BI", "I2-E12_BI", "I2-E13_BI", "I2-E14_BI", "I2-E15_BI", "I3-E01_BI", "I3-E04_BI", "I3-E05_BI", "I3-E06_BI", "I3-E09_BI", "I3-E02_BI", "I3-E03_BI", "I3-E07_BI", "I3-E08_BI", "I3-E10_BI", "I3-E11_BI", "I3-E12_BI", "I3-E13_BI", "I3-E14_BI", "I3-E15_BI"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table I1-E01_Proveedores_Credito
+ref table I1-E04_Proveedores_Compras
+ref table I1-E05_Productos_CostoReferencia
+ref table I1-E06_Proveedores_BajoMinimo
+ref table I1-E10_Proveedores_DosPeriodos
+ref table I1-E02_BI
+ref table I1-E03_BI
+ref table I1-E07_BI
+ref table I1-E08_BI
+ref table I1-E09_BI
+ref table I1-E11_BI
+ref table I1-E12_BI
+ref table I1-E13_BI
+ref table I1-E14_BI
+ref table I1-E15_BI
+ref table I2-E01_BI
+ref table I2-E04_BI
+ref table I2-E05_BI
+ref table I2-E06_BI
+ref table I2-E10_BI
+ref table I2-E02_BI
+ref table I2-E03_BI
+ref table I2-E07_BI
+ref table I2-E08_BI
+ref table I2-E09_BI
+ref table I2-E11_BI
+ref table I2-E12_BI
+ref table I2-E13_BI
+ref table I2-E14_BI
+ref table I2-E15_BI
+ref table I3-E01_BI
+ref table I3-E04_BI
+ref table I3-E05_BI
+ref table I3-E06_BI
+ref table I3-E09_BI
+ref table I3-E02_BI
+ref table I3-E03_BI
+ref table I3-E07_BI
+ref table I3-E08_BI
+ref table I3-E10_BI
+ref table I3-E11_BI
+ref table I3-E12_BI
+ref table I3-E13_BI
+ref table I3-E14_BI
+ref table I3-E15_BI
+
+ref cultureInfo es-MX
+

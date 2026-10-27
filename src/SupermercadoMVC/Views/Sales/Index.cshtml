@@ -1,0 +1,103 @@
+@model SalesPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Ventas";
+    Layout = "_AppLayout";
+    var inv = CultureInfo.InvariantCulture;
+    string Amount(decimal number) => number.ToString("0.00##", inv);
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">OPERACIONES · ENCABEZADO Y DETALLE</div><h1>Ventas</h1><p>Consulta ventas y prepara borradores con múltiples productos.</p></div>
+    <a class="button-primary" asp-action="Index" asp-route-nuevo="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@Model.Page">＋ Agregar venta</a>
+</section>
+@if (Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+@if (Model.Notice is not null) { <div class="notice-success" role="status">@Model.Notice</div> }
+<section class="catalog-kpis sales-kpis">
+    <article class="mini-kpi"><div><small>Resultados</small><strong>@Model.Total</strong></div></article>
+    <article class="mini-kpi"><div><small>Borradores · todos</small><strong>@Model.Borradores</strong></div></article>
+    <article class="mini-kpi"><div><small>Confirmadas · todas</small><strong>@Model.Confirmadas</strong></div></article>
+    <article class="mini-kpi"><div><small>Importe confirmado · todas</small><strong>@Amount(Model.ImporteConfirmado)</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form method="get" asp-action="Index" class="filter-bar">
+        <label class="search-box"><input type="search" name="buscar" value="@Model.Search" maxlength="100" placeholder="Número de venta, cliente o NIT" aria-label="Buscar ventas" /></label>
+        <select name="estado" class="filter-select" aria-label="Estado de venta"><option value="">Todos los estados</option>
+            @foreach (var state in new[] { "Borrador", "Confirmada", "Anulada" }) { <option value="@state" selected="@(Model.State == state)">@state</option> }
+        </select><button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading"><h2>Listado de ventas</h2><span>Página @Model.Page de @Model.PageCount · @Model.Total resultados</span></div>
+    <div class="table-responsive"><table class="table data-table"><thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th>Sucursal</th><th>Empleado</th><th>Estado</th><th>Total</th><th>Acciones</th></tr></thead><tbody>
+    @if (Model.Rows.Count == 0) { <tr><td colspan="8">No hay ventas para mostrar.</td></tr> }
+    @foreach (var row in Model.Rows)
+    {
+        <tr><td>@row.NumeroVenta</td><td>@row.FechaVenta.ToString("dd/MM/yyyy")</td><td>@row.Cliente</td><td>@row.Sucursal</td><td>@row.Empleado</td><td><span class="state-pill">@row.Estado</span></td><td>@Amount(row.Total)</td>
+        <td class="sales-actions">
+            <a class="button-secondary" asp-action="Index" asp-route-venta="@row.CodigoVenta" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@Model.Page">Consultar</a>
+            @if (row.Estado == "Borrador")
+            {
+                <a class="button-secondary" asp-action="Index" asp-route-venta="@row.CodigoVenta" asp-route-modo="editar" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@Model.Page">Editar</a>
+                <form asp-action="Confirm" asp-route-id="@row.CodigoVenta" method="post" onsubmit="return confirm('¿Confirmar esta venta y descontar inventario?');">
+                    <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" /><button type="submit" class="button-primary">Confirmar</button>
+                </form>
+                <form asp-action="Delete" asp-route-id="@row.CodigoVenta" method="post" onsubmit="return confirm('¿Eliminar este borrador y todos sus detalles?');">
+                    <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" /><button type="submit" class="button-secondary">Eliminar</button>
+                </form>
+            }
+        </td></tr>
+    }
+    </tbody></table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.Total ventas</span><div class="pagination-controls">
+        @if (Model.Page > 1) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@(Model.Page - 1)">← Anterior</a> }
+        <span>@Model.Page / @Model.PageCount</span>
+        @if (Model.Page < Model.PageCount) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@(Model.Page + 1)">Siguiente →</a> }
+    </div></nav>
+</section>
+@if (Model.OpenModal)
+{
+<div class="modal fade" id="salesModal" tabindex="-1" aria-labelledby="salesTitle" aria-hidden="true" data-readonly="@Model.ReadOnly.ToString().ToLowerInvariant()">
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><div class="eyebrow">@Model.EstadoVenta</div><h2 id="salesTitle" class="modal-title">@(Model.ReadOnly ? "Consultar venta" : Model.Input.CodigoVenta.HasValue ? "Editar borrador" : "Agregar venta")</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+    <form asp-action="Save" asp-route-id="@Model.Input.CodigoVenta" method="post" id="salesForm" class="sales-form">
+        <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" />
+        <div class="modal-body"><div asp-validation-summary="All" class="validation-errors" role="alert"></div>
+        <fieldset disabled="@Model.ReadOnly" class="sales-fields"><div class="form-grid">
+            <div class="form-field"><label asp-for="Input.NumeroVenta">Número de venta *</label><input asp-for="Input.NumeroVenta" class="form-control" maxlength="30" required /><span asp-validation-for="Input.NumeroVenta" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.FechaVenta">Fecha de venta *</label><input asp-for="Input.FechaVenta" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" required /><span asp-validation-for="Input.FechaVenta" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.CodigoCliente">Cliente *</label><select asp-for="Input.CodigoCliente" class="form-control" required><option value="">Selecciona cliente</option>@foreach (var item in Model.Clientes) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoCliente" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.CodigoSucursal">Sucursal *</label><select asp-for="Input.CodigoSucursal" class="form-control" required><option value="">Selecciona sucursal</option>@foreach (var item in Model.Sucursales) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoSucursal" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.CodigoEmpleado">Empleado de la sucursal *</label><select asp-for="Input.CodigoEmpleado" class="form-control" required><option value="">Selecciona empleado</option>@foreach (var item in Model.Empleados) { <option value="@item.Id" data-branch="@item.CodigoSucursal">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoEmpleado" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.Observaciones">Observaciones</label><textarea asp-for="Input.Observaciones" class="form-control" maxlength="300"></textarea><span asp-validation-for="Input.Observaciones" class="field-error"></span></div>
+        </div>
+        @if (!Model.ReadOnly) { <p class="required-note">Puedes guardar sin detalles. El inventario se descuenta al confirmar. El costo histórico se toma del costo promedio de la sucursal y se actualiza al confirmar.</p> }
+        <div class="table-responsive sales-lines-wrapper"><table class="table data-table sales-lines"><thead><tr><th>Producto</th><th>Cantidad</th><th>Precio unitario</th><th>Descuento de línea</th><th>Costo histórico</th><th>Importe</th><th></th></tr></thead><tbody id="salesLines">
+        @for (var i = 0; i < Model.Input.Lineas.Count; i++)
+        {
+            <tr class="sales-line">
+                <td><select asp-for="Input.Lineas[i].CodigoProducto" class="form-control line-product" required><option value="">Selecciona producto</option>@foreach (var item in Model.Productos) { <option value="@item.Id">@item.Nombre</option> }</select></td>
+                <td><input asp-for="Input.Lineas[i].Cantidad" type="number" min="0.01" max="9999999999.99" step="0.01" class="form-control line-quantity" required /></td>
+                <td><input asp-for="Input.Lineas[i].PrecioUnitario" type="number" min="0.01" max="9999999999.99" step="0.01" class="form-control line-price" required /></td>
+                <td><input asp-for="Input.Lineas[i].Descuento" type="number" min="0" max="9999999999.99" step="0.01" class="form-control line-discount" required /></td>
+                <td class="line-cost" data-saved="@Model.Input.Lineas[i].CostoUnitarioHistorico?.ToString(inv)">@Model.Input.Lineas[i].CostoUnitarioHistorico?.ToString(inv)</td>
+                <td class="line-amount"></td><td>@if (!Model.ReadOnly) { <button type="button" class="button-secondary remove-line" aria-label="Quitar línea">×</button> }</td>
+            </tr>
+        }
+        </tbody></table></div>
+        @if (!Model.ReadOnly) { <button type="button" class="button-secondary" id="addSaleLine">＋ Agregar producto</button> }
+        </fieldset><p id="salesStockMessage" class="field-error" role="status"></p><p class="sales-total">Total de la venta: <strong id="salesTotal">0.00</strong></p>
+        </div>
+        <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button>@if (!Model.ReadOnly) { <button type="submit" class="button-primary">Guardar borrador</button> }</div>
+    </form>
+</div></div></div>
+<template id="saleLineTemplate"><tr class="sales-line">
+    <td><select class="form-control line-product" required><option value="">Selecciona producto</option>@foreach (var item in Model.Productos) { <option value="@item.Id">@item.Nombre</option> }</select></td>
+    <td><input type="number" value="1" min="0.01" max="9999999999.99" step="0.01" class="form-control line-quantity" required /></td>
+    <td><input type="number" min="0.01" max="9999999999.99" step="0.01" class="form-control line-price" required /></td>
+    <td><input type="number" value="0" min="0" max="9999999999.99" step="0.01" class="form-control line-discount" required /></td>
+    <td class="line-cost"></td><td class="line-amount"></td><td><button type="button" class="button-secondary remove-line" aria-label="Quitar línea">×</button></td>
+</tr></template>
+<script type="application/json" id="salesData">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new { Model.Productos, Model.Inventario }))</script>
+}
+@section Scripts {
+    <script src="~/js/sales.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="~/css/sales.css" asp-append-version="true" />
+}

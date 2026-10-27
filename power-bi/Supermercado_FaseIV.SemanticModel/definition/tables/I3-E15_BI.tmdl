@@ -1,0 +1,53 @@
+table I3-E15_BI
+	lineageTag: 68b51abe-3e31-53ac-aeae-a2c1c0a739b0
+
+	column Decision
+		dataType: string
+		lineageTag: 189186ef-6e50-50d0-a8bd-d9654de99ba1
+		summarizeBy: none
+		sourceColumn: Decision
+
+	column NumeroAjuste
+		dataType: string
+		lineageTag: 73435c3f-5ceb-5648-a14b-1ecb1a4f4083
+		summarizeBy: none
+		sourceColumn: NumeroAjuste
+
+	column ExisteAjuste
+		dataType: int64
+		formatString: 0
+		lineageTag: 7de26263-2619-5acb-8f22-c6ec85571fce
+		summarizeBy: none
+		sourceColumn: ExisteAjuste
+
+	column CantidadLineas
+		dataType: int64
+		formatString: 0
+		lineageTag: 05884e50-2564-5f0c-9116-968fb9561f2d
+		summarizeBy: none
+		sourceColumn: CantidadLineas
+
+	column Antes
+		dataType: double
+		formatString: #,0.00
+		lineageTag: f855b6ab-e380-5b9a-ba31-13355c3a5af2
+		summarizeBy: sum
+		sourceColumn: Antes
+
+	column Despues
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 68b779b6-9e5f-505e-8b4b-4c36577a52c6
+		summarizeBy: sum
+		sourceColumn: Despues
+
+	partition I3-E15_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate_PRUEBAS", [Query="WITH Practicas AS (#(lf)    SELECT v.Decision, v.NumeroAjuste#(lf)    FROM (VALUES#(lf)        ('NO', 'I3-E15-E164A13A540348E8A8B38F'),#(lf)        ('SI', 'I3-E15-7F01845DDB7B4090BFA76E')#(lf)    ) AS v(Decision, NumeroAjuste)#(lf))#(lf)SELECT p.Decision, p.NumeroAjuste,#(lf)       CASE WHEN a.CodigoAjuste IS NULL THEN 0 ELSE 1 END AS ExisteAjuste,#(lf)       (SELECT COUNT(*) FROM dbo.Tbl_AjustesInventarioDetalle AS d WHERE d.CodigoAjuste = a.CodigoAjuste) AS CantidadLineas,#(lf)       CAST(NULL AS decimal(18,2)) AS Antes,#(lf)       (SELECT i.Existencia FROM dbo.Tbl_Inventario AS i WHERE i.CodigoInventario = 1) AS Despues#(lf)FROM Practicas AS p#(lf)LEFT JOIN dbo.Tbl_AjustesInventario AS a ON a.NumeroAjuste = p.NumeroAjuste;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

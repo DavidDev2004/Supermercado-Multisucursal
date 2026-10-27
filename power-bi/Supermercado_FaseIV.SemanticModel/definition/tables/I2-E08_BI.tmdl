@@ -1,0 +1,61 @@
+table I2-E08_BI
+	lineageTag: ecf5a92c-ec2a-50f2-ab41-9aea4e1c28a6
+
+	column CodigoCategoria
+		dataType: int64
+		formatString: 0
+		lineageTag: 64b83054-f99f-5a02-934c-95cd67530c95
+		summarizeBy: none
+		sourceColumn: CodigoCategoria
+
+	column Categoria
+		dataType: string
+		lineageTag: d7a65d9e-178d-5a4e-80a9-68f9d6463190
+		summarizeBy: none
+		sourceColumn: Categoria
+
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: 27d482c4-158b-5180-8f4f-8ffc272e8fa0
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: 97b84960-676f-590c-939a-db11abf0d64d
+		summarizeBy: none
+		sourceColumn: Mes
+
+	column UnidadesVendidas
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0f711eb2-26e7-5319-96ce-cb8cd3de64d0
+		summarizeBy: sum
+		sourceColumn: UnidadesVendidas
+
+	column VentaNeta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 1b188487-8cc1-5b7c-b126-684ac41db634
+		summarizeBy: sum
+		sourceColumn: VentaNeta
+
+	column Utilidad
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 45d4af0b-682a-5210-8e7e-31b215ba6183
+		summarizeBy: sum
+		sourceColumn: Utilidad
+
+	partition I2-E08_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    C.CodigoCategoria,#(lf)    C.Nombre AS Categoria,#(lf)    YEAR(V.FechaVenta) AS Anio,#(lf)    MONTH(V.FechaVenta) AS Mes,#(lf)    SUM(D.Cantidad) AS UnidadesVendidas,#(lf)    CAST(ROUND(SUM(D.Cantidad*D.PrecioUnitario-D.Descuento),2) AS DECIMAL(18,2)) AS VentaNeta,#(lf)    CAST(ROUND(SUM((D.Cantidad*D.PrecioUnitario-D.Descuento)#(lf)        -(D.Cantidad*D.CostoUnitarioHistorico)),2) AS DECIMAL(18,2)) AS Utilidad#(lf)FROM Tbl_Ventas V#(lf)INNER JOIN Tbl_VentasDetalle D ON D.CodigoVenta=V.CodigoVenta#(lf)INNER JOIN Tbl_Productos P ON P.CodigoProducto=D.CodigoProducto#(lf)INNER JOIN Tbl_Categorias C ON C.CodigoCategoria=P.CodigoCategoria#(lf)WHERE V.Estado='Confirmada'#(lf)    AND V.FechaVenta>='20260101' AND V.FechaVenta<'20270101'#(lf)GROUP BY C.CodigoCategoria,C.Nombre,YEAR(V.FechaVenta),MONTH(V.FechaVenta)#(lf)HAVING COUNT(D.CodigoDetalleVenta)>=2#(lf)    AND SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)>200#(lf)ORDER BY Anio ASC, Mes ASC, Categoria ASC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

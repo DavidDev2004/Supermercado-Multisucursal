@@ -1,0 +1,583 @@
+[
+  {
+    "key": "I1-E02",
+    "integrante": 1,
+    "pagina": 2,
+    "pagina_titulo": "Compras y movimientos",
+    "titulo": "Compras con recepción atrasada",
+    "tipo": "table",
+    "columnas": [
+      "NumeroCompra",
+      "Anio",
+      "Mes",
+      "DiasAtraso"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E03",
+    "integrante": 1,
+    "pagina": 2,
+    "pagina_titulo": "Compras y movimientos",
+    "titulo": "Compras recibidas en septiembre",
+    "tipo": "table",
+    "columnas": [
+      "NumeroCompra",
+      "Proveedor",
+      "Sucursal",
+      "ImporteCompra"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E07",
+    "integrante": 1,
+    "pagina": 2,
+    "pagina_titulo": "Compras y movimientos",
+    "titulo": "Compras por proveedor",
+    "tipo": "bar",
+    "columnas": [
+      "Proveedor",
+      "TotalComprado"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E08",
+    "integrante": 1,
+    "pagina": 2,
+    "pagina_titulo": "Compras y movimientos",
+    "titulo": "Costo neto por categoría y mes",
+    "tipo": "line",
+    "columnas": [
+      "Mes",
+      "CostoNeto",
+      "Categoria"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E09",
+    "integrante": 1,
+    "pagina": 2,
+    "pagina_titulo": "Compras y movimientos",
+    "titulo": "Bitácora de movimientos",
+    "tipo": "table",
+    "columnas": [
+      "Fecha",
+      "Documento",
+      "TipoEvento",
+      "CodigoSucursal",
+      "Monto"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E11",
+    "integrante": 1,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento operativo",
+    "titulo": "Proveedores a contactar",
+    "tipo": "table",
+    "columnas": [
+      "CodigoProveedor",
+      "Proveedor"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E12",
+    "integrante": 1,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento operativo",
+    "titulo": "Prioridad por atraso",
+    "tipo": "table",
+    "columnas": [
+      "NumeroCompra",
+      "CodigoSucursal",
+      "DiasAtraso",
+      "NivelAtraso"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E13",
+    "integrante": 1,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento operativo",
+    "titulo": "Presupuesto de la sucursal evaluada",
+    "tipo": "cardVisual",
+    "columnas": [
+      "TotalComprado",
+      "Presupuesto",
+      "Diferencia",
+      "EstadoPresupuesto"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I1-E14",
+    "integrante": 1,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento operativo",
+    "titulo": "Costo de referencia verificado",
+    "tipo": "table",
+    "columnas": [
+      "CodigoProductoProveedor",
+      "Proveedor",
+      "Producto",
+      "CostoReferencia"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  },
+  {
+    "key": "I1-E15",
+    "integrante": 1,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento operativo",
+    "titulo": "Compra de práctica verificada",
+    "tipo": "table",
+    "columnas": [
+      "NumeroCompra",
+      "ExisteCompra",
+      "CantidadLineas",
+      "ImporteCompra"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  },
+  {
+    "key": "I2-E01",
+    "integrante": 2,
+    "pagina": 1,
+    "pagina_titulo": "Clientes y oportunidades comerciales",
+    "titulo": "Clientes registrados",
+    "tipo": "table",
+    "columnas": [
+      "Cliente",
+      "Departamento",
+      "AntiguedadAnios"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E04",
+    "integrante": 2,
+    "pagina": 1,
+    "pagina_titulo": "Clientes y oportunidades comerciales",
+    "titulo": "Clientes con y sin ventas",
+    "tipo": "table",
+    "columnas": [
+      "Cliente",
+      "NumeroVenta",
+      "FechaVenta",
+      "TotalVenta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E05",
+    "integrante": 2,
+    "pagina": 1,
+    "pagina_titulo": "Clientes y oportunidades comerciales",
+    "titulo": "Ventas superiores al promedio",
+    "tipo": "table",
+    "columnas": [
+      "NumeroVenta",
+      "FechaVenta",
+      "CodigoSucursal",
+      "TotalVenta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E06",
+    "integrante": 2,
+    "pagina": 1,
+    "pagina_titulo": "Clientes y oportunidades comerciales",
+    "titulo": "Clientes con pagos destacados",
+    "tipo": "table",
+    "columnas": [
+      "Cliente",
+      "Departamento",
+      "Telefono"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E10",
+    "integrante": 2,
+    "pagina": 1,
+    "pagina_titulo": "Clientes y oportunidades comerciales",
+    "titulo": "Clientes recurrentes",
+    "tipo": "table",
+    "columnas": [
+      "CodigoCliente",
+      "Cliente"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E02",
+    "integrante": 2,
+    "pagina": 2,
+    "pagina_titulo": "Ventas y cobros",
+    "titulo": "Pagos aplicados",
+    "tipo": "table",
+    "columnas": [
+      "Comprobante",
+      "MetodoPago",
+      "Monto",
+      "Comision",
+      "MontoNeto"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E03",
+    "integrante": 2,
+    "pagina": 2,
+    "pagina_titulo": "Ventas y cobros",
+    "titulo": "Saldos por venta",
+    "tipo": "table",
+    "columnas": [
+      "NumeroVenta",
+      "Cliente",
+      "TotalVenta",
+      "TotalPagado",
+      "Saldo"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E07",
+    "integrante": 2,
+    "pagina": 2,
+    "pagina_titulo": "Ventas y cobros",
+    "titulo": "Ventas por sucursal",
+    "tipo": "bar",
+    "columnas": [
+      "Sucursal",
+      "TotalVendido"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E08",
+    "integrante": 2,
+    "pagina": 2,
+    "pagina_titulo": "Ventas y cobros",
+    "titulo": "Venta neta por categoría y mes",
+    "tipo": "line",
+    "columnas": [
+      "Mes",
+      "VentaNeta",
+      "Categoria"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E09",
+    "integrante": 2,
+    "pagina": 2,
+    "pagina_titulo": "Ventas y cobros",
+    "titulo": "Bitácora de ventas y pagos",
+    "tipo": "table",
+    "columnas": [
+      "Fecha",
+      "Documento",
+      "TipoEvento",
+      "CodigoSucursal",
+      "Monto"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E11",
+    "integrante": 2,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento comercial y verificaciones",
+    "titulo": "Clientes para campaña",
+    "tipo": "table",
+    "columnas": [
+      "CodigoCliente",
+      "Cliente"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E12",
+    "integrante": 2,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento comercial y verificaciones",
+    "titulo": "Clasificación de ventas",
+    "tipo": "table",
+    "columnas": [
+      "NumeroVenta",
+      "CodigoSucursal",
+      "TotalVenta",
+      "NivelVenta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E13",
+    "integrante": 2,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento comercial y verificaciones",
+    "titulo": "Meta de venta de la sucursal",
+    "tipo": "cardVisual",
+    "columnas": [
+      "TotalVendido",
+      "Meta",
+      "Faltante",
+      "EstadoMeta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I2-E14",
+    "integrante": 2,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento comercial y verificaciones",
+    "titulo": "Salario verificado",
+    "tipo": "table",
+    "columnas": [
+      "Empleado",
+      "CodigoSucursal",
+      "Salario"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  },
+  {
+    "key": "I2-E15",
+    "integrante": 2,
+    "pagina": 3,
+    "pagina_titulo": "Seguimiento comercial y verificaciones",
+    "titulo": "Registros de práctica verificados",
+    "tipo": "table",
+    "columnas": [
+      "NIT",
+      "NumeroVenta",
+      "ExisteCliente",
+      "ExisteVenta"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  },
+  {
+    "key": "I3-E01",
+    "integrante": 3,
+    "pagina": 1,
+    "pagina_titulo": "Productos y cobertura del inventario",
+    "titulo": "Productos registrados",
+    "tipo": "table",
+    "columnas": [
+      "Producto",
+      "Marca",
+      "PrecioVenta",
+      "DiasRegistrado"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E04",
+    "integrante": 3,
+    "pagina": 1,
+    "pagina_titulo": "Productos y cobertura del inventario",
+    "titulo": "Productos con y sin inventario",
+    "tipo": "table",
+    "columnas": [
+      "Producto",
+      "CodigoSucursal",
+      "Existencia",
+      "ExistenciaMinima"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E05",
+    "integrante": 3,
+    "pagina": 1,
+    "pagina_titulo": "Productos y cobertura del inventario",
+    "titulo": "Precios superiores al promedio",
+    "tipo": "table",
+    "columnas": [
+      "CodigoProducto",
+      "CodigoCategoria",
+      "Producto",
+      "PrecioVenta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E06",
+    "integrante": 3,
+    "pagina": 1,
+    "pagina_titulo": "Productos y cobertura del inventario",
+    "titulo": "Sucursales con pérdidas",
+    "tipo": "table",
+    "columnas": [
+      "Sucursal",
+      "Municipio",
+      "Departamento"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E09",
+    "integrante": 3,
+    "pagina": 1,
+    "pagina_titulo": "Productos y cobertura del inventario",
+    "titulo": "Cobertura territorial",
+    "tipo": "table",
+    "columnas": [
+      "Municipio",
+      "Departamento"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E02",
+    "integrante": 3,
+    "pagina": 2,
+    "pagina_titulo": "Existencias y pérdidas",
+    "titulo": "Necesidades de reposición",
+    "tipo": "table",
+    "columnas": [
+      "CodigoInventario",
+      "Existencia",
+      "ExistenciaMinima",
+      "Faltante"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E03",
+    "integrante": 3,
+    "pagina": 2,
+    "pagina_titulo": "Existencias y pérdidas",
+    "titulo": "Valoración del inventario",
+    "tipo": "table",
+    "columnas": [
+      "Sucursal",
+      "Producto",
+      "ValorCosto",
+      "ValorVenta"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E07",
+    "integrante": 3,
+    "pagina": 2,
+    "pagina_titulo": "Existencias y pérdidas",
+    "titulo": "Valor del inventario por sucursal",
+    "tipo": "bar",
+    "columnas": [
+      "Sucursal",
+      "ValorInventario"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E08",
+    "integrante": 3,
+    "pagina": 2,
+    "pagina_titulo": "Existencias y pérdidas",
+    "titulo": "Pérdidas por motivo y mes",
+    "tipo": "line",
+    "columnas": [
+      "Mes",
+      "ValorPerdido",
+      "Motivo"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E10",
+    "integrante": 3,
+    "pagina": 2,
+    "pagina_titulo": "Existencias y pérdidas",
+    "titulo": "Disponibilidad compartida",
+    "tipo": "table",
+    "columnas": [
+      "CodigoProducto",
+      "Producto"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E11",
+    "integrante": 3,
+    "pagina": 3,
+    "pagina_titulo": "Reposición y verificaciones",
+    "titulo": "Disponibilidad exclusiva",
+    "tipo": "table",
+    "columnas": [
+      "CodigoProducto",
+      "Producto",
+      "Disponibilidad"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E12",
+    "integrante": 3,
+    "pagina": 3,
+    "pagina_titulo": "Reposición y verificaciones",
+    "titulo": "Antigüedad del inventario",
+    "tipo": "table",
+    "columnas": [
+      "CodigoInventario",
+      "FechaUltimoIngreso",
+      "DiasSinIngreso",
+      "NivelAntiguedad"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E13",
+    "integrante": 3,
+    "pagina": 3,
+    "pagina_titulo": "Reposición y verificaciones",
+    "titulo": "Reposición de la sucursal",
+    "tipo": "cardVisual",
+    "columnas": [
+      "CodigoSucursal",
+      "Tolerancia",
+      "ProductosBajoMinimo",
+      "EstadoReposicion"
+    ],
+    "base": "SupermercadosGuate"
+  },
+  {
+    "key": "I3-E14",
+    "integrante": 3,
+    "pagina": 3,
+    "pagina_titulo": "Reposición y verificaciones",
+    "titulo": "Mínimo de inventario verificado",
+    "tipo": "table",
+    "columnas": [
+      "CodigoInventario",
+      "CodigoSucursal",
+      "Existencia",
+      "ExistenciaMinima"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  },
+  {
+    "key": "I3-E15",
+    "integrante": 3,
+    "pagina": 3,
+    "pagina_titulo": "Reposición y verificaciones",
+    "titulo": "Ajuste de práctica verificado",
+    "tipo": "table",
+    "columnas": [
+      "NumeroAjuste",
+      "ExisteAjuste",
+      "CantidadLineas",
+      "Antes",
+      "Despues"
+    ],
+    "base": "SupermercadosGuate_PRUEBAS"
+  }
+]

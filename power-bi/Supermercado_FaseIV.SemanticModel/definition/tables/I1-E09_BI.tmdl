@@ -1,0 +1,51 @@
+table I1-E09_BI
+	lineageTag: df2aad28-1205-55d6-9a6e-e28843adfe97
+
+	column Fecha
+		dataType: dateTime
+		lineageTag: 7af0381d-db94-5677-9d98-73ff564ba1f4
+		summarizeBy: none
+		sourceColumn: Fecha
+
+	column Documento
+		dataType: string
+		lineageTag: ffc3e409-7a22-550d-9e9e-77cbd2b04271
+		summarizeBy: none
+		sourceColumn: Documento
+
+	column TipoEvento
+		dataType: string
+		lineageTag: 5a55bf62-ea5f-5feb-b43a-ced955324d38
+		summarizeBy: none
+		sourceColumn: TipoEvento
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 196ac485-4bdf-5b00-9882-dac2fbec2512
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Monto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e0f1b20c-4ae6-56a2-9ac2-5bb940abde5a
+		summarizeBy: sum
+		sourceColumn: Monto
+
+	column Estado
+		dataType: string
+		lineageTag: ebe92764-768c-5860-ae7d-cd42c7570984
+		summarizeBy: none
+		sourceColumn: Estado
+
+	partition I1-E09_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="-- Ajustes antiguos sin FechaAplicacion no se atribuyen a septiembre; no se inventan fechas.#(lf)WITH Movimientos AS (#(lf)    SELECT c.FechaRecepcion AS Fecha, c.NumeroCompra AS Documento,#(lf)           CAST('Compra recibida' AS varchar(20)) AS TipoEvento,#(lf)           c.CodigoSucursal,#(lf)           CAST(ROUND(SUM(d.Cantidad * d.CostoUnitario - d.Descuento),2) AS decimal(18,2)) AS Monto,#(lf)           c.Estado#(lf)    FROM dbo.Tbl_Compras AS c#(lf)    JOIN dbo.Tbl_ComprasDetalle AS d ON d.CodigoCompra = c.CodigoCompra#(lf)    WHERE c.Estado = 'Recibida' AND c.FechaRecepcion >= '20260901' AND c.FechaRecepcion < '20261001'#(lf)    GROUP BY c.CodigoCompra, c.FechaRecepcion, c.NumeroCompra, c.CodigoSucursal, c.Estado#(lf)    UNION ALL#(lf)    SELECT a.FechaAplicacion, a.NumeroAjuste, CAST('Ajuste aplicado' AS varchar(20)),#(lf)           a.CodigoSucursal,#(lf)           CASE WHEN COUNT(d.CostoUnitario) = COUNT(*)#(lf)                THEN CAST(ROUND(SUM(d.Cantidad * d.CostoUnitario), 2) AS decimal(18,2))#(lf)                ELSE NULL END,#(lf)           a.Estado#(lf)    FROM dbo.Tbl_AjustesInventario AS a#(lf)    JOIN dbo.Tbl_AjustesInventarioDetalle AS d ON d.CodigoAjuste = a.CodigoAjuste#(lf)    WHERE a.Estado = 'Aplicado' AND a.FechaAplicacion >= '20260901' AND a.FechaAplicacion < '20261001'#(lf)    GROUP BY a.CodigoAjuste, a.FechaAplicacion, a.NumeroAjuste, a.CodigoSucursal, a.Estado#(lf))#(lf)SELECT Fecha, Documento, TipoEvento, CodigoSucursal, Monto, Estado#(lf)FROM Movimientos#(lf)ORDER BY Fecha, TipoEvento, Documento;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

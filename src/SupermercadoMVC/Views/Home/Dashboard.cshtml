@@ -1,0 +1,72 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Inicio";
+    Layout = "_AppLayout";
+    var maxSales = Model.MonthlySales.Count == 0 ? 1m : Math.Max(1m, Model.MonthlySales.Max(sale => sale.Total));
+    var cards = new[]
+    {
+        ("Sucursales", Model.TotalSucursales, "↗", "coral", "/catalogos/sucursales"),
+        ("Sucursales activas", Model.SucursalesActivas, "✓", "turquoise", "/catalogos/sucursales?estado=Activo"),
+        ("Categorías", Model.TotalCategorias, "◇", "navy", "/catalogos/categorias"),
+        ("Productos", Model.TotalProductos, "▣", "sand", "/modulos/productos"),
+        ("Clientes", Model.TotalClientes, "♙", "blue", "/catalogos/clientes"),
+        ("Proveedores", Model.TotalProveedores, "♧", "mint", "/catalogos/proveedores")
+    };
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">PANEL PRINCIPAL</div><h1>Un buen día para organizar tu mercado.</h1><p>Resumen general de Supermercado GT.</p></div>
+    <a class="button-secondary" asp-controller="Catalog" asp-action="Index" asp-route-slug="categorias"><span>＋</span> Gestionar catálogos</a>
+</section>
+<nav class="d-flex flex-wrap gap-2 mb-4" aria-label="Páginas de inicio">
+    <a class="button-secondary" href="/Inicio/Administrador">Administrador</a>
+    <a class="button-secondary" href="/Inicio/Bodega">Bodega</a>
+    <a class="button-secondary" href="/Inicio/Caja">Caja</a>
+</nav>
+@if (Model.DatabaseError is not null)
+{
+    <div class="system-alert"><span class="alert-icon">!</span><div><strong>Datos del sistema no disponibles</strong><p>@Model.DatabaseError</p></div></div>
+}
+<section class="kpi-grid" aria-label="Indicadores del supermercado">
+@foreach (var card in cards)
+{
+    <a class="kpi-card @card.Item4" href="@card.Item5">
+        <div class="kpi-top"><span>@card.Item1</span><span class="kpi-icon">@card.Item3</span></div>
+        <div class="kpi-value">@(card.Item2?.ToString("N0") ?? "—")</div>
+        <div class="kpi-caption">@(card.Item2.HasValue ? "Registros actuales" : "Sin conexión a datos")</div>
+        <span class="kpi-arrow" aria-hidden="true">↗</span>
+    </a>
+}
+</section>
+<section class="dashboard-grid">
+    <article class="panel-card sales-panel">
+        <div class="panel-heading"><div><div class="eyebrow">ACTIVIDAD COMERCIAL</div><h2>Ventas confirmadas</h2><p>Importes agregados de los últimos seis meses</p></div><span class="period-pill">Últimos 6 meses</span></div>
+        @if (Model.DatabaseError is not null)
+        {
+            <div class="chart-empty">El gráfico estará disponible al conectar con SQL Server.</div>
+        }
+        else if (Model.MonthlySales.Count == 0)
+        {
+            <div class="chart-empty">No hay ventas confirmadas en el periodo consultado.</div>
+        }
+        else
+        {
+            <div class="sales-chart" role="img" aria-label="Ventas confirmadas por mes">
+                @foreach (var point in Model.MonthlySales)
+                {
+                    var height = (int)Math.Clamp(decimal.ToDouble(point.Total / maxSales * 100m), 5, 100);
+                    <div class="chart-column" title="@point.Label: @point.Total.ToString("N2")"><div class="bar-value">@point.Total.ToString("N0")</div><div class="bar-track"><div class="bar-fill" style="height:@height%"></div></div><span class="bar-label">@point.Label</span></div>
+                }
+            </div>
+            <div class="chart-footnote">Fuente: ventas con estado Confirmada y sus detalles en SQL Server.</div>
+        }
+    </article>
+    <article class="panel-card quick-panel">
+        <div class="eyebrow">ACCESO RÁPIDO</div><h2>¿Qué necesitas hacer?</h2><p>Accede a los catálogos principales.</p>
+        <div class="quick-links">
+            <a asp-controller="Catalog" asp-action="Index" asp-route-slug="sucursales"><span class="quick-icon coral-bg">▦</span><span><strong>Sucursales</strong><small>Ubicaciones y estados</small></span><b>→</b></a>
+            <a asp-controller="Catalog" asp-action="Index" asp-route-slug="categorias"><span class="quick-icon mint-bg">◇</span><span><strong>Categorías</strong><small>Clasificación de productos</small></span><b>→</b></a>
+            <a asp-controller="Catalog" asp-action="Index" asp-route-slug="proveedores"><span class="quick-icon sand-bg">♧</span><span><strong>Proveedores</strong><small>Contactos comerciales</small></span><b>→</b></a>
+            <a asp-controller="Catalog" asp-action="Index" asp-route-slug="clientes"><span class="quick-icon blue-bg">♙</span><span><strong>Clientes</strong><small>Directorio de clientes</small></span><b>→</b></a>
+        </div>
+    </article>
+</section>

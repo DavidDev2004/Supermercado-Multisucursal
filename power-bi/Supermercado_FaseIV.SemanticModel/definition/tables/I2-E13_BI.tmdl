@@ -1,0 +1,47 @@
+table I2-E13_BI
+	lineageTag: 53f34dbe-d0d3-5a58-95d2-867b864bd7df
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: ee01c0cf-c7ba-5c16-a3e8-0f2a1cacaccb
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Meta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2cb65310-e03e-5dc9-a8e9-42ef19a04808
+		summarizeBy: sum
+		sourceColumn: Meta
+
+	column TotalVendido
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2b8cca76-ac68-5629-9b7b-9658867f777e
+		summarizeBy: sum
+		sourceColumn: TotalVendido
+
+	column Faltante
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 05ae2346-bb8f-59d5-9ff0-3b6161f974c8
+		summarizeBy: sum
+		sourceColumn: Faltante
+
+	column EstadoMeta
+		dataType: string
+		lineageTag: a6818c94-8537-5ffa-8f04-806c2ce929e6
+		summarizeBy: none
+		sourceColumn: EstadoMeta
+
+	partition I2-E13_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH VentasDocumento AS (#(lf)    SELECT v.CodigoVenta, v.CodigoSucursal,#(lf)           SUM(d.Cantidad * d.PrecioUnitario - d.Descuento) AS Importe#(lf)    FROM dbo.Tbl_Ventas AS v#(lf)    JOIN dbo.Tbl_VentasDetalle AS d ON d.CodigoVenta = v.CodigoVenta#(lf)    WHERE v.Estado = 'Confirmada' AND v.FechaVenta >= '20260901' AND v.FechaVenta < '20261001'#(lf)    GROUP BY v.CodigoVenta, v.CodigoSucursal#(lf))#(lf)SELECT CAST(1 AS int) AS CodigoSucursal, CAST(1000 AS decimal(18,2)) AS Meta,#(lf)       CAST(COALESCE(SUM(Importe), 0) AS decimal(18,2)) AS TotalVendido,#(lf)       CAST(CASE WHEN COALESCE(SUM(Importe), 0) >= 1000 THEN 0#(lf)                 ELSE 1000 - COALESCE(SUM(Importe), 0) END AS decimal(18,2)) AS Faltante,#(lf)       CASE WHEN COALESCE(SUM(Importe), 0) >= 1000 THEN 'Alcanzada'#(lf)            ELSE 'Pendiente' END AS EstadoMeta#(lf)FROM VentasDocumento WHERE CodigoSucursal = 1;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

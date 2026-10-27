@@ -1,0 +1,26 @@
+table I1-E11_BI
+	lineageTag: ad0286ce-651e-5319-9ff4-7b0675531594
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 7a90d943-04f3-5da9-b6d4-66964badad58
+		summarizeBy: none
+		sourceColumn: CodigoProveedor
+
+	column Proveedor
+		dataType: string
+		lineageTag: 7860b6b6-f7ba-58f9-aad1-5a45c4e7c77d
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	partition I1-E11_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH CompraronAntes AS (#(lf)    SELECT CodigoProveedor FROM dbo.Tbl_Compras#(lf)    WHERE Estado = 'Recibida' AND FechaCompra >= '20260101' AND FechaCompra < '20260701'#(lf)    EXCEPT#(lf)    SELECT CodigoProveedor FROM dbo.Tbl_Compras#(lf)    WHERE Estado = 'Recibida' AND FechaCompra >= '20260701' AND FechaCompra < '20261001'#(lf)),#(lf)SinCompras2026 AS (#(lf)    SELECT p.CodigoProveedor#(lf)    FROM dbo.Tbl_Proveedores AS p#(lf)    WHERE p.Estado = 'Activo'#(lf)      AND EXISTS (SELECT 1 FROM dbo.Tbl_ProductoProveedor pp#(lf)                  WHERE pp.CodigoProveedor = p.CodigoProveedor AND pp.Estado = 'Activo')#(lf)      AND NOT EXISTS (SELECT 1 FROM dbo.Tbl_Compras c#(lf)                      WHERE c.CodigoProveedor = p.CodigoProveedor#(lf)                        AND c.Estado = 'Recibida'#(lf)                        AND c.FechaCompra >= '20260101' AND c.FechaCompra < '20270101')#(lf)),#(lf)Unicos AS (#(lf)    SELECT CodigoProveedor FROM CompraronAntes#(lf)    UNION#(lf)    SELECT CodigoProveedor FROM SinCompras2026#(lf))#(lf)SELECT p.CodigoProveedor, p.Nombre AS Proveedor#(lf)FROM Unicos AS u#(lf)JOIN dbo.Tbl_Proveedores AS p ON p.CodigoProveedor = u.CodigoProveedor#(lf)ORDER BY Proveedor;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

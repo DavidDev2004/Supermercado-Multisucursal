@@ -1,0 +1,47 @@
+table I3-E04_BI
+	lineageTag: be7806b1-6692-55ad-9bae-aa943d4ac5d4
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 1026a7e2-0d0f-5609-938d-d3036b94f311
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Producto
+		dataType: string
+		lineageTag: 89c8e77c-6902-5252-b553-8be098e63f38
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: d6cd2046-0a46-5e72-b3da-15ee947b1f26
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Existencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 45bb671b-7eae-5e1f-8eae-57192455a0c0
+		summarizeBy: sum
+		sourceColumn: Existencia
+
+	column ExistenciaMinima
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e92a7f37-f4cb-54bb-89b8-713103f55b39
+		summarizeBy: sum
+		sourceColumn: ExistenciaMinima
+
+	partition I3-E04_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT p.CodigoProducto, p.Nombre AS Producto,#(lf)       i.CodigoSucursal, i.Existencia, i.ExistenciaMinima#(lf)FROM dbo.Tbl_Productos AS p#(lf)LEFT JOIN dbo.Tbl_Inventario AS i ON i.CodigoProducto=p.CodigoProducto#(lf)WHERE p.Estado='Activo'#(lf)ORDER BY Producto, i.CodigoSucursal;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,25 @@
+table I3-E09_BI
+	lineageTag: 857409a8-8cf1-5914-abc9-cf44a02befce
+
+	column Municipio
+		dataType: string
+		lineageTag: d1f8c21d-1b08-5b23-ae55-fc114041d471
+		summarizeBy: none
+		sourceColumn: Municipio
+
+	column Departamento
+		dataType: string
+		lineageTag: ac278564-3137-5b86-a80b-cbc14412fd8f
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	partition I3-E09_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT Municipio, Departamento FROM dbo.Tbl_Sucursales WHERE Estado='Activo'#(lf)UNION#(lf)SELECT Municipio, Departamento FROM dbo.Tbl_Proveedores WHERE Estado='Activo'#(lf)ORDER BY Departamento, Municipio;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

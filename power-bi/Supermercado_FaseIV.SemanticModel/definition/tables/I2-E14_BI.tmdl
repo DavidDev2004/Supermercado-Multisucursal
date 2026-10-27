@@ -1,0 +1,40 @@
+table I2-E14_BI
+	lineageTag: 3f7d2f7b-eda0-5fb6-97fd-d9f38ddba709
+
+	column CodigoEmpleado
+		dataType: int64
+		formatString: 0
+		lineageTag: 7520f8a4-4e78-50d9-816e-105dbbbec237
+		summarizeBy: none
+		sourceColumn: CodigoEmpleado
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 7bc110cd-789f-5c5e-a4c3-a6ccb94f0f0c
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Empleado
+		dataType: string
+		lineageTag: 07444078-61dc-5b11-b12c-16cf611cf2d9
+		summarizeBy: none
+		sourceColumn: Empleado
+
+	column Salario
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e15b63f7-7e28-59e7-8419-fb65fb2d6c8a
+		summarizeBy: sum
+		sourceColumn: Salario
+
+	partition I2-E14_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate_PRUEBAS", [Query="SELECT e.CodigoEmpleado, e.CodigoSucursal,#(lf)       e.Nombres + ' ' + e.Apellidos AS Empleado,#(lf)       CAST(e.Salario AS decimal(18,2)) AS Salario#(lf)FROM dbo.Tbl_Empleados AS e#(lf)WHERE e.CodigoEmpleado = 1;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

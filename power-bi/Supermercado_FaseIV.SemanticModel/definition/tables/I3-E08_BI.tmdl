@@ -1,0 +1,54 @@
+table I3-E08_BI
+	lineageTag: ce69d999-fe53-5f1c-8c16-b437c8aa32b5
+
+	column Motivo
+		dataType: string
+		lineageTag: ba9c2a7f-9487-5f01-ad47-5b3b9f341ca6
+		summarizeBy: none
+		sourceColumn: Motivo
+
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: b18a0683-a327-590c-af2e-4f52f079322d
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: 97f9233d-25fc-55a3-a552-c050b1cf5a2a
+		summarizeBy: none
+		sourceColumn: Mes
+
+	column CantidadLineas
+		dataType: int64
+		formatString: 0
+		lineageTag: 75ab7240-9ff4-56a8-abdb-407fa0c4f225
+		summarizeBy: none
+		sourceColumn: CantidadLineas
+
+	column UnidadesPerdidas
+		dataType: double
+		formatString: #,0.00
+		lineageTag: bbfcc8f0-00b0-597f-9bb8-d49b573cd34a
+		summarizeBy: sum
+		sourceColumn: UnidadesPerdidas
+
+	column ValorPerdido
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 48633ed6-daec-55a3-afe4-8d035eeeb3ac
+		summarizeBy: sum
+		sourceColumn: ValorPerdido
+
+	partition I3-E08_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT a.Motivo, YEAR(a.FechaAjuste) AS Anio, MONTH(a.FechaAjuste) AS Mes,#(lf)             COUNT(*) AS CantidadLineas,#(lf)             SUM(ABS(d.Cantidad)) AS UnidadesPerdidas,#(lf)             CAST(ROUND(SUM(ABS(d.Cantidad)*d.CostoUnitario),2) AS decimal(18,2)) AS ValorPerdido#(lf)      FROM dbo.Tbl_AjustesInventario AS a#(lf)      JOIN dbo.Tbl_AjustesInventarioDetalle AS d ON d.CodigoAjuste=a.CodigoAjuste#(lf)      WHERE a.Estado='Aplicado' AND a.FechaAjuste>='20260101'#(lf)        AND a.FechaAjuste<'20270101' AND d.Cantidad<0#(lf)      GROUP BY a.Motivo,YEAR(a.FechaAjuste),MONTH(a.FechaAjuste)#(lf)      HAVING COUNT(*)>=2#(lf)         AND COUNT(d.CostoUnitario)=COUNT(*)#(lf)         AND SUM(ABS(d.Cantidad)*d.CostoUnitario)>20#(lf)      ORDER BY Anio, Mes, ValorPerdido DESC, a.Motivo;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

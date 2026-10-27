@@ -1,0 +1,47 @@
+table I2-E07_BI
+	lineageTag: ac357b53-b96b-5f89-8b14-cfafa0623178
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: afa3e763-34c1-576f-847e-f6a3a81fe9af
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Sucursal
+		dataType: string
+		lineageTag: 517a1bb9-ec6a-57cc-87d0-c188020c4549
+		summarizeBy: none
+		sourceColumn: Sucursal
+
+	column CantidadVentas
+		dataType: int64
+		formatString: 0
+		lineageTag: 8380f8a8-bcd4-5b25-8865-338268c3396f
+		summarizeBy: none
+		sourceColumn: CantidadVentas
+
+	column TotalVendido
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 86c68eb1-1dbd-5988-a79f-10cb9b2565f2
+		summarizeBy: sum
+		sourceColumn: TotalVendido
+
+	column TicketPromedio
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 1b57834c-a6e1-5c84-a7ff-d89104c2d12a
+		summarizeBy: sum
+		sourceColumn: TicketPromedio
+
+	partition I2-E07_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    S.CodigoSucursal,#(lf)    S.Nombre AS Sucursal,#(lf)    COUNT(DISTINCT V.CodigoVenta) AS CantidadVentas,#(lf)    CAST(ROUND(SUM(D.Cantidad*D.PrecioUnitario-D.Descuento),2) AS DECIMAL(18,2)) AS TotalVendido,#(lf)    CAST(ROUND(SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)/COUNT(DISTINCT V.CodigoVenta),2) AS DECIMAL(18,2)) AS TicketPromedio#(lf)FROM Tbl_Sucursales S#(lf)INNER JOIN Tbl_Ventas V ON V.CodigoSucursal=S.CodigoSucursal#(lf)INNER JOIN Tbl_VentasDetalle D ON D.CodigoVenta=V.CodigoVenta#(lf)WHERE V.Estado='Confirmada'#(lf)    AND V.FechaVenta>='20260101' AND V.FechaVenta<'20261001'#(lf)GROUP BY S.CodigoSucursal,S.Nombre#(lf)HAVING COUNT(DISTINCT V.CodigoVenta)>=3#(lf)    AND SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)>500#(lf)ORDER BY TotalVendido DESC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

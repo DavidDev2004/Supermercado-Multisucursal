@@ -1,0 +1,46 @@
+table I2-E05_BI
+	lineageTag: 5e71d7b7-d348-5805-9a96-a2bf1aa64a5e
+
+	column CodigoVenta
+		dataType: int64
+		formatString: 0
+		lineageTag: df59b2e0-e744-5bfc-9dd7-d9749eb095b0
+		summarizeBy: none
+		sourceColumn: CodigoVenta
+
+	column NumeroVenta
+		dataType: string
+		lineageTag: 9ec0cebc-60a0-5927-a81d-947d62015750
+		summarizeBy: none
+		sourceColumn: NumeroVenta
+
+	column FechaVenta
+		dataType: dateTime
+		lineageTag: e682a292-135a-5db3-8455-17e3b5f352ce
+		summarizeBy: none
+		sourceColumn: FechaVenta
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: ccff8a3e-f094-5397-a60a-0808a029beda
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column TotalVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 524f30b5-b3ef-50f1-b9f5-9206f97674c4
+		summarizeBy: sum
+		sourceColumn: TotalVenta
+
+	partition I2-E05_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    CodigoVenta,#(lf)    NumeroVenta,#(lf)    FechaVenta,#(lf)    CodigoSucursal,#(lf)    CAST(ROUND((SELECT SUM(Cantidad*PrecioUnitario-Descuento)#(lf)           FROM Tbl_VentasDetalle D WHERE D.CodigoVenta=V.CodigoVenta),2) AS DECIMAL(18,2)) AS TotalVenta#(lf)FROM Tbl_Ventas V#(lf)WHERE Estado='Confirmada'#(lf)    AND (SELECT SUM(Cantidad*PrecioUnitario-Descuento)#(lf)         FROM Tbl_VentasDetalle D WHERE D.CodigoVenta=V.CodigoVenta)>#(lf)        (SELECT AVG(TotalVenta)#(lf)         FROM#(lf)            (SELECT SUM(D2.Cantidad*D2.PrecioUnitario-D2.Descuento) AS TotalVenta#(lf)             FROM Tbl_Ventas V2#(lf)             INNER JOIN Tbl_VentasDetalle D2 ON D2.CodigoVenta=V2.CodigoVenta#(lf)             WHERE V2.Estado='Confirmada'#(lf)             GROUP BY V2.CodigoVenta) T)#(lf)ORDER BY TotalVenta DESC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

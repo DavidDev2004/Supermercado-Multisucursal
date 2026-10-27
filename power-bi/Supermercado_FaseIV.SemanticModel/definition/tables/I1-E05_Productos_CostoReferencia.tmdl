@@ -1,0 +1,41 @@
+table I1-E05_Productos_CostoReferencia
+	lineageTag: 12afd662-5da6-547b-bb0b-6d24316ce24a
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 2fb1ec89-ae65-5fb1-aee1-baae92626bc9
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Producto
+		dataType: string
+		lineageTag: 8a484b1c-44c9-5a2c-8254-3d1fd0669448
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column Marca
+		dataType: string
+		lineageTag: 7dbc72a6-74c4-5199-a655-5c44ceba0822
+		summarizeBy: none
+		sourceColumn: Marca
+
+	column PrecioVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 22d70aa3-c523-55d8-941f-283c0fc85401
+		summarizeBy: sum
+		sourceColumn: PrecioVenta
+
+		annotation SummarizationSetBy = Automatic
+
+	partition I1-E05_Productos_CostoReferencia = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT p.CodigoProducto, p.Nombre AS Producto, p.Marca,#(lf)       CAST(p.PrecioVenta AS decimal(18,2)) AS PrecioVenta#(lf)FROM dbo.Tbl_Productos AS p#(lf)WHERE p.Estado = 'Activo'#(lf)  AND EXISTS (#(lf)      SELECT 1#(lf)      FROM dbo.Tbl_ProductoProveedor AS pp#(lf)      WHERE pp.CodigoProducto = p.CodigoProducto#(lf)        AND pp.Estado = 'Activo'#(lf)        AND pp.CodigoProveedor IN (#(lf)            SELECT CodigoProveedor FROM dbo.Tbl_Proveedores WHERE Estado = 'Activo'#(lf)        )#(lf)        AND pp.CostoReferencia > (#(lf)            SELECT AVG(CAST(CostoReferencia AS decimal(18,4)))#(lf)            FROM dbo.Tbl_ProductoProveedor#(lf)            WHERE Estado = 'Activo'#(lf)        )#(lf)  )#(lf)ORDER BY Producto, p.CodigoProducto;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

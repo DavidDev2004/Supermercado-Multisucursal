@@ -1,0 +1,38 @@
+table I2-E06_BI
+	lineageTag: 660c79b8-7b2d-5800-accf-868ee18905e9
+
+	column CodigoCliente
+		dataType: int64
+		formatString: 0
+		lineageTag: b8bc30c2-907b-5798-bf2a-56b44c405535
+		summarizeBy: none
+		sourceColumn: CodigoCliente
+
+	column Cliente
+		dataType: string
+		lineageTag: 5604c324-202d-508a-9ef8-6526558531c8
+		summarizeBy: none
+		sourceColumn: Cliente
+
+	column Departamento
+		dataType: string
+		lineageTag: e8c81175-e18f-5b43-93d9-5704bdb96313
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	column Telefono
+		dataType: string
+		lineageTag: c2a60717-159f-5740-b096-8f1f760b95eb
+		summarizeBy: none
+		sourceColumn: Telefono
+
+	partition I2-E06_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    CodigoCliente,#(lf)    Nombres+' '+Apellidos AS Cliente,#(lf)    Departamento,#(lf)    Telefono#(lf)FROM Tbl_Clientes#(lf)WHERE Estado='Activo' AND CodigoCliente IN#(lf)    (SELECT CodigoCliente FROM Tbl_Ventas#(lf)     WHERE Estado='Confirmada' AND CodigoVenta IN#(lf)        (SELECT CodigoVenta FROM Tbl_Pagos#(lf)         WHERE Estado='Aplicado' AND Monto>#(lf)            (SELECT AVG(Monto) FROM Tbl_Pagos WHERE Estado='Aplicado')))#(lf)ORDER BY Apellidos ASC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

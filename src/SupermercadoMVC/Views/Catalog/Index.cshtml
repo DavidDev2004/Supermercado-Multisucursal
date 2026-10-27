@@ -1,0 +1,147 @@
+@model CatalogPageViewModel
+@{
+    ViewData["Title"] = Model.Definition.Title;
+    Layout = "_AppLayout";
+    var createUrl = Url.Action("Create", "Catalog", new { slug = Model.Definition.Slug }) ?? "#";
+    var editUrlTemplate = Url.Action("Edit", "Catalog", new { slug = Model.Definition.Slug, id = 0 }) ?? "#";
+}
+<section class="welcome-row catalog-welcome">
+    <div><div class="eyebrow">CATÁLOGOS · GESTIÓN DE DATOS</div><h1>@Model.Definition.Title</h1><p>Consulta, filtra y administra los registros de @Model.Definition.Title.ToLowerInvariant().</p></div>
+    <button class="button-primary" type="button" data-bs-toggle="modal" data-bs-target="#recordModal" data-mode="create"><span>＋</span> Agregar @Model.Definition.SingularTitle</button>
+</section>
+
+@if (Model.Error is not null)
+{
+    <div class="system-alert"><span class="alert-icon">!</span><div><strong>No se pudo consultar el catálogo</strong><p>@Model.Error</p></div></div>
+}
+@if (Model.Notice is not null) { <div class="notice-success" role="status">✓ @Model.Notice</div> }
+
+<section class="catalog-kpis">
+    <article class="mini-kpi"><span class="mini-kpi-icon mint-bg">▤</span><div><small>Resultados</small><strong>@Model.Total.ToString("N0")</strong></div></article>
+    <article class="mini-kpi"><span class="mini-kpi-icon turquoise-bg">✓</span><div><small>Activos</small><strong>@Model.Active.ToString("N0")</strong></div></article>
+    <article class="mini-kpi"><span class="mini-kpi-icon coral-bg">◌</span><div><small>Inactivos</small><strong>@Model.Inactive.ToString("N0")</strong></div></article>
+</section>
+
+<section class="panel-card catalog-panel">
+    <form method="get" asp-controller="Catalog" asp-action="Index" class="filter-bar">
+        <input type="hidden" name="slug" value="@Model.Definition.Slug" />
+        <label class="search-box"><span aria-hidden="true">⌕</span><input type="search" name="buscar" value="@Model.Search" maxlength="100" placeholder="Buscar por nombre, código..." aria-label="Buscar" /></label>
+        <select name="estado" class="filter-select" aria-label="Filtrar por estado">
+            <option value="" selected="@(Model.State == "")">Todos los estados</option>
+            <option value="Activo" selected="@(Model.State == "Activo")">Activo</option>
+            <option value="Inactivo" selected="@(Model.State == "Inactivo")">Inactivo</option>
+        </select>
+        <button class="button-secondary filter-submit" type="submit">Filtrar</button>
+    </form>
+    <div class="table-heading"><div><h2>Listado de @Model.Definition.Title.ToLowerInvariant()</h2><p>Mostrando @Model.Rows.Count registro(s) · Página @Model.Page de @Model.PageCount</p></div><span class="table-count">@Model.Total.ToString("N0") total</span></div>
+    <div class="table-responsive">
+        <table class="table data-table align-middle">
+            <thead><tr><th class="id-column">Código</th>@foreach (var field in Model.Definition.Fields) { <th>@field.Label</th> }<th class="actions-column">Acciones</th></tr></thead>
+            <tbody>
+            @if (Model.Rows.Count == 0)
+            {
+                <tr><td colspan="@(Model.Definition.Fields.Count + 2)"><div class="empty-state"><span>⌕</span><strong>No hay registros para mostrar</strong><small>Prueba otro filtro o agrega un nuevo registro.</small></div></td></tr>
+            }
+            @foreach (var row in Model.Rows)
+            {
+                <tr data-record='@System.Text.Json.JsonSerializer.Serialize(row)'>
+                    <td class="record-id">#@row[Model.Definition.IdColumn]</td>
+                    @foreach (var field in Model.Definition.Fields)
+                    {
+                        var raw = row.TryGetValue(field.Name, out var item) ? item : null;
+                        var cell = raw is DateTime date ? date.ToString("dd/MM/yyyy") : raw?.ToString() ?? "—";
+                        if (field.Name == "CodigoSucursal" && Model.Definition.Slug == "empleados")
+                        {
+                            cell = Model.Sucursales.FirstOrDefault(sucursal => sucursal.CodigoSucursal.ToString(System.Globalization.CultureInfo.InvariantCulture) == raw?.ToString())?.Nombre ?? "Sucursal no disponible";
+                        }
+                        if (field.Type == System.Data.SqlDbType.Decimal && raw is decimal amount)
+                        {
+                            cell = amount.ToString("N2", System.Globalization.CultureInfo.GetCultureInfo("es-GT"));
+                        }
+                        if (field.Name == "Estado")
+                        {
+                            <td><span class="state-pill @(cell == "Activo" ? "state-active" : "state-inactive")"><i></i>@cell</span></td>
+                        }
+                        else
+                        {
+                            <td>@cell</td>
+                        }
+                    }
+                    <td class="row-actions">
+                        <button class="icon-action edit-action" type="button" title="Editar" aria-label="Editar registro" data-bs-toggle="modal" data-bs-target="#recordModal" data-mode="edit">✎</button>
+                        <form method="post" action="/catalogos/@Model.Definition.Slug/eliminar/@row[Model.Definition.IdColumn]" onsubmit="return confirm('¿Eliminar este registro? Si tiene relaciones, SQL Server rechazará la operación.');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" />
+                            <button class="icon-action delete-action" type="submit" title="Eliminar" aria-label="Eliminar registro">⌫</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.PageCount > 1)
+    {
+        <nav class="pagination-row" aria-label="Paginación">
+            <span>@Model.Total.ToString("N0") registros</span>
+            <div class="pagination-controls">
+                @if (Model.Page > 1) { <a class="page-button" asp-controller="Catalog" asp-action="Index" asp-route-slug="@Model.Definition.Slug" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@(Model.Page - 1)">← Anterior</a> } else { <span class="page-button disabled">← Anterior</span> }
+                <span class="page-current">@Model.Page / @Model.PageCount</span>
+                @if (Model.Page < Model.PageCount) { <a class="page-button" asp-controller="Catalog" asp-action="Index" asp-route-slug="@Model.Definition.Slug" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-pagina="@(Model.Page + 1)">Siguiente →</a> } else { <span class="page-button disabled">Siguiente →</span> }
+            </div>
+        </nav>
+    }
+</section>
+
+<div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalTitle" aria-hidden="true"
+     data-create-url="@createUrl" data-edit-url-template="@editUrlTemplate" data-id-column="@Model.Definition.IdColumn">
+    <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
+        <form id="recordForm" method="post" action="@createUrl">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Input.Id" />
+            <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" />
+            <div class="modal-header"><div><div class="eyebrow">@Model.Definition.Title.ToUpperInvariant()</div><h2 class="modal-title" id="recordModalTitle">Agregar registro</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+            <div class="modal-body">
+                @Html.ValidationSummary(false, "", new { @class = "validation-errors" })
+                <div class="form-grid">
+                @foreach (var field in Model.Definition.Fields)
+                {
+                    Model.Input.Fields.TryGetValue(field.Name, out var value);
+                    if (value is null && Model.OpenModal != "edit") value = field.DefaultValue;
+                    <div class="form-field @(field.Name == "Descripcion" || field.Name == "Direccion" ? "field-wide" : "")">
+                        <label for="field-@field.Name">@field.Label @if (field.Required) { <span>*</span> }</label>
+                        @if (field.InputType == "sucursal")
+                        {
+                            <select id="field-@field.Name" name="Fields[@field.Name]" data-field="@field.Name" class="form-control" required>
+                                <option value="">Selecciona una sucursal</option>
+                                @foreach (var sucursal in Model.Sucursales)
+                                {
+                                    <option value="@sucursal.CodigoSucursal" selected="@(value == sucursal.CodigoSucursal.ToString(System.Globalization.CultureInfo.InvariantCulture))">@sucursal.Nombre</option>
+                                }
+                            </select>
+                            @if (Model.Sucursales.Count == 0)
+                            {
+                                <span class="field-error">No hay sucursales disponibles. No se puede guardar sin una sucursal existente.</span>
+                            }
+                        }
+                        else if (field.InputType == "select")
+                        {
+                            <select id="field-@field.Name" name="Fields[@field.Name]" data-field="@field.Name" data-default="@field.DefaultValue" class="form-control" required="@field.Required">
+                                <option value="Activo" selected="@(value == "Activo")">Activo</option><option value="Inactivo" selected="@(value == "Inactivo")">Inactivo</option>
+                            </select>
+                        }
+                        else
+                        {
+                            <input id="field-@field.Name" name="Fields[@field.Name]" data-field="@field.Name" data-default="@field.DefaultValue" class="form-control" type="@field.InputType" value="@value" @(field.Type == System.Data.SqlDbType.VarChar ? $"maxlength={field.Size}" : "") @(field.Minimum.HasValue ? $"min={field.Minimum.Value}" : "") @(field.Type == System.Data.SqlDbType.Int ? "step=1" : "") @(field.Type == System.Data.SqlDbType.Decimal ? "step=0.01 min=0.01 max=9999999999.99" : "") required="@field.Required" />
+                        }
+                        @Html.ValidationMessage($"Fields[{field.Name}]", null, new { @class = "field-error" })
+                    </div>
+                }
+                </div>
+            </div>
+            <div class="modal-footer"><span class="required-note">* Campos obligatorios según el esquema</span><button type="button" class="button-secondary" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="button-primary" id="recordSubmit">Guardar registro</button></div>
+        </form>
+    </div></div>
+</div>
+<div id="modalState" data-open="@Model.OpenModal" hidden></div>
+@section Scripts { <script src="~/js/catalog.js" asp-append-version="true"></script> }

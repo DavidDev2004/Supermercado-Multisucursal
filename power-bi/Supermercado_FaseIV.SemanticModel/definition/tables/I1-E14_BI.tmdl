@@ -1,0 +1,53 @@
+table I1-E14_BI
+	lineageTag: faadfd1e-87f5-59fd-8589-1018a0b44620
+
+	column CodigoProductoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 677904d8-f1cd-58c5-93ca-544b511e6c0f
+		summarizeBy: none
+		sourceColumn: CodigoProductoProveedor
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: d633b543-3b85-5290-bec4-fe58e4758b23
+		summarizeBy: none
+		sourceColumn: CodigoProveedor
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 57c539a1-3174-531e-b704-a0da5806b241
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Proveedor
+		dataType: string
+		lineageTag: 9db2a504-fdad-584f-9267-89132afac8bd
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	column Producto
+		dataType: string
+		lineageTag: 6bc0c814-eda1-5163-905c-c5ce89b67edf
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column CostoReferencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 6480fad6-8898-52b1-b4b9-599699c057c3
+		summarizeBy: sum
+		sourceColumn: CostoReferencia
+
+	partition I1-E14_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate_PRUEBAS", [Query="SELECT pp.CodigoProductoProveedor, pp.CodigoProveedor, pp.CodigoProducto,#(lf)       pr.Nombre AS Proveedor, p.Nombre AS Producto,#(lf)       CAST(pp.CostoReferencia AS decimal(18,2)) AS CostoReferencia#(lf)FROM dbo.Tbl_ProductoProveedor AS pp#(lf)JOIN dbo.Tbl_Proveedores AS pr ON pr.CodigoProveedor = pp.CodigoProveedor#(lf)JOIN dbo.Tbl_Productos AS p ON p.CodigoProducto = pp.CodigoProducto#(lf)WHERE pp.CodigoProductoProveedor = 1;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

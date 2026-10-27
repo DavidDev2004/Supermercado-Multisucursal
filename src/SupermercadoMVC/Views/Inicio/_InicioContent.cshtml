@@ -1,0 +1,77 @@
+@model InicioPage
+@using System.Globalization
+@{
+    var colors = new[] { "coral", "turquoise", "navy", "sand", "blue" };
+}
+<div class="inicio-dashboard">
+    <section class="welcome-row">
+        <div><div class="eyebrow">INICIO · TODAS LAS SUCURSALES</div><h1>@Model.Kind</h1><p>Información consolidada de Supermercado GT.@if (Model.Error is null) { <span> Fecha de consulta: @InicioFormat.Date(Model.Today).</span> }</p></div>
+        <a class="button-secondary inicio-link" asp-controller="Home" asp-action="Index">Inicio general</a>
+    </section>
+    <nav class="inicio-switcher" aria-label="Páginas de inicio">
+        @foreach (var destination in new[] { "Administrador", "Bodega", "Caja" }) {
+            <a class="button-secondary inicio-link @(destination == Model.Kind ? "inicio-selected" : "")" href="/Inicio/@destination" aria-current="@(destination == Model.Kind ? "page" : null)">@destination</a>
+        }
+    </nav>
+    <div class="inicio-loading" role="status" hidden>Cargando datos de SQL Server…</div>
+    @if (Model.Error is not null)
+    {
+        <div class="system-alert" role="alert"><div><strong>Datos no disponibles</strong><p>@Model.Error</p></div></div>
+    }
+    else
+    {
+    <section class="kpi-grid inicio-kpis @(Model.Kind == "Administrador" ? "inicio-five" : "")" aria-label="Indicadores @Model.Kind">
+        @for (var i = 0; i < Model.Metrics.Count; i++) {
+            var metric = Model.Metrics[i];
+            <article class="kpi-card @colors[i % colors.Length]"><div class="kpi-top"><span>@metric.Label</span></div>
+                <div class="kpi-value">@(metric.Money ? InicioFormat.Money(metric.Value) : InicioFormat.Number(metric.Value))</div>
+                <div class="kpi-caption">Todas las sucursales · SQL Server</div>
+            </article>
+        }
+    </section>
+    }
+    <section class="panel-card quick-panel inicio-quick">
+        <div class="eyebrow">ACCESOS RÁPIDOS</div><h2>Continúa con tus operaciones</h2>
+        <div class="inicio-links">@foreach (var link in Model.Links) { <a class="button-secondary inicio-link" href="@link.Url">@link.Label →</a> }</div>
+        <div class="inicio-unavailable">@foreach (var label in Model.Unavailable) { <span>@label · No disponible</span> }</div>
+    </section>
+    @if (Model.Kind == "Caja")
+    {
+    <section class="panel-card catalog-panel inicio-product-search">
+        <form method="get" asp-controller="Inicio" asp-action="Caja" class="filter-bar inicio-search-form">
+            <label class="search-box"><input type="search" name="buscarProducto" value="@Model.ProductSearch" maxlength="100" placeholder="Código de barras, nombre o marca" aria-label="Buscar productos" /></label>
+            <button type="submit" class="button-secondary">Buscar productos</button>
+        </form>
+        @if (Model.Products is not null) { <partial name="_InicioTable" model="Model.Products" /> }
+        else if (Model.Error is not null) { <div class="chart-empty">La búsqueda estará disponible cuando se restablezca la conexión.</div> }
+    </section>
+    }
+    <div class="inicio-charts">
+    @foreach (var chart in Model.Charts)
+    {
+        var max = chart.Points.Count == 0 ? 0m : chart.Points.Max(p => p.Value);
+        <section class="panel-card inicio-chart">
+            <div class="panel-heading"><div><h2>@chart.Title</h2><p>@chart.Description</p></div></div>
+            @if (chart.Points.Count == 0 || max == 0)
+            { <div class="chart-empty">No hay importes o cantidades en el periodo consultado.</div> }
+            @if (chart.Points.Count > 0)
+            {
+            <ul class="inicio-bars" aria-label="@chart.Title">
+            @foreach (var point in chart.Points)
+            {
+                var width = max <= 0 ? "0" : Math.Clamp(point.Value / max * 100m, 0m, 100m).ToString("0.##", CultureInfo.InvariantCulture);
+                <li><div class="inicio-bar-label"><span>@point.Label</span><strong>@(chart.Money ? InicioFormat.Money(point.Value) : InicioFormat.Number(point.Value))</strong></div>
+                    <div class="inicio-bar-track" aria-hidden="true"><div class="inicio-bar-fill" style="width:@width%"></div></div></li>
+            }
+            </ul>
+            }
+            @if (chart.Note is not null) { <p class="chart-footnote">@chart.Note</p> }
+        </section>
+    }
+    </div>
+    @foreach (var table in Model.Tables) { <partial name="_InicioTable" model="table" /> }
+    @foreach (var notice in Model.Notices)
+    {
+        <section class="panel-card inicio-notice"><h2>@notice.Title</h2><p>@notice.Text</p></section>
+    }
+</div>

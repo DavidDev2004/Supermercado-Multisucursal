@@ -1,0 +1,71 @@
+table I2-E03_BI
+	lineageTag: bca08662-4e28-5238-812c-9296e114c151
+
+	column CodigoVenta
+		dataType: int64
+		formatString: 0
+		lineageTag: 64a9f922-35ac-521d-b686-f60d1344d530
+		summarizeBy: none
+		sourceColumn: CodigoVenta
+
+	column NumeroVenta
+		dataType: string
+		lineageTag: cc9473de-a685-5b99-989b-faba1ba75d9a
+		summarizeBy: none
+		sourceColumn: NumeroVenta
+
+	column FechaVenta
+		dataType: dateTime
+		lineageTag: 64f867cf-da0a-569c-b009-568cb8fe8574
+		summarizeBy: none
+		sourceColumn: FechaVenta
+
+	column Cliente
+		dataType: string
+		lineageTag: 9d3e6673-5388-5f01-a722-f177458f4475
+		summarizeBy: none
+		sourceColumn: Cliente
+
+	column Sucursal
+		dataType: string
+		lineageTag: c4e1980c-ace5-5c3c-acb0-880ae38eba5a
+		summarizeBy: none
+		sourceColumn: Sucursal
+
+	column Empleado
+		dataType: string
+		lineageTag: d1acc9b1-f207-5346-978f-53b5f27f097d
+		summarizeBy: none
+		sourceColumn: Empleado
+
+	column TotalVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 0778bc99-5638-51b1-bcb8-b35a87428640
+		summarizeBy: sum
+		sourceColumn: TotalVenta
+
+	column TotalPagado
+		dataType: double
+		formatString: #,0.00
+		lineageTag: e808f8dd-d463-5c24-9791-67e4e668e3cd
+		summarizeBy: sum
+		sourceColumn: TotalPagado
+
+	column Saldo
+		dataType: double
+		formatString: #,0.00
+		lineageTag: b900dd96-c6ae-598c-b1fd-3fa26668c176
+		summarizeBy: sum
+		sourceColumn: Saldo
+
+	partition I2-E03_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    V.CodigoVenta,#(lf)    V.NumeroVenta,#(lf)    V.FechaVenta,#(lf)    C.Nombres+' '+C.Apellidos AS Cliente,#(lf)    S.Nombre AS Sucursal,#(lf)    E.Nombres+' '+E.Apellidos AS Empleado,#(lf)    CAST(ROUND((SELECT SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)#(lf)           FROM Tbl_VentasDetalle D WHERE D.CodigoVenta=V.CodigoVenta),2) AS DECIMAL(18,2)) AS TotalVenta,#(lf)    CAST(ROUND(ISNULL((SELECT SUM(P.Monto) FROM Tbl_Pagos P#(lf)                  WHERE P.CodigoVenta=V.CodigoVenta AND P.Estado='Aplicado'),0),2) AS DECIMAL(18,2)) AS TotalPagado,#(lf)    CAST(ROUND((SELECT SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)#(lf)           FROM Tbl_VentasDetalle D WHERE D.CodigoVenta=V.CodigoVenta)#(lf)          -ISNULL((SELECT SUM(P.Monto) FROM Tbl_Pagos P#(lf)                   WHERE P.CodigoVenta=V.CodigoVenta AND P.Estado='Aplicado'),0),2) AS DECIMAL(18,2)) AS Saldo#(lf)FROM Tbl_Ventas V#(lf)INNER JOIN Tbl_Clientes C ON C.CodigoCliente=V.CodigoCliente#(lf)INNER JOIN Tbl_Sucursales S ON S.CodigoSucursal=V.CodigoSucursal#(lf)INNER JOIN Tbl_Empleados E ON E.CodigoEmpleado=V.CodigoEmpleado#(lf)WHERE V.Estado='Confirmada' AND V.FechaVenta>='20260901' AND V.FechaVenta<'20261001'#(lf)ORDER BY Saldo DESC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,7 @@
+@{
+    var title = ViewData["ModuleTitle"]?.ToString() ?? "Módulo";
+    ViewData["Title"] = title;
+    Layout = "_AppLayout";
+}
+<section class="welcome-row"><div><div class="eyebrow">MÓDULO</div><h1>@title</h1><p>Esta sección se habilitará en una etapa posterior del proyecto.</p></div></section>
+<article class="panel-card coming-soon"><div class="coming-icon">✦</div><div class="eyebrow">PRÓXIMAMENTE</div><h2>Estamos preparando @title.ToLowerInvariant()</h2><p>El módulo todavía no está implementado. Esta pantalla no muestra ni modifica información.</p><a class="button-secondary" asp-controller="Home" asp-action="Index">Volver al inicio</a></article>

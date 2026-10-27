@@ -1,0 +1,26 @@
+table I2-E11_BI
+	lineageTag: 26b55b62-5fbf-5d2d-94dc-dc83e06625c0
+
+	column CodigoCliente
+		dataType: int64
+		formatString: 0
+		lineageTag: 887e3e26-e098-50fe-ad4c-36736eddd19b
+		summarizeBy: none
+		sourceColumn: CodigoCliente
+
+	column Cliente
+		dataType: string
+		lineageTag: 607e8d68-3bea-51c8-9682-6c7577e9bf69
+		summarizeBy: none
+		sourceColumn: Cliente
+
+	partition I2-E11_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    C.CodigoCliente,#(lf)    C.Nombres+' '+C.Apellidos AS Cliente#(lf)FROM Tbl_Clientes C#(lf)INNER JOIN Tbl_Ventas V ON V.CodigoCliente=C.CodigoCliente#(lf)WHERE V.Estado='Confirmada'#(lf)    AND V.FechaVenta>='20260101' AND V.FechaVenta<'20260701'#(lf)#(lf)EXCEPT#(lf)#(lf)SELECT#(lf)    C.CodigoCliente,#(lf)    C.Nombres+' '+C.Apellidos AS Cliente#(lf)FROM Tbl_Clientes C#(lf)INNER JOIN Tbl_Ventas V ON V.CodigoCliente=C.CodigoCliente#(lf)WHERE V.Estado='Confirmada'#(lf)    AND V.FechaVenta>='20260701' AND V.FechaVenta<'20261001'#(lf)#(lf)UNION#(lf)#(lf)SELECT#(lf)    CodigoCliente,#(lf)    Nombres+' '+Apellidos AS Cliente#(lf)FROM Tbl_Clientes C#(lf)WHERE Estado='Activo'#(lf)    AND FechaRegistro>='20260101' AND FechaRegistro<'20270101'#(lf)    AND CodigoCliente NOT IN#(lf)        (SELECT CodigoCliente FROM Tbl_Ventas#(lf)         WHERE Estado='Confirmada'#(lf)            AND FechaVenta>='20260101' AND FechaVenta<'20270101')#(lf)ORDER BY Cliente ASC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,27 @@
+@model LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar sesión";
+    ViewData["Standalone"] = true;
+    Layout = "_AppLayout";
+}
+<div class="login-scene">
+    <div class="login-orbit orbit-one"></div><div class="login-orbit orbit-two"></div>
+    <section class="login-card">
+        <a class="brand login-brand" asp-controller="Access" asp-action="Index">
+            <span class="brand-mark"><svg viewBox="0 0 32 32"><path d="M4 6h3l3.1 14.2a3 3 0 0 0 2.9 2.3h11.2a3 3 0 0 0 2.9-2.2L30 11H9"/><path d="M12 27h.1M24 27h.1M10 11h19"/></svg></span>
+            <span><strong>Supermercado GT</strong><small>GESTIÓN MULTISUCURSAL</small></span>
+        </a>
+        <div class="login-eyebrow">BIENVENIDO</div>
+        <h1>Todo tu mercado,<br /><span>en un solo lugar.</span></h1>
+        <p class="login-copy">Ingresa a Supermercado GT con tu usuario autorizado.</p>
+        <form asp-controller="Access" asp-action="Enter" asp-route-returnUrl="@ViewData["ReturnUrl"]" method="post" class="login-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="validation-errors" role="alert"></div>
+            <label asp-for="Usuario"></label><input asp-for="Usuario" id="usuario" type="text" autocomplete="username" maxlength="50" required placeholder="Usuario" /><span asp-validation-for="Usuario" class="field-error"></span>
+            <label asp-for="Password"></label><input asp-for="Password" id="password" type="password" autocomplete="current-password" required placeholder="Contraseña" /><span asp-validation-for="Password" class="field-error"></span>
+            <button class="btn-primary-coral" type="submit">Iniciar sesión <span aria-hidden="true">→</span></button>
+        </form>
+        <div class="login-footnote"><span>✦</span> Proyecto académico · Base de Datos I</div>
+    </section>
+    <div class="login-side-note"><strong>SUPERMERCADO GT</strong><span>ORDEN · CONTROL · CRECIMIENTO</span></div>
+</div>

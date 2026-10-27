@@ -1,0 +1,71 @@
+﻿# Compilación y herramientas
+bin/
+obj/
+.vs/
+*.user
+*.suo
+TestResults/
+node_modules/
+**/.pytest_cache/
+**/__pycache__/
+*.pyc
+*.log
+*.tmp
+*.temp
+*.swp
+.DS_Store
+Thumbs.db
+
+# Configuración local y secretos
+.env
+.env.*
+!.env.example
+**/appsettings.*.json
+!**/appsettings.example.json
+!**/appsettings.Development.example.json
+**/secrets.json
+*.pubxml
+*.publishsettings
+*.pfx
+*.pem
+*.key
+*.snk
+MEMORY.md
+database/CONEXION.md
+
+# Recuperación automática de Power BI
+**/AutoRecovery/
+
+# Archivos locales, cachés y copias con datos importados
+.tmp-edge-client-repro/
+**/.pbi/
+power-bi/respaldos/
+*.pbix
+*.pbit
+*.abf
+
+# Respaldos, bases locales y exportaciones con datos
+*.bak
+*.bacpac
+*.bcp
+*.dmp
+*.dump
+*.mdf
+*.ldf
+*.sqlite
+*.db
+*.zip
+*.7z
+*.rar
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.parquet
+
+# Material de referencia local sin autorización de redistribución documentada
+docs/07_Dashboard_paginas_Inicio.docx
+docs/prototipos/*
+!docs/prototipos/.gitkeep
+power-bi/referencias/
+src/SupermercadoMVC/wwwroot/favicon.ico

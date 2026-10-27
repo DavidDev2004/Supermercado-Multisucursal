@@ -1,0 +1,75 @@
+table I3-E02_BI
+	lineageTag: a70422b8-0440-582c-83e2-6d43dde734cb
+
+	column CodigoInventario
+		dataType: int64
+		formatString: 0
+		lineageTag: cad65ed8-b78b-5577-b6a7-5a03947308d8
+		summarizeBy: none
+		sourceColumn: CodigoInventario
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: e9bfb324-04a8-5eeb-b54f-c7d8dccd1942
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 87457aa0-f95e-588b-9ad4-407ee0c18685
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Existencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 9858e541-f002-518a-a0dc-be6aa07de855
+		summarizeBy: sum
+		sourceColumn: Existencia
+
+	column ExistenciaMinima
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a79c7d20-f7d9-5d83-8e1c-3a46d05aa7f5
+		summarizeBy: sum
+		sourceColumn: ExistenciaMinima
+
+	column Faltante
+		dataType: double
+		formatString: #,0.00
+		lineageTag: ffc2f4d8-b2fa-5dcf-8158-9731ba52a323
+		summarizeBy: sum
+		sourceColumn: Faltante
+
+	column ValorFaltante
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 3d7962d1-ec33-583e-a539-d159ab338cb1
+		summarizeBy: sum
+		sourceColumn: ValorFaltante
+
+	column DiasSinIngreso
+		dataType: int64
+		formatString: 0
+		lineageTag: 509fa09a-db1f-500d-9cfd-8c95d0ad5319
+		summarizeBy: none
+		sourceColumn: DiasSinIngreso
+
+	column SituacionIngreso
+		dataType: string
+		lineageTag: 81692441-b182-5543-b54e-5dafc17b16a3
+		summarizeBy: none
+		sourceColumn: SituacionIngreso
+
+	partition I3-E02_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT i.CodigoInventario, i.CodigoSucursal, i.CodigoProducto,#(lf)       i.Existencia, i.ExistenciaMinima,#(lf)       CASE WHEN i.Existencia < i.ExistenciaMinima#(lf)            THEN i.ExistenciaMinima-i.Existencia ELSE CAST(0 AS decimal(12,2)) END AS Faltante,#(lf)       CAST(ROUND((CASE WHEN i.Existencia<i.ExistenciaMinima THEN i.ExistenciaMinima-i.Existencia ELSE 0 END)*i.CostoPromedio,2) AS decimal(18,2)) AS ValorFaltante,#(lf)       CASE WHEN i.FechaUltimoIngreso IS NULL THEN NULL#(lf)            ELSE DATEDIFF(DAY,i.FechaUltimoIngreso,'20260930') END AS DiasSinIngreso,#(lf)       CASE WHEN i.FechaUltimoIngreso IS NULL THEN 'Sin ingreso'#(lf)            ELSE 'Con ingreso' END AS SituacionIngreso#(lf)FROM dbo.Tbl_Inventario AS i#(lf)WHERE i.Existencia<=i.ExistenciaMinima AND i.CostoPromedio>0#(lf)ORDER BY ValorFaltante DESC, i.CodigoInventario;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

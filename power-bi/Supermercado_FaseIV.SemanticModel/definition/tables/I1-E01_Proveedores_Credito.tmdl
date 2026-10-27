@@ -1,0 +1,66 @@
+table I1-E01_Proveedores_Credito
+	lineageTag: ddba3ea1-f8a8-4e82-82dc-d35878c77eaa
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 50265f2b-f851-4130-8654-16dd5c9d6084
+		summarizeBy: sum
+		sourceColumn: CodigoProveedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Proveedor
+		dataType: string
+		lineageTag: 75d69ddd-b3b0-4974-85a1-df5a1b921798
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+		annotation SummarizationSetBy = Automatic
+
+	column Departamento
+		dataType: string
+		lineageTag: 098982a5-df9b-4bd2-b78b-2d06b00ad9f4
+		summarizeBy: none
+		sourceColumn: Departamento
+
+		annotation SummarizationSetBy = Automatic
+
+	column DiasCredito
+		dataType: int64
+		formatString: 0
+		lineageTag: 1089fc1f-4216-47cf-8459-805d1c097c00
+		summarizeBy: sum
+		sourceColumn: DiasCredito
+
+		annotation SummarizationSetBy = Automatic
+
+	column Correo
+		dataType: string
+		lineageTag: 736cd511-3553-4172-8fdc-93e0e49242a3
+		summarizeBy: none
+		sourceColumn: Correo
+
+		annotation SummarizationSetBy = Automatic
+
+	column AntiguedadAnios
+		dataType: int64
+		formatString: 0
+		lineageTag: 557cd667-527e-4a87-b872-f16031bb402b
+		summarizeBy: sum
+		sourceColumn: AntiguedadAnios
+
+		annotation SummarizationSetBy = Automatic
+
+	partition I1-E01_Proveedores_Credito = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="#(lf)SELECT#(lf)    pr.CodigoProveedor,#(lf)    UPPER(pr.Nombre) AS Proveedor,#(lf)    pr.Departamento,#(lf)    pr.DiasCredito,#(lf)    ISNULL(pr.Correo, 'No registrado') AS Correo,#(lf)    DATEDIFF(YEAR, pr.FechaRegistro, '20260930')#(lf)    - CASE#(lf)        WHEN DATEADD(#(lf)            YEAR,#(lf)            DATEDIFF(YEAR, pr.FechaRegistro, '20260930'),#(lf)            pr.FechaRegistro#(lf)        ) > '20260930'#(lf)        THEN 1 ELSE 0#(lf)      END AS AntiguedadAnios#(lf)FROM dbo.Tbl_Proveedores AS pr#(lf)WHERE pr.Estado = 'Activo'#(lf)  AND pr.DiasCredito BETWEEN 15 AND 60#(lf)  AND (#(lf)      pr.Nombre LIKE '%Guatemala%'#(lf)      OR pr.Nombre LIKE '%GT%'#(lf)  );"])
+				in
+				    Origen
+
+	changedProperty = Name
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,38 @@
+table I3-E06_BI
+	lineageTag: 9b4426fe-bf52-5f81-b7aa-aee9c105b9a8
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: dfefc5d4-5b1b-5237-b733-290f226b48f8
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Sucursal
+		dataType: string
+		lineageTag: 7e889d3a-fb1b-5d00-84ab-5843125b720f
+		summarizeBy: none
+		sourceColumn: Sucursal
+
+	column Municipio
+		dataType: string
+		lineageTag: 846f37b1-21bb-5c5f-a5d2-eccd1d5ccee9
+		summarizeBy: none
+		sourceColumn: Municipio
+
+	column Departamento
+		dataType: string
+		lineageTag: 8646cfff-cd3d-5c3a-a0dd-2f39797afabc
+		summarizeBy: none
+		sourceColumn: Departamento
+
+	partition I3-E06_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="-- No se usa JOIN en la consulta principal; los EXISTS preservan una fila por sucursal.#(lf)SELECT s.CodigoSucursal, s.Nombre AS Sucursal, s.Municipio, s.Departamento#(lf)FROM dbo.Tbl_Sucursales AS s#(lf)WHERE s.Estado='Activo'#(lf)  AND EXISTS (#(lf)      SELECT 1 FROM dbo.Tbl_AjustesInventario AS a#(lf)      WHERE a.CodigoSucursal=s.CodigoSucursal AND a.Estado='Aplicado'#(lf)        AND a.FechaAjuste >= '20260901' AND a.FechaAjuste < '20261001'#(lf)        AND EXISTS (#(lf)            SELECT 1 FROM dbo.Tbl_AjustesInventarioDetalle AS d#(lf)            WHERE d.CodigoAjuste=a.CodigoAjuste AND d.Cantidad<0#(lf)              AND d.CodigoProducto IN (#(lf)                  SELECT CodigoProducto FROM dbo.Tbl_Productos WHERE Estado='Activo'#(lf)              )#(lf)        )#(lf)  )#(lf)ORDER BY s.Departamento, Sucursal;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

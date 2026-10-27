@@ -1,0 +1,48 @@
+table I3-E14_BI
+	lineageTag: 2c9d24db-cc5f-54c9-9859-d913161e5b3f
+
+	column CodigoInventario
+		dataType: int64
+		formatString: 0
+		lineageTag: 077baa20-eb49-5c6e-bcf1-cc75e574bae1
+		summarizeBy: none
+		sourceColumn: CodigoInventario
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 7b477281-e8ab-5eb1-ab67-5b1356f3fad6
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f1b9095-6076-5967-a68e-221e577ce993
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Existencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: cc8bc905-5bf6-5eaf-bd85-7e0ff979b5cc
+		summarizeBy: sum
+		sourceColumn: Existencia
+
+	column ExistenciaMinima
+		dataType: double
+		formatString: #,0.00
+		lineageTag: a43dfaf1-f8f9-5fc3-8361-fb16870c569e
+		summarizeBy: sum
+		sourceColumn: ExistenciaMinima
+
+	partition I3-E14_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate_PRUEBAS", [Query="SELECT i.CodigoInventario, i.CodigoSucursal, i.CodigoProducto,#(lf)       i.Existencia, i.ExistenciaMinima#(lf)FROM dbo.Tbl_Inventario AS i#(lf)WHERE i.CodigoInventario = 1;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

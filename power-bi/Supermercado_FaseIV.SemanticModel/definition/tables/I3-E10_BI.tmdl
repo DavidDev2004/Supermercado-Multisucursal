@@ -1,0 +1,26 @@
+table I3-E10_BI
+	lineageTag: 76660cbc-66cc-51e5-bb69-d870aae9bb88
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 11d5b153-e282-5b4e-95bd-2df406a3c5c0
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Producto
+		dataType: string
+		lineageTag: 91d4e6e8-5c15-5eb5-a070-ee7d2c6038e2
+		summarizeBy: none
+		sourceColumn: Producto
+
+	partition I3-E10_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH Compartidos AS (#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales) AND Existencia>0#(lf)        INTERSECT#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales WHERE CodigoSucursal <> (SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales)) AND Existencia>0#(lf)    )#(lf)    SELECT p.CodigoProducto, p.Nombre AS Producto#(lf)    FROM Compartidos AS c#(lf)    JOIN dbo.Tbl_Productos AS p ON p.CodigoProducto=c.CodigoProducto#(lf)    ORDER BY Producto, p.CodigoProducto;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

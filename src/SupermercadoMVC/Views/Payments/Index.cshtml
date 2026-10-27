@@ -1,0 +1,95 @@
+@model PaymentsPage
+@using System.Globalization
+@{
+    ViewData["Title"] = "Pagos y saldos";
+    Layout = "_AppLayout";
+    string Amount(decimal value) => value.ToString("0.00", CultureInfo.InvariantCulture);
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">OPERACIONES · COBROS</div><h1>Pagos y saldos</h1><p>Consulta el saldo de cada venta y registra abonos sobre ventas confirmadas.</p></div>
+</section>
+@if (Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+@if (Model.Notice is not null) { <div class="notice-success" role="status">@Model.Notice</div> }
+<section class="catalog-kpis payments-kpis" aria-label="Indicadores de todas las ventas confirmadas">
+    <article class="mini-kpi"><div><small>Total · todas las confirmadas</small><strong>@Amount(Model.TotalConfirmed)</strong></div></article>
+    <article class="mini-kpi"><div><small>Pagos aplicados · confirmadas</small><strong>@Amount(Model.PaidConfirmed)</strong></div></article>
+    <article class="mini-kpi"><div><small>Saldo neto · confirmadas</small><strong>@Amount(Model.BalanceConfirmed)</strong></div></article>
+    <article class="mini-kpi"><div><small>Confirmadas con saldo positivo</small><strong>@Model.PendingConfirmed</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form asp-action="Index" method="get" class="filter-bar">
+        <label class="search-box"><input type="search" name="buscar" value="@Model.Search" maxlength="100" placeholder="Venta, cliente, NIT o comprobante" aria-label="Buscar ventas o pagos" /></label>
+        <select name="estado" class="filter-select" aria-label="Estado de venta"><option value="">Todos los estados</option>
+            @foreach (var state in new[] { "Borrador", "Confirmada", "Anulada" }) { <option value="@state" selected="@(Model.State == state)">@state</option> }
+        </select>
+        <select name="saldo" class="filter-select" aria-label="Saldo de venta"><option value="">Todos los saldos</option>
+            <option value="pendiente" selected="@(Model.Balance == "pendiente")">Saldo positivo</option>
+            <option value="pagado" selected="@(Model.Balance == "pagado")">Saldo cero</option>
+            <option value="negativo" selected="@(Model.Balance == "negativo")">Saldo negativo</option>
+        </select><button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading"><h2>Saldos por venta</h2><span>Página @Model.Page de @Model.PageCount · @Model.Total resultados</span></div>
+    <p class="required-note payments-note">Total agregado redondeado una sola vez a dos decimales. Solo los pagos Aplicados abonan al saldo; la comisión no reduce el abono. Los saldos negativos se conservan.</p>
+    <div class="table-responsive"><table class="table data-table"><thead><tr><th>Venta / Fecha</th><th>Cliente</th><th>Sucursal</th><th>Estado</th><th>Total pagadero</th><th>Pagado</th><th>Saldo</th><th>Acciones</th></tr></thead><tbody>
+        @if (Model.Rows.Count == 0) { <tr><td colspan="8">No hay ventas para mostrar.</td></tr> }
+        @foreach (var row in Model.Rows)
+        {
+            <tr><td>@row.NumeroVenta<br /><small>@row.FechaVenta.ToString("dd/MM/yyyy")</small></td><td>@row.Cliente</td><td>@row.Sucursal</td><td><span class="state-pill">@row.Estado</span></td>
+                <td>@Amount(row.TotalVenta)</td><td>@Amount(row.TotalPagado)</td><td class="@(row.Saldo < 0 ? "payment-negative" : "")">@Amount(row.Saldo) @if (row.Saldo < 0) { <small>Saldo negativo</small> }</td>
+                <td><div class="payments-actions">
+                    <a class="button-secondary" asp-action="Index" asp-route-venta="@row.CodigoVenta" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-saldo="@Model.Balance" asp-route-pagina="@Model.Page">Historial</a>
+                    @if (row.PuedePagar) { <a class="button-primary" asp-action="Index" asp-route-venta="@row.CodigoVenta" asp-route-registrar="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-saldo="@Model.Balance" asp-route-pagina="@Model.Page">Registrar pago</a> }
+                </div></td>
+            </tr>
+        }
+    </tbody></table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.Total ventas</span><div class="pagination-controls">
+        @if (Model.Page > 1) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-saldo="@Model.Balance" asp-route-pagina="@(Model.Page - 1)">← Anterior</a> }
+        <span>@Model.Page / @Model.PageCount</span>
+        @if (Model.Page < Model.PageCount) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-saldo="@Model.Balance" asp-route-pagina="@(Model.Page + 1)">Siguiente →</a> }
+    </div></nav>
+</section>
+@if (Model.Sale is { } sale)
+{
+<div class="modal fade" id="paymentsModal" tabindex="-1" aria-labelledby="paymentsTitle" aria-hidden="true">
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><div class="eyebrow">@sale.Estado · @sale.NumeroVenta</div><h2 id="paymentsTitle" class="modal-title">@(Model.Register ? "Registrar pago" : "Historial y saldo")</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+    <div class="modal-body">
+        <p>@sale.Cliente · @sale.Sucursal · @sale.FechaVenta.ToString("dd/MM/yyyy")</p>
+        <div class="payments-summary"><span>Total pagadero <strong>@Amount(sale.TotalVenta)</strong></span><span>Pagos aplicados <strong>@Amount(sale.TotalPagado)</strong></span><span class="@(sale.Saldo < 0 ? "payment-negative" : "")">Saldo <strong>@Amount(sale.Saldo)</strong></span></div>
+        <div asp-validation-summary="All" class="validation-errors" role="alert"></div>
+        @if (sale.Saldo < 0) { <p class="field-error">Esta venta tiene saldo negativo. Se conserva el importe existente y no admite nuevos pagos.</p> }
+        @if (Model.Register && sale.PuedePagar)
+        {
+        <form asp-action="Register" asp-route-id="@sale.CodigoVenta" method="post" id="paymentForm">
+            <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="saldo" value="@Model.Balance" /><input type="hidden" name="pagina" value="@Model.Page" />
+            <div class="form-grid">
+                <div class="form-field"><label asp-for="Input.Comprobante">Comprobante *</label><input asp-for="Input.Comprobante" class="form-control" maxlength="50" required /><span asp-validation-for="Input.Comprobante" class="field-error"></span></div>
+                <div class="form-field"><label asp-for="Input.FechaPago">Fecha de pago *</label><input asp-for="Input.FechaPago" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" required /><span asp-validation-for="Input.FechaPago" class="field-error"></span></div>
+                <div class="form-field"><label asp-for="Input.MetodoPago">Método de pago *</label><input asp-for="Input.MetodoPago" class="form-control" maxlength="50" required placeholder="Método de pago" /><span asp-validation-for="Input.MetodoPago" class="field-error"></span></div>
+                <div class="form-field"><label asp-for="Input.Monto">Monto del abono *</label><input asp-for="Input.Monto" type="number" min="0.01" max="@Amount(Math.Min(sale.Saldo, 9999999999.99m))" step="0.01" class="form-control" required /><span asp-validation-for="Input.Monto" class="field-error"></span></div>
+                <div class="form-field"><label asp-for="Input.Comision">Comisión bancaria *</label><input asp-for="Input.Comision" type="number" min="0" max="9999999999.99" step="0.01" class="form-control" required /><span asp-validation-for="Input.Comision" class="field-error"></span></div>
+                <div class="form-field"><label asp-for="Input.Autorizacion">Autorización (opcional)</label><input asp-for="Input.Autorizacion" class="form-control" maxlength="50" /><span asp-validation-for="Input.Autorizacion" class="field-error"></span></div>
+            </div>
+            <p class="required-note payments-note">El monto completo abona al cliente. La comisión no se resta. El saldo se verifica nuevamente al guardar.</p>
+            <div class="payments-submit"><button type="submit" class="button-primary">Guardar pago</button></div>
+        </form>
+        }
+        else if (!sale.PuedePagar) { <p class="required-note payments-note">Solo se permiten nuevos pagos para ventas Confirmadas con saldo positivo.</p> }
+        else { <a class="button-primary" asp-action="Index" asp-route-venta="@sale.CodigoVenta" asp-route-registrar="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-saldo="@Model.Balance" asp-route-pagina="@Model.Page">Registrar pago</a> }
+        <h3 class="payments-history-title">Historial de pagos</h3>
+        <div class="table-responsive"><table class="table data-table"><thead><tr><th>Código</th><th>Comprobante</th><th>Fecha</th><th>Método</th><th>Monto</th><th>Comisión</th><th>Autorización</th><th>Estado</th></tr></thead><tbody>
+        @if (Model.History.Count == 0) { <tr><td colspan="8">Esta venta no tiene pagos registrados.</td></tr> }
+        @foreach (var payment in Model.History)
+        {
+            <tr><td>@payment.CodigoPago</td><td>@payment.Comprobante</td><td>@payment.FechaPago.ToString("dd/MM/yyyy")</td><td>@payment.MetodoPago</td><td>@Amount(payment.Monto)</td><td>@Amount(payment.Comision)</td><td>@(payment.Autorizacion ?? "—")</td><td><span class="state-pill">@payment.Estado</span></td></tr>
+        }
+        </tbody></table></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button></div>
+</div></div></div>
+}
+@section Scripts {
+    <link rel="stylesheet" href="~/css/payments.css" asp-append-version="true" />
+    <script src="~/js/payments.js" asp-append-version="true"></script>
+}

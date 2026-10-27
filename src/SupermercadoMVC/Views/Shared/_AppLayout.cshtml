@@ -1,0 +1,72 @@
+@{
+    var standalone = ViewData["Standalone"] is true;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#102c3b" />
+    <title>@ViewData["Title"] · Supermercado GT</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app.css" asp-append-version="true" />
+</head>
+<body class="@(standalone ? "standalone" : "app-shell")">
+@if (standalone)
+{
+    <main class="standalone-main">@RenderBody()</main>
+}
+else
+{
+    <div class="app-frame">
+        <aside class="sidebar" id="sidebar">
+            <a class="brand" asp-controller="Home" asp-action="Index" aria-label="Supermercado GT, inicio">
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 6h3l3.1 14.2a3 3 0 0 0 2.9 2.3h11.2a3 3 0 0 0 2.9-2.2L30 11H9"/><path d="M12 27h.1M24 27h.1M10 11h19"/></svg></span>
+                <span><strong>Supermercado</strong><small>GESTIÓN MULTISUCURSAL</small></span>
+            </a>
+            <div class="sidebar-label">MENÚ PRINCIPAL</div>
+            <nav class="side-nav" aria-label="Navegación principal">
+                <a class="side-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><span class="nav-icon">⌂</span>Inicio</a>
+                <a class="side-link @(Context.Request.Path.Value?.Contains("sucursales", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="sucursales"><span class="nav-icon">▦</span>Sucursales</a>
+                <a class="side-link @(Context.Request.Path.Value?.Contains("categorias", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="categorias"><span class="nav-icon">◇</span>Categorías</a>
+                <a class="side-link @(controller == "Productos" ? "active" : "")" asp-controller="Productos" asp-action="Index"><span class="nav-icon">▣</span>Productos</a>
+                <a class="side-link @(Context.Request.Path.Value?.Contains("proveedores", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="proveedores"><span class="nav-icon">♧</span>Proveedores</a>
+                <a class="side-link @(Context.Request.Path.Value?.Contains("clientes", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="clientes"><span class="nav-icon">♙</span>Clientes</a>
+                <a class="side-link @(Context.Request.Path.Value?.Contains("empleados", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="empleados"><span class="nav-icon">♙</span>Empleados</a>
+                <a class="side-link @(controller == "Compras" ? "active" : "")" asp-controller="Compras" asp-action="Index"><span class="nav-icon">⇣</span>Compras</a>
+                <a class="side-link @(controller == "Sales" ? "active" : "")" asp-controller="Sales" asp-action="Index"><span class="nav-icon">⌁</span>Ventas</a>
+                <a class="side-link @(controller == "Payments" ? "active" : "")" asp-controller="Payments" asp-action="Index"><span class="nav-icon">＄</span>Pagos y saldos</a>
+                <a class="side-link @(controller == "Inventario" ? "active" : "")" asp-controller="Inventario" asp-action="Index"><span class="nav-icon">▤</span>Inventario</a>
+                <a class="side-link @(controller == "Ajustes" ? "active" : "")" asp-controller="Ajustes" asp-action="Index"><span class="nav-icon">⇄</span>Ajustes de inventario</a>
+                <a class="side-link @(controller == "Modules" && Context.Request.Path.Value?.Contains("reportes", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Modules" asp-action="Index" asp-route-slug="reportes"><span class="nav-icon">◷</span>Reportes</a>
+            </nav>
+            <div class="sidebar-bottom">
+                <div class="demo-chip"><span></span> Sesión activa</div>
+                <form asp-controller="Access" asp-action="Exit" method="post">@Html.AntiForgeryToken()<button class="side-link signout" type="submit"><span class="nav-icon">↪</span>Salir</button></form>
+            </div>
+        </aside>
+        <div class="main-column">
+            <header class="topbar">
+                <button class="mobile-menu" type="button" id="menuToggle" aria-label="Abrir menú">☰</button>
+                <div class="topbar-kicker">Supermercado GT <span>/</span> @ViewData["Title"]</div>
+                <div class="topbar-right"><span class="today-label">@DateTime.Today.ToString("dddd, dd MMMM", System.Globalization.CultureInfo.GetCultureInfo("es-GT"))</span><div class="avatar" aria-label="Usuario conectado">@((User.Identity?.Name ?? "US").Substring(0, Math.Min(2, (User.Identity?.Name ?? "US").Length)).ToUpperInvariant())</div></div>
+            </header>
+            <main class="page-content" role="main">
+                @if (TempData["Welcome"] is string welcome)
+                {
+                    <div class="alert alert-info alert-dismissible fade show" role="status">@welcome<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button></div>
+                }
+                @RenderBody()
+            </main>
+            <footer class="app-footer">Supermercado GT <span>·</span> Herramienta académica</footer>
+        </div>
+    </div>
+}
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="~/js/app.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

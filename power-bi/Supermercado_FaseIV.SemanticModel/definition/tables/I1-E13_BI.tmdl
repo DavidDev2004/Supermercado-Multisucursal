@@ -1,0 +1,47 @@
+table I1-E13_BI
+	lineageTag: d7332e0c-292a-5573-a6f1-46f9501f468a
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d5081cc-03f1-572f-bb42-804e3521710f
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Presupuesto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 494c2207-e2ed-591b-a96e-c45ec676af9b
+		summarizeBy: sum
+		sourceColumn: Presupuesto
+
+	column TotalComprado
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 160dc700-b2a9-52d3-8fd7-8c5f2a0996ca
+		summarizeBy: sum
+		sourceColumn: TotalComprado
+
+	column Diferencia
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 6edda720-3647-5759-9634-cf1da3dd92f4
+		summarizeBy: sum
+		sourceColumn: Diferencia
+
+	column EstadoPresupuesto
+		dataType: string
+		lineageTag: a77cfc1e-18d8-5240-879d-302e2a35757b
+		summarizeBy: none
+		sourceColumn: EstadoPresupuesto
+
+	partition I1-E13_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH Sucursal AS (#(lf)    SELECT MIN(CodigoSucursal) AS CodigoSucursal FROM dbo.Tbl_Sucursales WHERE Estado = 'Activo'#(lf)), ComprasDocumento AS (#(lf)    SELECT c.CodigoCompra, c.CodigoSucursal,#(lf)           SUM(d.Cantidad * d.CostoUnitario - d.Descuento) AS Importe#(lf)    FROM dbo.Tbl_Compras AS c#(lf)    JOIN dbo.Tbl_ComprasDetalle AS d ON d.CodigoCompra = c.CodigoCompra#(lf)    WHERE c.Estado = 'Recibida' AND c.FechaCompra >= '20260901' AND c.FechaCompra < '20261001'#(lf)    GROUP BY c.CodigoCompra, c.CodigoSucursal#(lf))#(lf)SELECT s.CodigoSucursal, CAST(10000 AS decimal(18,2)) AS Presupuesto,#(lf)       CAST(COALESCE(SUM(cd.Importe), 0) AS decimal(18,2)) AS TotalComprado,#(lf)       CAST(10000 - COALESCE(SUM(cd.Importe), 0) AS decimal(18,2)) AS Diferencia,#(lf)       CASE WHEN COALESCE(SUM(cd.Importe), 0) > 10000 THEN 'Excedido'#(lf)            ELSE 'Dentro del presupuesto' END AS EstadoPresupuesto#(lf)FROM Sucursal AS s#(lf)LEFT JOIN ComprasDocumento AS cd ON cd.CodigoSucursal = s.CodigoSucursal#(lf)WHERE s.CodigoSucursal IS NOT NULL#(lf)GROUP BY s.CodigoSucursal;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

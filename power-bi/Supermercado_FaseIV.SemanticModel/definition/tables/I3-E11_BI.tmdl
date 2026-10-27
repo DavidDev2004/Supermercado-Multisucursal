@@ -1,0 +1,32 @@
+table I3-E11_BI
+	lineageTag: 84d6d819-60da-5337-a25a-a1083920acfc
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: 43e9acff-277a-5563-baba-1a3d6a732237
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column Producto
+		dataType: string
+		lineageTag: 8e9ff36c-8f61-5dff-85dc-a502375c05f9
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column Disponibilidad
+		dataType: string
+		lineageTag: bc51dcde-020c-513b-a5b1-b5685b2731ce
+		summarizeBy: none
+		sourceColumn: Disponibilidad
+
+	partition I3-E11_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH SoloA AS (#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales) AND Existencia>0#(lf)        EXCEPT#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales WHERE CodigoSucursal <> (SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales)) AND Existencia>0#(lf)    ),#(lf)    SoloB AS (#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales WHERE CodigoSucursal <> (SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales)) AND Existencia>0#(lf)        EXCEPT#(lf)        SELECT CodigoProducto FROM dbo.Tbl_Inventario#(lf)        WHERE CodigoSucursal=(SELECT MIN(CodigoSucursal) FROM dbo.Tbl_Sucursales) AND Existencia>0#(lf)    ),#(lf)    Exclusivos AS (#(lf)        SELECT CodigoProducto, CAST('Solo sucursal 1' AS varchar(30)) AS Disponibilidad FROM SoloA#(lf)        UNION ALL#(lf)        SELECT CodigoProducto, CAST('Solo sucursal 2' AS varchar(30)) AS Disponibilidad FROM SoloB#(lf)    )#(lf)    SELECT p.CodigoProducto, p.Nombre AS Producto, x.Disponibilidad#(lf)    FROM Exclusivos AS x#(lf)    JOIN dbo.Tbl_Productos AS p ON p.CodigoProducto=x.CodigoProducto#(lf)    ORDER BY x.Disponibilidad, Producto, p.CodigoProducto;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

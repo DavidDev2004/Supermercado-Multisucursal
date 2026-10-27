@@ -1,0 +1,75 @@
+@model InventarioPagina
+@using System.Globalization
+@{
+    ViewData["Title"] = "Inventario";
+    Layout = "_AppLayout";
+    string Numero(decimal value) => value.ToString("0.00", CultureInfo.InvariantCulture);
+    string Fecha(DateTime? value) => value?.ToString("dd/MM/yyyy") ?? "Sin registro";
+}
+<section class="welcome-row">
+    <div>
+        <div class="eyebrow">CONTROL DE EXISTENCIAS · SOLO CONSULTA</div>
+        <h1>Inventario</h1>
+        <p>Existencias por producto y sucursal. Las compras, ventas y ajustes actualizan estas cifras.</p>
+    </div>
+</section>
+@if (Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+<section class="catalog-kpis inventory-kpis" aria-label="Indicadores globales de inventario">
+    <article class="mini-kpi"><div><small>Registros · todas las sucursales</small><strong>@Model.TotalInventarios</strong></div></article>
+    <article class="mini-kpi"><div><small>Unidades · todas las sucursales</small><strong>@Numero(Model.UnidadesTotales)</strong></div></article>
+    <article class="mini-kpi"><div><small>Bajo mínimo · todas</small><strong>@Model.BajoMinimo</strong></div></article>
+    <article class="mini-kpi"><div><small>Sin existencias · todas</small><strong>@Model.SinExistencias</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form method="get" asp-action="Index" class="filter-bar inventory-filters">
+        <label class="search-box"><input type="search" name="buscar" value="@Model.Buscar" maxlength="100" placeholder="Código, producto, marca, categoría o sucursal" aria-label="Buscar en inventario" /></label>
+        <select name="sucursal" class="filter-select" aria-label="Filtrar por sucursal">
+            <option value="">Todas las sucursales</option>
+            @foreach (var branch in Model.Sucursales) { <option value="@branch.Id" selected="@(Model.Sucursal == branch.Id)">@branch.Nombre</option> }
+        </select>
+        <select name="categoria" class="filter-select" aria-label="Filtrar por categoría">
+            <option value="">Todas las categorías</option>
+            @foreach (var category in Model.Categorias) { <option value="@category.Id" selected="@(Model.Categoria == category.Id)">@category.Nombre</option> }
+        </select>
+        <select name="situacion" class="filter-select" aria-label="Filtrar por situación">
+            <option value="">Todas las situaciones</option>
+            <option value="BajoMinimo" selected="@(Model.Situacion == "BajoMinimo")">Bajo mínimo</option>
+            <option value="SinExistencias" selected="@(Model.Situacion == "SinExistencias")">Sin existencias</option>
+        </select>
+        <button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading"><h2>Existencias por sucursal</h2><span>Página @Model.Pagina de @Model.TotalPaginas · @Model.TotalFiltrado resultados</span></div>
+    <div class="table-responsive"><table class="table data-table inventory-table">
+        <thead><tr><th>Producto</th><th>Categoría</th><th>Sucursal</th><th>Existencia</th><th>Mínimo</th><th>Costo promedio</th><th>Último ingreso</th><th>Último conteo</th><th>Situación</th></tr></thead>
+        <tbody>
+        @if (Model.Filas.Count == 0) { <tr><td colspan="9">No hay inventarios para mostrar con estos filtros.</td></tr> }
+        @foreach (var row in Model.Filas)
+        {
+            <tr>
+                <td><strong>@row.Producto</strong><small class="inventory-code">@row.CodigoBarra</small></td>
+                <td>@row.Categoria</td><td>@row.Sucursal</td>
+                <td>@Numero(row.Existencia)</td><td>@Numero(row.ExistenciaMinima)</td>
+                <td>Q @Numero(row.CostoPromedio)</td>
+                <td>@Fecha(row.FechaUltimoIngreso)</td><td>@Fecha(row.FechaUltimoConteo)</td>
+                <td>
+                    @if (row.SinExistencias) { <span class="inventory-status inventory-empty">Sin existencias</span> }
+                    @if (row.BajoMinimo) { <span class="inventory-status inventory-low">Bajo mínimo</span> }
+                    @if (!row.SinExistencias && !row.BajoMinimo) { <span class="inventory-status inventory-ok">En nivel</span> }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.TotalFiltrado inventarios</span><div class="pagination-controls">
+        @if (Model.Pagina > 1)
+        {
+            <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Buscar" asp-route-sucursal="@Model.Sucursal" asp-route-categoria="@Model.Categoria" asp-route-situacion="@Model.Situacion" asp-route-pagina="@(Model.Pagina - 1)">← Anterior</a>
+        }
+        <span>@Model.Pagina / @Model.TotalPaginas</span>
+        @if (Model.Pagina < Model.TotalPaginas)
+        {
+            <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Buscar" asp-route-sucursal="@Model.Sucursal" asp-route-categoria="@Model.Categoria" asp-route-situacion="@Model.Situacion" asp-route-pagina="@(Model.Pagina + 1)">Siguiente →</a>
+        }
+    </div></nav>
+</section>
+@section Scripts { <link rel="stylesheet" href="~/css/inventario.css" asp-append-version="true" /> }

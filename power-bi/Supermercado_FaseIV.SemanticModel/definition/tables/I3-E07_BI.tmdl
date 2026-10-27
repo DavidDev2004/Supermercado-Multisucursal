@@ -1,0 +1,47 @@
+table I3-E07_BI
+	lineageTag: faaf7e92-3f82-5f8c-9a98-c589d9dbfa06
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 2a415c4a-5254-5f98-993d-265e99ce7343
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Sucursal
+		dataType: string
+		lineageTag: fdcb92bb-da49-59e8-9694-a7dbf0bbcccb
+		summarizeBy: none
+		sourceColumn: Sucursal
+
+	column CantidadProductos
+		dataType: int64
+		formatString: 0
+		lineageTag: ae978b39-81dc-5757-9e61-c6f62d8696cb
+		summarizeBy: none
+		sourceColumn: CantidadProductos
+
+	column TotalUnidades
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 13853ae9-7d81-586b-9e6b-54e976a248f2
+		summarizeBy: sum
+		sourceColumn: TotalUnidades
+
+	column ValorInventario
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 06d43ec5-e6fa-588b-a4bf-a960f9771c3a
+		summarizeBy: sum
+		sourceColumn: ValorInventario
+
+	partition I3-E07_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT s.CodigoSucursal, s.Nombre AS Sucursal,#(lf)       COUNT(DISTINCT i.CodigoProducto) AS CantidadProductos,#(lf)       SUM(i.Existencia) AS TotalUnidades,#(lf)       CAST(ROUND(SUM(i.Existencia*i.CostoPromedio),2) AS decimal(18,2)) AS ValorInventario#(lf)FROM dbo.Tbl_Inventario AS i#(lf)JOIN dbo.Tbl_Sucursales AS s ON s.CodigoSucursal=i.CodigoSucursal AND s.Estado='Activo'#(lf)JOIN dbo.Tbl_Productos AS p ON p.CodigoProducto=i.CodigoProducto AND p.Estado='Activo'#(lf)GROUP BY s.CodigoSucursal, s.Nombre#(lf)HAVING COUNT(DISTINCT i.CodigoProducto)>=3#(lf)   AND SUM(i.Existencia*i.CostoPromedio)>500#(lf)ORDER BY ValorInventario DESC, Sucursal;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

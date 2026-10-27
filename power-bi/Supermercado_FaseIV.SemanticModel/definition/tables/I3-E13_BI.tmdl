@@ -1,0 +1,40 @@
+table I3-E13_BI
+	lineageTag: 4ca6047c-be1d-5fa6-8293-9856f05641b6
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 65d3cdee-4edc-5495-a78d-9d306dfff3db
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column Tolerancia
+		dataType: int64
+		formatString: 0
+		lineageTag: 28630356-dc02-5c4d-9d60-1746c1d46237
+		summarizeBy: none
+		sourceColumn: Tolerancia
+
+	column ProductosBajoMinimo
+		dataType: int64
+		formatString: 0
+		lineageTag: 9d2c205f-9db3-5c85-bd58-89279791d548
+		summarizeBy: none
+		sourceColumn: ProductosBajoMinimo
+
+	column EstadoReposicion
+		dataType: string
+		lineageTag: c8f31b05-09af-56ff-aefb-fecd2c9c459a
+		summarizeBy: none
+		sourceColumn: EstadoReposicion
+
+	partition I3-E13_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH Sucursal AS (#(lf)    SELECT MIN(CodigoSucursal) AS CodigoSucursal FROM dbo.Tbl_Sucursales WHERE Estado = 'Activo'#(lf))#(lf)SELECT s.CodigoSucursal, CAST(2 AS int) AS Tolerancia,#(lf)       COUNT(i.CodigoInventario) AS ProductosBajoMinimo,#(lf)       CASE WHEN COUNT(i.CodigoInventario) > 2 THEN 'Reposición prioritaria'#(lf)            ELSE 'Seguimiento normal' END AS EstadoReposicion#(lf)FROM Sucursal AS s#(lf)LEFT JOIN dbo.Tbl_Inventario AS i ON i.CodigoSucursal = s.CodigoSucursal#(lf)    AND i.Existencia < i.ExistenciaMinima#(lf)    AND EXISTS (SELECT 1 FROM dbo.Tbl_Productos AS p#(lf)                WHERE p.CodigoProducto = i.CodigoProducto AND p.Estado = 'Activo')#(lf)WHERE s.CodigoSucursal IS NOT NULL#(lf)GROUP BY s.CodigoSucursal;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

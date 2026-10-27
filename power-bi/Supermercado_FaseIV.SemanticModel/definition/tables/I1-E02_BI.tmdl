@@ -1,0 +1,66 @@
+table I1-E02_BI
+	lineageTag: 9738a992-8697-51bd-a546-8602d1191496
+
+	column CodigoCompra
+		dataType: int64
+		formatString: 0
+		lineageTag: 67eb74db-27bd-5d7b-8676-162aa7cdd6d6
+		summarizeBy: none
+		sourceColumn: CodigoCompra
+
+	column NumeroCompra
+		dataType: string
+		lineageTag: 454ed5f9-ef0c-55b6-9e0a-da740294bb0d
+		summarizeBy: none
+		sourceColumn: NumeroCompra
+
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: 198f9292-b6fb-5fb8-92ec-deb9567a2e11
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: b8e36479-f37b-5a8e-b177-a1f05fa1d966
+		summarizeBy: none
+		sourceColumn: Mes
+
+	column FechaEntregaProgramada
+		dataType: dateTime
+		lineageTag: a2b964e1-ddac-577d-9bc0-cb4ed3aeb23f
+		summarizeBy: none
+		sourceColumn: FechaEntregaProgramada
+
+	column FechaRecepcion
+		dataType: dateTime
+		lineageTag: 9793b2fd-c81a-572d-acc5-e5a8852a33f6
+		summarizeBy: none
+		sourceColumn: FechaRecepcion
+
+	column DiasAtraso
+		dataType: int64
+		formatString: 0
+		lineageTag: 4c781f75-b847-53cf-a67e-59a49d150d61
+		summarizeBy: none
+		sourceColumn: DiasAtraso
+
+	column LongitudNumero
+		dataType: int64
+		formatString: 0
+		lineageTag: 30410386-7a37-5fa1-9aa9-b1370e7556fb
+		summarizeBy: none
+		sourceColumn: LongitudNumero
+
+	partition I1-E02_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT c.CodigoCompra, c.NumeroCompra,#(lf)       YEAR(c.FechaCompra) AS Anio, MONTH(c.FechaCompra) AS Mes,#(lf)       c.FechaEntregaProgramada, c.FechaRecepcion,#(lf)       DATEDIFF(DAY, c.FechaEntregaProgramada, c.FechaRecepcion) AS DiasAtraso,#(lf)       LEN(c.NumeroCompra) AS LongitudNumero#(lf)FROM dbo.Tbl_Compras AS c#(lf)WHERE c.Estado = 'Recibida'#(lf)  AND c.FechaCompra >= '20260701' AND c.FechaCompra < '20261001'#(lf)  AND c.FechaRecepcion > c.FechaEntregaProgramada#(lf)ORDER BY DiasAtraso DESC, c.NumeroCompra;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

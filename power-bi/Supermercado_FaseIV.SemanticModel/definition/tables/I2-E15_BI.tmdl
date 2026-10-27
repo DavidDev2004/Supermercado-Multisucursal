@@ -1,0 +1,45 @@
+table I2-E15_BI
+	lineageTag: 289d0dd2-d39e-5706-bedc-96a288d8d9cd
+
+	column Decision
+		dataType: string
+		lineageTag: 1fcdc656-1ebe-570b-a254-fe0909eead46
+		summarizeBy: none
+		sourceColumn: Decision
+
+	column NIT
+		dataType: string
+		lineageTag: a6533fd3-1fb3-5c33-b739-4f4736b07efd
+		summarizeBy: none
+		sourceColumn: NIT
+
+	column NumeroVenta
+		dataType: string
+		lineageTag: 27179ccc-6a8d-5213-a249-14c479c453d3
+		summarizeBy: none
+		sourceColumn: NumeroVenta
+
+	column ExisteCliente
+		dataType: int64
+		formatString: 0
+		lineageTag: 8efdefd1-84a8-5b90-bd45-f84f146a14c8
+		summarizeBy: none
+		sourceColumn: ExisteCliente
+
+	column ExisteVenta
+		dataType: int64
+		formatString: 0
+		lineageTag: de906424-74f8-5e38-a46e-7c75b149b39c
+		summarizeBy: none
+		sourceColumn: ExisteVenta
+
+	partition I2-E15_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate_PRUEBAS", [Query="WITH Practicas AS (#(lf)    SELECT v.Decision, v.NIT, v.NumeroVenta#(lf)    FROM (VALUES#(lf)        ('NO', 'I2E15638B1CE7EB1542', 'I2-E15-3243CE0A052A4894844FA9'),#(lf)        ('SI', 'I2E1548F48CBA74FE4B', 'I2-E15-9287DE7FEC6C4195A2A587')#(lf)    ) AS v(Decision, NIT, NumeroVenta)#(lf))#(lf)SELECT p.Decision, p.NIT, p.NumeroVenta,#(lf)       CASE WHEN c.CodigoCliente IS NULL THEN 0 ELSE 1 END AS ExisteCliente,#(lf)       CASE WHEN v.CodigoVenta IS NULL THEN 0 ELSE 1 END AS ExisteVenta#(lf)FROM Practicas AS p#(lf)LEFT JOIN dbo.Tbl_Clientes AS c ON c.NIT = p.NIT#(lf)LEFT JOIN dbo.Tbl_Ventas AS v ON v.NumeroVenta = p.NumeroVenta;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

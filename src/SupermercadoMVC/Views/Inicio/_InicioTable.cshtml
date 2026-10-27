@@ -1,0 +1,11 @@
+@model InicioTable
+<section class="panel-card catalog-panel inicio-table-panel">
+    <div class="table-heading"><div><h2>@Model.Title</h2><p>@Model.Description</p></div></div>
+    <div class="table-responsive"><table class="table data-table"><caption class="visually-hidden">@Model.Title</caption>
+        <thead><tr>@foreach (var column in Model.Columns) { <th scope="col">@column</th> }</tr></thead>
+        <tbody>
+        @if (Model.Rows.Count == 0) { <tr><td colspan="@Model.Columns.Count"><div class="empty-state"><strong>Sin datos para mostrar</strong><small>No hay registros que coincidan con esta consulta.</small></div></td></tr> }
+        @foreach (var row in Model.Rows) { <tr>@foreach (var cell in row) { <td>@cell</td> }</tr> }
+        </tbody>
+    </table></div>
+</section>

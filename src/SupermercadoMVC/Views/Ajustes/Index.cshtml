@@ -1,0 +1,104 @@
+@model AjustesIndexViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Ajustes de inventario";
+    Layout = "_AppLayout";
+    string Amount(decimal value) => value.ToString("0.00##", CultureInfo.InvariantCulture);
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">INVENTARIO · ENCABEZADO Y DETALLE</div><h1>Ajustes de inventario</h1><p>Prepara entradas y salidas con cantidades positivas o negativas.</p></div>
+    <a class="button-primary" asp-action="Index" asp-route-nuevo="true" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-sucursal="@Model.Branch" asp-route-pagina="@Model.Page">＋ Agregar ajuste</a>
+</section>
+@if (Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+@if (Model.Notice is not null) { <div class="notice-success" role="status">@Model.Notice</div> }
+<section class="catalog-kpis adjustments-kpis" aria-label="Indicadores de todas las sucursales">
+    <article class="mini-kpi"><div><small>Ajustes · todos</small><strong>@Model.TotalAjustes</strong></div></article>
+    <article class="mini-kpi"><div><small>Borradores · todos</small><strong>@Model.Borradores</strong></div></article>
+    <article class="mini-kpi"><div><small>Aplicados · todos</small><strong>@Model.Aplicados</strong></div></article>
+    <article class="mini-kpi"><div><small>Anulados · todos</small><strong>@Model.Anulados</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form method="get" asp-action="Index" class="filter-bar">
+        <label class="search-box"><input type="search" name="buscar" value="@Model.Search" maxlength="100" placeholder="Número, motivo, sucursal o empleado" aria-label="Buscar ajustes" /></label>
+        <select name="estado" class="filter-select" aria-label="Estado del ajuste"><option value="">Todos los estados</option>
+            @foreach (var state in new[] { "Borrador", "Aplicado", "Anulado" }) { <option value="@state" selected="@(Model.State == state)">@state</option> }
+        </select>
+        <select name="sucursal" class="filter-select" aria-label="Filtrar sucursal"><option value="">Todas las sucursales</option>
+            @foreach (var branch in Model.Sucursales) { <option value="@branch.Id" selected="@(Model.Branch == branch.Id)">@branch.Nombre</option> }
+        </select><button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading"><h2>Listado de ajustes</h2><span>Página @Model.Page de @Model.PageCount · @Model.Total resultados</span></div>
+    <div class="table-responsive"><table class="table data-table"><thead><tr><th>Número</th><th>Fecha</th><th>Sucursal</th><th>Empleado</th><th>Motivo</th><th>Estado</th><th>Líneas</th><th>Valor firmado</th><th>Acciones</th></tr></thead><tbody>
+    @if (Model.Rows.Count == 0) { <tr><td colspan="9">No hay ajustes para mostrar.</td></tr> }
+    @foreach (var row in Model.Rows)
+    {
+        <tr><td><strong>@row.NumeroAjuste</strong></td><td>@row.FechaAjuste.ToString("dd/MM/yyyy")</td><td>@row.Sucursal</td><td>@row.Empleado</td><td>@row.Motivo</td><td>@row.Estado</td><td>@row.CantidadLineas</td>
+        <td>@(row.Estado == "Borrador" ? "Pendiente de aplicar" : row.Valor.HasValue ? "Q " + Amount(row.Valor.Value) : "Sin costo histórico")</td>
+        <td class="adjustments-actions">
+            <a class="button-secondary" asp-action="Index" asp-route-ajuste="@row.CodigoAjuste" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-sucursal="@Model.Branch" asp-route-pagina="@Model.Page">Consultar</a>
+            @if (row.Estado == "Borrador")
+            {
+                <a class="button-secondary" asp-action="Index" asp-route-ajuste="@row.CodigoAjuste" asp-route-modo="editar" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-sucursal="@Model.Branch" asp-route-pagina="@Model.Page">Editar</a>
+                <form asp-action="Apply" asp-route-id="@row.CodigoAjuste" method="post" onsubmit="return confirm('¿Aplicar este ajuste? Se actualizarán existencias y se fijarán los costos históricos.');">
+                    <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="sucursal" value="@Model.Branch" /><input type="hidden" name="pagina" value="@Model.Page" /><button type="submit" class="button-primary">Aplicar</button>
+                </form>
+                <form asp-action="Delete" asp-route-id="@row.CodigoAjuste" method="post" onsubmit="return confirm('¿Eliminar este borrador y sus detalles?');">
+                    <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="sucursal" value="@Model.Branch" /><input type="hidden" name="pagina" value="@Model.Page" /><button type="submit" class="button-secondary">Eliminar</button>
+                </form>
+            }
+        </td></tr>
+    }
+    </tbody></table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.Total ajustes</span><div class="pagination-controls">
+        @if (Model.Page > 1) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-sucursal="@Model.Branch" asp-route-pagina="@(Model.Page - 1)">← Anterior</a> }
+        <span>@Model.Page / @Model.PageCount</span>
+        @if (Model.Page < Model.PageCount) { <a class="page-button" asp-action="Index" asp-route-buscar="@Model.Search" asp-route-estado="@Model.State" asp-route-sucursal="@Model.Branch" asp-route-pagina="@(Model.Page + 1)">Siguiente →</a> }
+    </div></nav>
+</section>
+@if (Model.OpenModal)
+{
+<div class="modal fade" id="adjustmentsModal" tabindex="-1" aria-labelledby="adjustmentsTitle" aria-hidden="true" data-readonly="@Model.ReadOnly.ToString().ToLowerInvariant()">
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><div><div class="eyebrow">@Model.EstadoAjuste</div><h2 id="adjustmentsTitle" class="modal-title">@(Model.ReadOnly ? "Consultar ajuste" : Model.Input.CodigoAjuste.HasValue ? "Editar borrador" : "Agregar ajuste")</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+    <form asp-action="Save" asp-route-id="@Model.Input.CodigoAjuste" method="post" id="adjustmentsForm" class="adjustments-form">
+        <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="sucursal" value="@Model.Branch" /><input type="hidden" name="pagina" value="@Model.Page" />
+        <div class="modal-body"><div asp-validation-summary="All" class="validation-errors" role="alert"></div>
+        <fieldset disabled="@Model.ReadOnly" class="adjustments-fields"><div class="form-grid">
+            <div class="form-field"><label asp-for="Input.NumeroAjuste">Número de ajuste *</label><input asp-for="Input.NumeroAjuste" class="form-control" maxlength="30" required /><span asp-validation-for="Input.NumeroAjuste" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.FechaAjuste">Fecha *</label><input asp-for="Input.FechaAjuste" asp-format="{0:yyyy-MM-dd}" type="date" class="form-control" required /><span asp-validation-for="Input.FechaAjuste" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.CodigoSucursal">Sucursal *</label><select asp-for="Input.CodigoSucursal" class="form-control" required><option value="">Selecciona sucursal</option>@foreach (var item in Model.Sucursales) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoSucursal" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.CodigoEmpleado">Empleado de la sucursal *</label><select asp-for="Input.CodigoEmpleado" class="form-control" required><option value="">Selecciona empleado</option>@foreach (var item in Model.Empleados) { <option value="@item.Id" data-branch="@item.CodigoSucursal">@item.Nombre</option> }</select><span asp-validation-for="Input.CodigoEmpleado" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.Motivo">Motivo *</label><input asp-for="Input.Motivo" class="form-control" maxlength="200" required /><span asp-validation-for="Input.Motivo" class="field-error"></span></div>
+            <div class="form-field"><label asp-for="Input.Observaciones">Observaciones</label><textarea asp-for="Input.Observaciones" class="form-control" maxlength="300"></textarea><span asp-validation-for="Input.Observaciones" class="field-error"></span></div>
+        </div>
+        <p class="required-note">Las cantidades positivas aumentan existencias; las negativas las reducen. Cero no es válido. El borrador no modifica inventario. Al aplicar se exige inventario existente y costo promedio positivo; ese costo se guarda en cada detalle.</p>
+        <div class="table-responsive adjustments-lines-wrapper"><table class="table data-table adjustments-lines"><thead><tr><th>Producto</th><th>Cantidad firmada</th><th>Costo histórico unitario</th><th>Valor firmado</th><th></th></tr></thead><tbody id="adjustmentsLines">
+        @for (var i = 0; i < Model.Input.Lineas.Count; i++)
+        {
+            var line = Model.Input.Lineas[i];
+            <tr class="adjustment-line">
+                <td><select asp-for="Input.Lineas[i].CodigoProducto" class="form-control line-product" required><option value="">Selecciona producto</option>@foreach (var item in Model.Productos) { <option value="@item.Id">@item.Nombre</option> }</select><span asp-validation-for="Input.Lineas[i].CodigoProducto" class="field-error"></span></td>
+                <td><input asp-for="Input.Lineas[i].Cantidad" type="number" min="-9999999999.99" max="9999999999.99" step="0.01" class="form-control line-quantity" required /><span asp-validation-for="Input.Lineas[i].Cantidad" class="field-error"></span></td>
+                <td>@(Model.EstadoAjuste == "Borrador" ? "Se fija al aplicar" : line.CostoUnitario.HasValue ? "Q " + Amount(line.CostoUnitario.Value) : "No registrado")</td>
+                <td>@(Model.EstadoAjuste != "Borrador" && line.Cantidad.HasValue && line.CostoUnitario.HasValue ? "Q " + Amount(line.Cantidad.Value * line.CostoUnitario.Value) : "—")</td>
+                <td>@if (!Model.ReadOnly) { <button type="button" class="button-secondary remove-line" aria-label="Quitar producto">×</button> }</td>
+            </tr>
+        }
+        </tbody></table></div>
+        @if (!Model.ReadOnly) { <button type="button" class="button-secondary" id="addAdjustmentLine">＋ Agregar producto</button> }
+        </fieldset>
+        <p class="required-note">Aplicados y Anulados son de solo consulta. Los ajustes antiguos sin costo registrado no se valoran con el costo actual.</p>
+        </div>
+        <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button>@if (!Model.ReadOnly) { <button type="submit" class="button-primary">Guardar borrador</button> }</div>
+    </form>
+</div></div></div>
+<template id="adjustmentLineTemplate"><tr class="adjustment-line">
+    <td><select class="form-control line-product" required><option value="">Selecciona producto</option>@foreach (var item in Model.Productos) { <option value="@item.Id">@item.Nombre</option> }</select></td>
+    <td><input type="number" min="-9999999999.99" max="9999999999.99" step="0.01" class="form-control line-quantity" required /></td>
+    <td>Se fija al aplicar</td><td>—</td><td><button type="button" class="button-secondary remove-line" aria-label="Quitar producto">×</button></td>
+</tr></template>
+}
+@section Scripts {
+    <script src="~/js/ajustes.js" asp-append-version="true"></script>
+    <link rel="stylesheet" href="~/css/ajustes.css" asp-append-version="true" />
+}

@@ -1,0 +1,47 @@
+table I1-E07_BI
+	lineageTag: f907aa25-f899-5cd5-9570-94275a602852
+
+	column CodigoProveedor
+		dataType: int64
+		formatString: 0
+		lineageTag: 156420a7-68d1-53bb-9ce1-ddc9427152e6
+		summarizeBy: none
+		sourceColumn: CodigoProveedor
+
+	column Proveedor
+		dataType: string
+		lineageTag: 328df54d-1dd3-52cc-89f2-4afad0adebcc
+		summarizeBy: none
+		sourceColumn: Proveedor
+
+	column CantidadCompras
+		dataType: int64
+		formatString: 0
+		lineageTag: 87010e7a-1b73-5571-bf60-9630d8d72829
+		summarizeBy: none
+		sourceColumn: CantidadCompras
+
+	column TotalComprado
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 9c582996-44f0-5702-b945-1e600a11a29c
+		summarizeBy: sum
+		sourceColumn: TotalComprado
+
+	column PromedioCompra
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 2c5f9d64-0fc3-5c1b-aba0-59572379cdcd
+		summarizeBy: sum
+		sourceColumn: PromedioCompra
+
+	partition I1-E07_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="WITH ComprasDocumento AS (#(lf)    SELECT c.CodigoCompra, c.CodigoProveedor,#(lf)           SUM(d.Cantidad * d.CostoUnitario - d.Descuento) AS ImporteCompra#(lf)    FROM dbo.Tbl_Compras AS c#(lf)    JOIN dbo.Tbl_ComprasDetalle AS d ON d.CodigoCompra = c.CodigoCompra#(lf)    WHERE c.Estado = 'Recibida'#(lf)      AND c.FechaCompra >= '20260101' AND c.FechaCompra < '20261001'#(lf)    GROUP BY c.CodigoCompra, c.CodigoProveedor#(lf))#(lf)SELECT pr.CodigoProveedor, pr.Nombre AS Proveedor,#(lf)       COUNT(*) AS CantidadCompras,#(lf)       CAST(ROUND(SUM(cd.ImporteCompra), 2) AS decimal(18,2)) AS TotalComprado,#(lf)       CAST(ROUND(AVG(CAST(cd.ImporteCompra AS decimal(18,4))), 2) AS decimal(18,2)) AS PromedioCompra#(lf)FROM ComprasDocumento AS cd#(lf)JOIN dbo.Tbl_Proveedores AS pr ON pr.CodigoProveedor = cd.CodigoProveedor#(lf)GROUP BY pr.CodigoProveedor, pr.Nombre#(lf)HAVING COUNT(*) >= 2 AND SUM(cd.ImporteCompra) > 1000#(lf)ORDER BY TotalComprado DESC, Proveedor;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

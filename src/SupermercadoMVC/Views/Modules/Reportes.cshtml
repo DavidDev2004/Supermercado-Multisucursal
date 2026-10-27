@@ -1,0 +1,100 @@
+@model ReportesPagina
+@using System.Globalization
+@{
+    ViewData["Title"] = "Reportes";
+    Layout = "_AppLayout";
+    string Money(decimal value) => value.ToString("N2", CultureInfo.GetCultureInfo("es-GT"));
+    var isInventory = Model.Tipo == "inventario";
+    var isBalances = Model.Tipo == "saldos";
+    var isPurchases = Model.Tipo == "compras";
+    var names = new Dictionary<string, string> { ["ventas"] = "Ventas", ["compras"] = "Compras", ["inventario"] = "Inventario", ["saldos"] = "Saldos pendientes" };
+}
+<section class="welcome-row">
+    <div><div class="eyebrow">ANÁLISIS · SOLO CONSULTA</div><h1>Reportes</h1>
+        <p>Ventas, compras, inventario y saldos calculados con datos de SQL Server.</p></div>
+</section>
+<nav class="report-tabs" aria-label="Tipos de reporte">
+    @foreach (var item in names)
+    {
+        <a class="@(Model.Tipo == item.Key ? "active" : "")" asp-controller="Modules" asp-action="Index" asp-route-slug="reportes" asp-route-tipo="@item.Key">@item.Value</a>
+    }
+</nav>
+@if (Model.Error is not null) { <div class="system-alert" role="alert">@Model.Error</div> }
+<section class="catalog-kpis report-kpis" aria-label="Totales filtrados">
+    <article class="mini-kpi"><div><small>Registros · filtros actuales</small><strong>@Model.TotalRegistros</strong></div></article>
+    <article class="mini-kpi"><div><small>@(isBalances ? "Total de ventas" : isInventory ? "Existencias" : "Unidades") · filtros actuales</small><strong>@Money(Model.TotalCantidad)</strong></div></article>
+    <article class="mini-kpi"><div><small>@(isBalances ? "Saldo pendiente" : isInventory ? "Valor de inventario" : "Importe") · filtros actuales</small><strong>Q @Money(Model.TotalImporte)</strong></div></article>
+</section>
+<section class="panel-card catalog-panel">
+    <form method="get" asp-controller="Modules" asp-action="Index" class="filter-bar report-filters">
+        <input type="hidden" name="slug" value="reportes" />
+        <input type="hidden" name="tipo" value="@Model.Tipo" />
+        @if (!isInventory)
+        {
+            <label>Desde <input type="date" name="desde" value="@Model.Desde?.ToString("yyyy-MM-dd")" aria-label="Fecha inicial" /></label>
+            <label>Hasta <input type="date" name="hasta" value="@Model.Hasta?.ToString("yyyy-MM-dd")" aria-label="Fecha final" /></label>
+        }
+        <label>Sucursal <select name="sucursal" class="filter-select"><option value="">Todas</option>
+            @foreach (var option in Model.Sucursales) { <option value="@option.Id" selected="@(Model.Sucursal == option.Id)">@option.Nombre</option> }
+        </select></label>
+        @if (isPurchases)
+        {
+            <label>Proveedor <select name="proveedor" class="filter-select"><option value="">Todos</option>
+                @foreach (var option in Model.Proveedores) { <option value="@option.Id" selected="@(Model.Proveedor == option.Id)">@option.Nombre</option> }
+            </select></label>
+        }
+        @if (Model.Tipo is "ventas" or "saldos")
+        {
+            <label>Cliente <select name="cliente" class="filter-select"><option value="">Todos</option>
+                @foreach (var option in Model.Clientes) { <option value="@option.Id" selected="@(Model.Cliente == option.Id)">@option.Nombre</option> }
+            </select></label>
+        }
+        @if (!isBalances)
+        {
+            <label>Estado <select name="estado" class="filter-select"><option value="">Todos</option>
+                @if (isPurchases) { <option value="Borrador" selected="@(Model.Estado == "Borrador")">Borrador</option><option value="Recibida" selected="@(Model.Estado == "Recibida")">Recibida</option><option value="Anulada" selected="@(Model.Estado == "Anulada")">Anulada</option> }
+                else if (isInventory) { <option value="En nivel" selected="@(Model.Estado == "En nivel")">En nivel</option><option value="Bajo mínimo" selected="@(Model.Estado == "Bajo mínimo")">Bajo mínimo</option><option value="Sin existencias" selected="@(Model.Estado == "Sin existencias")">Sin existencias</option> }
+                else { <option value="Borrador" selected="@(Model.Estado == "Borrador")">Borrador</option><option value="Confirmada" selected="@(Model.Estado == "Confirmada")">Confirmada</option><option value="Anulada" selected="@(Model.Estado == "Anulada")">Anulada</option> }
+            </select></label>
+        }
+        <button type="submit" class="button-secondary">Filtrar</button>
+    </form>
+    <div class="table-heading report-heading"><div><h2>@names[Model.Tipo]</h2><p>@Model.TotalRegistros resultados · página @Model.Pagina de @Model.TotalPaginas</p></div>
+        @if (Model.Error is null)
+        {
+            <a class="button-secondary" asp-controller="Modules" asp-action="Csv" asp-route-tipo="@Model.Tipo"
+               asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")"
+               asp-route-sucursal="@Model.Sucursal" asp-route-proveedor="@Model.Proveedor" asp-route-cliente="@Model.Cliente"
+               asp-route-estado="@Model.Estado">Exportar CSV</a>
+        }
+    </div>
+    <div class="table-responsive"><table class="table data-table report-table"><thead><tr>
+        <th>@(isInventory ? "Último ingreso" : "Fecha")</th><th>@(isInventory ? "Código de barras" : "Número")</th>
+        <th>@(isPurchases ? "Proveedor" : isInventory ? "Producto" : "Cliente")</th><th>Sucursal</th><th>Estado</th>
+        <th>@(isBalances ? "Total venta" : isInventory ? "Existencia" : "Unidades")</th>
+        @if (isInventory || isBalances) { <th>@(isBalances ? "Pagado" : "Costo promedio")</th> }
+        <th>@(isBalances ? "Saldo" : isInventory ? "Valor" : "Importe")</th>
+        <th>@(isInventory ? "Categoría" : "NIT")</th>
+    </tr></thead><tbody>
+        @if (Model.Filas.Count == 0) { <tr><td colspan="@(isInventory || isBalances ? 9 : 8)">No hay resultados para los filtros seleccionados.</td></tr> }
+        @foreach (var row in Model.Filas)
+        {
+            <tr><td>@(row.Fecha?.ToString("dd/MM/yyyy") ?? "—")</td><td><strong>@row.Referencia</strong></td><td>@row.Relacion</td><td>@row.Sucursal</td>
+                <td><span class="report-status">@row.Estado</span></td><td>@(isBalances ? "Q " : "")@Money(row.Cantidad)</td>
+                @if (isInventory || isBalances) { <td>Q @Money(row.Precio)</td> }
+                <td>Q @Money(row.Importe)</td><td>@row.Complemento</td></tr>
+        }
+    </tbody></table></div>
+    <nav class="pagination-row" aria-label="Paginación"><span>@Model.TotalRegistros registros</span><div class="pagination-controls">
+        @if (Model.Pagina > 1)
+        {
+            <a class="page-button" asp-action="Index" asp-route-slug="reportes" asp-route-tipo="@Model.Tipo" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" asp-route-sucursal="@Model.Sucursal" asp-route-proveedor="@Model.Proveedor" asp-route-cliente="@Model.Cliente" asp-route-estado="@Model.Estado" asp-route-pagina="@(Model.Pagina-1)">← Anterior</a>
+        }
+        <span>@Model.Pagina / @Model.TotalPaginas</span>
+        @if (Model.Pagina < Model.TotalPaginas)
+        {
+            <a class="page-button" asp-action="Index" asp-route-slug="reportes" asp-route-tipo="@Model.Tipo" asp-route-desde="@Model.Desde?.ToString("yyyy-MM-dd")" asp-route-hasta="@Model.Hasta?.ToString("yyyy-MM-dd")" asp-route-sucursal="@Model.Sucursal" asp-route-proveedor="@Model.Proveedor" asp-route-cliente="@Model.Cliente" asp-route-estado="@Model.Estado" asp-route-pagina="@(Model.Pagina+1)">Siguiente →</a>
+        }
+    </div></nav>
+</section>
+@section Scripts { <link rel="stylesheet" href="~/css/reportes.css" asp-append-version="true" /> }

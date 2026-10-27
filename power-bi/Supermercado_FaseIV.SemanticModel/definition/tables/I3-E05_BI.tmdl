@@ -1,0 +1,40 @@
+table I3-E05_BI
+	lineageTag: ef0bcf8f-1fa6-59e9-9718-0e393914678b
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: ff90d4c8-a138-5d69-9302-bf03800eaaea
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column CodigoCategoria
+		dataType: int64
+		formatString: 0
+		lineageTag: 066d3515-b72c-5421-b9a6-0df14874cd92
+		summarizeBy: none
+		sourceColumn: CodigoCategoria
+
+	column Producto
+		dataType: string
+		lineageTag: d555091c-f7f5-5978-82ab-c4a200f4ae18
+		summarizeBy: none
+		sourceColumn: Producto
+
+	column PrecioVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: c41483af-ded5-55cb-9fb0-d7bbdad45ff6
+		summarizeBy: sum
+		sourceColumn: PrecioVenta
+
+	partition I3-E05_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT p.CodigoProducto, p.CodigoCategoria, p.Nombre AS Producto,#(lf)       CAST(p.PrecioVenta AS decimal(18,2)) AS PrecioVenta#(lf)FROM dbo.Tbl_Productos AS p#(lf)WHERE p.Estado='Activo'#(lf)  AND p.PrecioVenta > (#(lf)      SELECT AVG(CAST(p2.PrecioVenta AS decimal(18,4)))#(lf)      FROM dbo.Tbl_Productos AS p2#(lf)      WHERE p2.CodigoCategoria=p.CodigoCategoria AND p2.Estado='Activo'#(lf)  )#(lf)ORDER BY p.CodigoCategoria, p.PrecioVenta DESC, p.CodigoProducto;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

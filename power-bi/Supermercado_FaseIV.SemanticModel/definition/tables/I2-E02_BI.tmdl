@@ -1,0 +1,79 @@
+table I2-E02_BI
+	lineageTag: 67108ba8-a5b3-5837-9765-3f4a513cfb79
+
+	column CodigoPago
+		dataType: int64
+		formatString: 0
+		lineageTag: 40309e66-7125-5430-818b-c1c22960f062
+		summarizeBy: none
+		sourceColumn: CodigoPago
+
+	column Comprobante
+		dataType: string
+		lineageTag: 2bb609c2-76aa-5750-bff1-3370b1d557a6
+		summarizeBy: none
+		sourceColumn: Comprobante
+
+	column FechaPago
+		dataType: dateTime
+		lineageTag: d2b40e4c-05c5-5a83-a025-24af6f3103d2
+		summarizeBy: none
+		sourceColumn: FechaPago
+
+	column Anio
+		dataType: int64
+		formatString: 0
+		lineageTag: c8e75d93-9aae-5475-84b3-8f19a1238b54
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column Mes
+		dataType: int64
+		formatString: 0
+		lineageTag: 7cb698f7-b466-5dae-937e-90400d85d4f0
+		summarizeBy: none
+		sourceColumn: Mes
+
+	column MetodoPago
+		dataType: string
+		lineageTag: bffb1004-e66a-5ff8-a427-f6be5f908c8a
+		summarizeBy: none
+		sourceColumn: MetodoPago
+
+	column Autorizacion
+		dataType: string
+		lineageTag: 24df0046-2a90-5bdd-9633-92a2718ba9c8
+		summarizeBy: none
+		sourceColumn: Autorizacion
+
+	column Monto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: ea65ccd2-606e-51f3-a9d7-ccaed7575495
+		summarizeBy: sum
+		sourceColumn: Monto
+
+	column Comision
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 949403fa-f535-52f6-aaf4-31943c14f722
+		summarizeBy: sum
+		sourceColumn: Comision
+
+	column MontoNeto
+		dataType: double
+		formatString: #,0.00
+		lineageTag: fd0174a4-a71b-5507-b06a-9258ffdb38dd
+		summarizeBy: sum
+		sourceColumn: MontoNeto
+
+	partition I2-E02_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    CodigoPago,#(lf)    UPPER(Comprobante) AS Comprobante,#(lf)    FechaPago,#(lf)    YEAR(FechaPago) AS Anio,#(lf)    MONTH(FechaPago) AS Mes,#(lf)    MetodoPago,#(lf)    ISNULL(Autorizacion,'Sin autorizacion') AS Autorizacion,#(lf)    ROUND(Monto,2) AS Monto,#(lf)    ROUND(Comision,2) AS Comision,#(lf)    ROUND(Monto-Comision,2) AS MontoNeto#(lf)FROM Tbl_Pagos#(lf)WHERE Estado='Aplicado'#(lf)    AND FechaPago>='20260701' AND FechaPago<'20261001'#(lf)    AND MetodoPago IN ('Efectivo','Tarjeta') AND Monto>50#(lf)ORDER BY FechaPago DESC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

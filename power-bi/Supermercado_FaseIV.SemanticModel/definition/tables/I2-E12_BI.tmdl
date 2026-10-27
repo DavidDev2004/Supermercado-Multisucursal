@@ -1,0 +1,46 @@
+table I2-E12_BI
+	lineageTag: 3f3e9ece-4448-56a9-aacb-572a902c25d2
+
+	column CodigoVenta
+		dataType: int64
+		formatString: 0
+		lineageTag: 2ef2adeb-1449-5afe-a371-effc1f86ed34
+		summarizeBy: none
+		sourceColumn: CodigoVenta
+
+	column NumeroVenta
+		dataType: string
+		lineageTag: 16debeb3-6292-5977-890a-4b566b7d57bc
+		summarizeBy: none
+		sourceColumn: NumeroVenta
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 99643558-ca18-53ac-b921-b4d8eaab6b1f
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column TotalVenta
+		dataType: double
+		formatString: #,0.00
+		lineageTag: 86b697c9-9d11-5cc0-9db5-476f9c4025b5
+		summarizeBy: sum
+		sourceColumn: TotalVenta
+
+	column NivelVenta
+		dataType: string
+		lineageTag: 043ee31a-e45e-57c1-8506-491ec60530a0
+		summarizeBy: none
+		sourceColumn: NivelVenta
+
+	partition I2-E12_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT#(lf)    V.CodigoVenta,#(lf)    V.NumeroVenta,#(lf)    V.CodigoSucursal,#(lf)    CAST(ROUND(SUM(D.Cantidad*D.PrecioUnitario-D.Descuento),2) AS DECIMAL(18,2)) AS TotalVenta,#(lf)    CASE#(lf)        WHEN SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)<100 THEN 'Baja'#(lf)        WHEN SUM(D.Cantidad*D.PrecioUnitario-D.Descuento)<=500 THEN 'Media'#(lf)        ELSE 'Alta'#(lf)    END AS NivelVenta#(lf)FROM Tbl_Ventas V#(lf)INNER JOIN Tbl_VentasDetalle D ON D.CodigoVenta=V.CodigoVenta#(lf)WHERE V.Estado='Confirmada'#(lf)GROUP BY V.CodigoVenta,V.NumeroVenta,V.CodigoSucursal#(lf)ORDER BY TotalVenta DESC;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,53 @@
+table I3-E12_BI
+	lineageTag: 4b0a2e55-07ab-5535-9b03-4107a07e0134
+
+	column CodigoInventario
+		dataType: int64
+		formatString: 0
+		lineageTag: 211df9d2-54ab-52c4-b64f-6fc3f5dfd4b0
+		summarizeBy: none
+		sourceColumn: CodigoInventario
+
+	column CodigoSucursal
+		dataType: int64
+		formatString: 0
+		lineageTag: 0346787d-48f5-5307-b655-828f3fa616b0
+		summarizeBy: none
+		sourceColumn: CodigoSucursal
+
+	column CodigoProducto
+		dataType: int64
+		formatString: 0
+		lineageTag: daacf058-7920-570e-bfcb-18fe6bee5ec0
+		summarizeBy: none
+		sourceColumn: CodigoProducto
+
+	column FechaUltimoIngreso
+		dataType: dateTime
+		lineageTag: 47afc5bf-28c6-5adf-b557-713fb0ba3d52
+		summarizeBy: none
+		sourceColumn: FechaUltimoIngreso
+
+	column DiasSinIngreso
+		dataType: int64
+		formatString: 0
+		lineageTag: 686e44a9-2399-5570-b846-00b5ae90237c
+		summarizeBy: none
+		sourceColumn: DiasSinIngreso
+
+	column NivelAntiguedad
+		dataType: string
+		lineageTag: ea6fdee9-833e-568b-9ab7-3c1f0f6e52bc
+		summarizeBy: none
+		sourceColumn: NivelAntiguedad
+
+	partition I3-E12_BI = m
+		mode: import
+		source =
+				let
+				    Origen = Sql.Database("localhost,1435", "SupermercadosGuate", [Query="SELECT i.CodigoInventario, i.CodigoSucursal, i.CodigoProducto,#(lf)       i.FechaUltimoIngreso,#(lf)       CASE WHEN i.FechaUltimoIngreso IS NULL THEN NULL#(lf)            ELSE DATEDIFF(DAY,i.FechaUltimoIngreso,'20260930') END AS DiasSinIngreso,#(lf)       CASE WHEN i.FechaUltimoIngreso IS NULL THEN 'Sin ingreso'#(lf)            WHEN DATEDIFF(DAY,i.FechaUltimoIngreso,'20260930')<=30 THEN 'Reciente'#(lf)            WHEN DATEDIFF(DAY,i.FechaUltimoIngreso,'20260930')<=90 THEN 'Intermedio'#(lf)            ELSE 'Antiguo' END AS NivelAntiguedad#(lf)FROM dbo.Tbl_Inventario AS i#(lf)ORDER BY DiasSinIngreso DESC, i.CodigoInventario;"])
+				in
+				    Origen
+
+	annotation PBI_ResultType = Table
+
