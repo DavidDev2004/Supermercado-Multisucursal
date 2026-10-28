@@ -20,6 +20,8 @@ Thumbs.db
 .env
 .env.*
 !.env.example
+deployment/private/
+deployment/tools/
 **/appsettings.*.json
 !**/appsettings.example.json
 !**/appsettings.Development.example.json

@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 using SupermercadoMVC.Data;
 using SupermercadoMVC.Models;
 
@@ -55,11 +57,23 @@ if (args.Contains("--crear-usuario-inicial", StringComparer.Ordinal))
 
 if (!app.Environment.IsDevelopment())
 {
+    // El agente HTTPS local entrega la solicitud a Kestrel por HTTP desde loopback.
+    // Confiar solo en ese proxy permite emitir cookies y redirecciones HTTPS correctas.
+    var forwardedHeaders = new ForwardedHeadersOptions
+    {
+        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+        ForwardLimit = 1
+    };
+    forwardedHeaders.KnownProxies.Add(IPAddress.Loopback);
+    forwardedHeaders.KnownProxies.Add(IPAddress.IPv6Loopback);
+    app.UseForwardedHeaders(forwardedHeaders);
+
     app.UseExceptionHandler("/Home/Error");
     app.UseHttpsRedirection();
     app.UseHsts();
 }
 
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseSession();

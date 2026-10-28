@@ -1,8 +1,8 @@
-# Rediseño visual: avance aislado
+# Rediseño visual responsive
 
 - Rama local: `redisenio-responsive`.
-- Worktree: `C:\Users\html1\.codex\worktrees\redisenio-responsive\BaseDatos_2026`.
-- La aplicación pública y el túnel ngrok continúan en `C:\BaseDatos_2026`; no se sustituyeron ni reiniciaron.
+- El trabajo se desarrolló en un worktree independiente de la carpeta principal.
+- El rediseño se integró en `main` el 27 de octubre de 2026. La aplicación Production se actualizó sin reiniciar el túnel ngrok.
 - Se copiaron al worktree los cambios locales de `.gitignore`, `Program.cs` y `deployment/Demo.ps1` sin copiar `deployment/private`.
 
 ## Implementado
@@ -23,8 +23,14 @@
 - Modales de Clientes, Productos, Compras, Ventas, Pagos y Ajustes abiertos en móvil; se agregó una línea de compra en el formulario sin guardar. El formulario de Pagos conservó método POST y token antiforgery. No hubo solicitudes POST ni cambios de datos.
 - Reportes: se corrigió la altura excesiva de los selectores en móvil; consola del navegador sin errores ni advertencias durante las comprobaciones.
 
-## Pendiente antes de integrar
+## Validación de Production
+
+- La compilación Release terminó con 0 advertencias y 0 errores.
+- El enlace HTTPS conservó su URL y Basic Auth: sin credenciales respondió 401 y con credenciales locales sirvió el login y los recursos CSS/JS del rediseño. No se incluyeron credenciales en este documento.
+- La ruta de Inventario sin sesión del supermercado redirigió al login propio.
+
+## Pendiente de comprobación manual
 
 - Revisión visual manual de los formularios restantes y de casos con tablas extensas en un dispositivo físico.
 - Pruebas funcionales de escritura en un entorno de prueba, si el usuario las autoriza por separado.
-- Aprobación del usuario para integrar la rama; no publicar ni fusionar antes.
+- Comprobar el diseño en iPad y teléfono físicos, y las operaciones de escritura únicamente si se autorizan pruebas de datos por separado.
