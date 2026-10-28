@@ -9,7 +9,8 @@
     const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
     const setMode = mode => {
         const isEdit = mode === 'edit';
-        title.textContent = isEdit ? 'Editar registro' : 'Agregar registro';
+        const singular = modalElement.dataset.singularTitle || 'registro';
+        title.textContent = `${isEdit ? 'Editar' : 'Agregar'} ${singular}`;
         submit.textContent = isEdit ? 'Guardar cambios' : 'Guardar registro';
     };
 

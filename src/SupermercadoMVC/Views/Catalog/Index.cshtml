@@ -94,13 +94,13 @@
 </section>
 
 <div class="modal fade" id="recordModal" tabindex="-1" aria-labelledby="recordModalTitle" aria-hidden="true"
-     data-create-url="@createUrl" data-edit-url-template="@editUrlTemplate" data-id-column="@Model.Definition.IdColumn">
+     data-create-url="@createUrl" data-edit-url-template="@editUrlTemplate" data-id-column="@Model.Definition.IdColumn" data-singular-title="@Model.Definition.SingularTitle">
     <div class="modal-dialog modal-dialog-centered modal-lg"><div class="modal-content">
         <form id="recordForm" method="post" action="@createUrl">
             @Html.AntiForgeryToken()
             <input type="hidden" name="Id" value="@Model.Input.Id" />
             <input type="hidden" name="buscar" value="@Model.Search" /><input type="hidden" name="estado" value="@Model.State" /><input type="hidden" name="pagina" value="@Model.Page" />
-            <div class="modal-header"><div><div class="eyebrow">@Model.Definition.Title.ToUpperInvariant()</div><h2 class="modal-title" id="recordModalTitle">Agregar registro</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
+            <div class="modal-header"><div><div class="eyebrow">@Model.Definition.Title.ToUpperInvariant()</div><h2 class="modal-title" id="recordModalTitle">Agregar @Model.Definition.SingularTitle</h2></div><button type="button" class="modal-close" data-bs-dismiss="modal" aria-label="Cerrar">×</button></div>
             <div class="modal-body">
                 @Html.ValidationSummary(false, "", new { @class = "validation-errors" })
                 <div class="form-grid">
