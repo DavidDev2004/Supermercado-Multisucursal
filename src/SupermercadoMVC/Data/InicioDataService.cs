@@ -89,8 +89,8 @@ public sealed class InicioDataService(DatabaseConnectionFactory connections)
         {
             m.Links.AddRange([new("Clientes", "/catalogos/clientes"), new("Empleados", "/catalogos/empleados"),
                 new("Sucursales", "/catalogos/sucursales"), new("Ventas", "/ventas"), new("Pagos y saldos", "/pagos"),
-                new("Compras", "/compras"), new("Productos", "/productos"), new("Inventario", "/inventario")]);
-            m.Unavailable.Add("Reportes");
+                new("Compras", "/compras"), new("Productos", "/productos"), new("Inventario", "/inventario"),
+                new("Reportes", "/modulos/reportes")]);
         }
         else if (kind == "Bodega")
         {

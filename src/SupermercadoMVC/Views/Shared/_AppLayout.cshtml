@@ -21,11 +21,15 @@
 else
 {
     <div class="app-frame">
-        <aside class="sidebar" id="sidebar">
+        <button class="sidebar-backdrop" id="sidebarBackdrop" type="button" aria-label="Cerrar menú" tabindex="-1" hidden></button>
+        <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+            <div class="sidebar-head">
             <a class="brand" asp-controller="Home" asp-action="Index" aria-label="Supermercado GT, inicio">
                 <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M4 6h3l3.1 14.2a3 3 0 0 0 2.9 2.3h11.2a3 3 0 0 0 2.9-2.2L30 11H9"/><path d="M12 27h.1M24 27h.1M10 11h19"/></svg></span>
                 <span><strong>Supermercado</strong><small>GESTIÓN MULTISUCURSAL</small></span>
             </a>
+            <button class="sidebar-close" type="button" id="menuClose" aria-label="Cerrar menú">×</button>
+            </div>
             <div class="sidebar-label">MENÚ PRINCIPAL</div>
             <nav class="side-nav" aria-label="Navegación principal">
                 <a class="side-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><span class="nav-icon">⌂</span>Inicio</a>
@@ -44,14 +48,14 @@ else
             </nav>
             <div class="sidebar-bottom">
                 <div class="demo-chip"><span></span> Sesión activa</div>
-                <form asp-controller="Access" asp-action="Exit" method="post">@Html.AntiForgeryToken()<button class="side-link signout" type="submit"><span class="nav-icon">↪</span>Salir</button></form>
+                <form asp-controller="Access" asp-action="Exit" method="post">@Html.AntiForgeryToken()<button class="side-link signout" type="submit"><span class="nav-icon" aria-hidden="true">↪</span>Cerrar sesión</button></form>
             </div>
         </aside>
         <div class="main-column">
             <header class="topbar">
-                <button class="mobile-menu" type="button" id="menuToggle" aria-label="Abrir menú">☰</button>
+                <button class="mobile-menu" type="button" id="menuToggle" aria-label="Abrir menú" aria-controls="sidebar" aria-expanded="false"><span aria-hidden="true">☰</span></button>
                 <div class="topbar-kicker">Supermercado GT <span>/</span> @ViewData["Title"]</div>
-                <div class="topbar-right"><span class="today-label">@DateTime.Today.ToString("dddd, dd MMMM", System.Globalization.CultureInfo.GetCultureInfo("es-GT"))</span><div class="avatar" aria-label="Usuario conectado">@((User.Identity?.Name ?? "US").Substring(0, Math.Min(2, (User.Identity?.Name ?? "US").Length)).ToUpperInvariant())</div></div>
+                <div class="topbar-right"><span class="today-label">@DateTime.Today.ToString("dddd, dd MMMM", System.Globalization.CultureInfo.GetCultureInfo("es-GT"))</span><div class="avatar" aria-label="Usuario conectado">@((User.Identity?.Name ?? "US").Substring(0, Math.Min(2, (User.Identity?.Name ?? "US").Length)).ToUpperInvariant())</div><form class="topbar-signout" asp-controller="Access" asp-action="Exit" method="post">@Html.AntiForgeryToken()<button type="submit" aria-label="Cerrar sesión" title="Cerrar sesión"><span aria-hidden="true">↪</span><span class="topbar-signout-label">Cerrar sesión</span></button></form></div>
             </header>
             <main class="page-content" role="main">
                 @if (TempData["Welcome"] is string welcome)
@@ -68,5 +72,6 @@ else
 <script src="~/js/site.js" asp-append-version="true"></script>
 <script src="~/js/app.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
+<link rel="stylesheet" href="~/css/responsive.css" asp-append-version="true" />
 </body>
 </html>

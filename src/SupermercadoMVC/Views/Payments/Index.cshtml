@@ -72,7 +72,6 @@
                 <div class="form-field"><label asp-for="Input.Autorizacion">Autorización (opcional)</label><input asp-for="Input.Autorizacion" class="form-control" maxlength="50" /><span asp-validation-for="Input.Autorizacion" class="field-error"></span></div>
             </div>
             <p class="required-note payments-note">El monto completo abona al cliente. La comisión no se resta. El saldo se verifica nuevamente al guardar.</p>
-            <div class="payments-submit"><button type="submit" class="button-primary">Guardar pago</button></div>
         </form>
         }
         else if (!sale.PuedePagar) { <p class="required-note payments-note">Solo se permiten nuevos pagos para ventas Confirmadas con saldo positivo.</p> }
@@ -86,7 +85,7 @@
         }
         </tbody></table></div>
     </div>
-    <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button></div>
+    <div class="modal-footer"><button type="button" class="button-secondary" data-bs-dismiss="modal">Cerrar</button>@if (Model.Register && sale.PuedePagar) { <button type="submit" form="paymentForm" class="button-primary">Guardar pago</button> }</div>
 </div></div></div>
 }
 @section Scripts {
