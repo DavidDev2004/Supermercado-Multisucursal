@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SupermercadoMVC.Data;
 using SupermercadoMVC.Filters;
+using SupermercadoMVC.Security;
 
 namespace SupermercadoMVC.Controllers;
 
@@ -9,6 +10,8 @@ public sealed class HomeController(DashboardDataService dashboard, ILogger<HomeC
 {
     public async Task<IActionResult> Index(CancellationToken cancellationToken)
     {
+        if (User.IsInRole(RolePermissions.Bodega)) return RedirectToAction("Bodega", "Inicio");
+        if (User.IsInRole(RolePermissions.Caja)) return RedirectToAction("Caja", "Inicio");
         var model = new Models.DashboardViewModel();
         try
         {

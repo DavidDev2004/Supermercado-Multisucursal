@@ -1,10 +1,12 @@
 # Cumplimiento académico y estado de pruebas
 
-**Corte:** 27 de octubre de 2026. Esta auditoría no ejecutó DML, migraciones ni cambios en SQL Server. «Implementado» significa que existen ruta, controlador, vista y servicio; no equivale a prueba funcional completa.
+**Corte vigente:** 7 de noviembre de 2026. La preparación de entrega no ejecutó DML, migraciones ni cambios en SQL Server. Compilación aislada sin errores ni advertencias; 90 comprobaciones HTTP locales sin fallos y contraste de los 31 KPI calculables de BI mediante ocho SELECT independientes. No se repitieron escrituras CRUD ni concurrencia/rollback. [Detalle de resultados y entrega](ENTREGA_20261107.md).
+
+Las tablas de módulos y de pruebas del 27 de octubre que siguen se conservan como evidencia histórica; sus pendientes de conexión y compilación quedan superados por la comprobación anterior. Los pendientes de escritura y de evaluación académica se conservan. Login, roles y BI sí están implementados.
 
 ## Fuentes de requisitos
 
-Se leyeron los tres `01_Proyecto_Final_Integrante_*.docx` y las guías 01–05 en la carpeta local `Downloads`, además de la guía 07 local. Los documentos originales y las imágenes de prototipos se conservan solo localmente; se excluyen del repositorio público por falta de autorización de distribución documentada. Las guías 06 y 08–10 no se encontraron. Los tres PNG específicos de Inicio que nombra la guía 07 tampoco estaban disponibles; se revisaron dos imágenes generales y nueve prototipos de Fase IV locales. El documento de requisitos de Centro Automotriz pertenece a otro proyecto y no se utilizó para esta comparación.
+La auditoría anterior revisó los tres documentos de proyecto de integrantes y las guías 01–05 y 07. Ahora también están disponibles la guía 09, los documentos BI de los tres integrantes y las dos alternativas de guía 10 (Tailscale y Cloudflare Tunnel), leídas para esta preparación. Los originales y prototipos se conservan localmente y se excluyen de Git. Las guías 06 y 08 y los tres PNG específicos de Inicio no se localizaron en el proyecto; no se inventa su cumplimiento. El documento de Centro Automotriz no corresponde a este proyecto.
 
 | Fuente oficial revisada | Requisito principal | Estado comprobable |
 |---|---|---|
@@ -15,7 +17,9 @@ Se leyeron los tres `01_Proyecto_Final_Integrante_*.docx` y las guías 01–05 e
 | Guía 04 | Encabezado/detalle, modales, KPI y transacciones. | Implementado en Compras, Ventas y Ajustes; pruebas transaccionales negativas aún pendientes. |
 | Guía 05 | Integración y matriz de acciones, resultado esperado/obtenido y evidencia. | Existe evidencia parcial en documentación; no hay una matriz completa con capturas de todos los módulos actuales. |
 | Guía 07 | Inicio Administrador/Bodega/Caja, KPI y gráficos SQL y comparación SELECT. | Rutas y código presentes; usuario reportó seis SELECT concordantes. Faltan sus tres prototipos específicos y una inspección visual final. |
-| Guías 06, 08, 09 y 10 | No disponibles. | Cumplimiento no evaluable sin los documentos. |
+| Guías 06 y 08 | No localizadas en el proyecto. | Cumplimiento no evaluable sin los documentos. |
+| Guía 09 y documentos individuales | Nueve módulos BI web, roles y cuatro KPI/cuatro gráficas previstos por módulo. | Rutas y consultas implementadas; 31 KPI calculables contrastados con SQL. M05 completo y M07-E03/M08-E07 pendientes por sus fuentes. Diseños sujetos a aprobación académica. |
+| Guía 10 Tailscale o Cloudflare | Elegir una alternativa; respaldo, permisos y pruebas remotas. | Servidor actual usa ngrok. Falta aceptación docente de esa alternativa o elección/configuración autorizada de una de las dos guías y evidencia desde otra red. Véase ENTREGA_20261107.md. |
 
 ## Módulos MVC
 
@@ -53,8 +57,8 @@ No apareció un proyecto de pruebas automatizadas MVC. El diagnóstico de Invent
 
 ## Pendientes por prioridad
 
-1. **Alta:** obtener las guías 06 y 08–10, completar la matriz de evidencias de la guía 05 y ejecutar una regresión autenticada, sobre todo de Reportes, Productos, Compras y Ajustes. No declarar cumplimiento final antes de ello.
-2. **Alta para publicación pública:** definir hosting y SQL Server accesible con TLS válido, secretos fuera del paquete, protección del login ante intentos repetidos y revisión del acceso por roles si el profesor lo exige. Véase [publicación](PUBLICACION_SEGURIDAD.md).
+1. **Alta:** cerrar la aprobación académica de los diseños y limitaciones BI, obtener guías 06/08 si son exigibles y completar evidencias. Las consultas y rutas HTTP de Reportes, Productos, Compras y Ajustes sí se comprobaron en la preparación final; las escrituras no se repitieron.
+2. **Alta para entrega remota:** confirmar con el docente si ngrok satisface la guía 10; en caso contrario elegir Tailscale o Cloudflare, conservar configuración y comprobar desde otro equipo. Roles ya están implementados y verificados; mantener secretos locales. Véase [publicación](PUBLICACION_SEGURIDAD.md).
 3. **Media:** ejecutar escenarios negativos y de concurrencia/rollback en una copia aislada con datos de prueba y respaldo; la lectura del código no certifica esos flujos.
 4. **Media:** abrir el PBIP final en Power BI Desktop y comprobar los nueve prototipos, refresco y resultados; el validador local cubre únicamente estructura.
-5. **Media:** armonizar `AGENTS.md`, que aún contiene restricciones redactadas para una etapa inicial, con el alcance ya autorizado e implementado. Se conservó sin cambios porque esta auditoría no modifica reglas operativas.
+5. **Entrega:** revisar los cambios locales, autorizar commit/push y actualización de la instancia pública por separado. Esta preparación no los ejecuta ni cambia `AGENTS.md`.

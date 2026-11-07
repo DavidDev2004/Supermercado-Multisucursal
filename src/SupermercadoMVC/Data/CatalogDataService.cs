@@ -60,7 +60,7 @@ public sealed class CatalogDataService(DatabaseConnectionFactory connections)
         {
             command.CommandText = $"SELECT {columns} FROM {definition.Table} WHERE {filter} ORDER BY [{definition.IdColumn}] DESC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY;";
             AddSearchParameters(command, search, state);
-            command.Parameters.Add("@Offset", SqlDbType.Int).Value = (page - 1) * pageSize;
+            command.Parameters.Add("@Offset", SqlDbType.BigInt).Value = ((long)page - 1) * pageSize;
             command.Parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
             await using var reader = await command.ExecuteReaderAsync(cancellationToken);
             while (await reader.ReadAsync(cancellationToken))

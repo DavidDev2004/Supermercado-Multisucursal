@@ -1,15 +1,18 @@
 # Supermercado Multisucursal
 
-Proyecto académico de Base de Datos I: aplicación ASP.NET Core MVC, SQL Server y proyecto Power BI. El código actual incluye autenticación por cookies, catálogos, productos y proveedores, compras, ventas, pagos y saldos, inventario, ajustes, reportes y tres páginas de inicio.
+Proyecto académico de Base de Datos I: aplicación ASP.NET Core MVC, SQL Server y proyecto Power BI. El código actual incluye autenticación por cookies y roles, catálogos, productos y proveedores, compras, ventas, pagos y saldos, inventario, ajustes, reportes, tres páginas de inicio e Inteligencia de Negocios web M01–M09.
 
-## Estado verificado el 27 de octubre de 2026
+## Estado verificado el 7 de noviembre de 2026
 
-- `dotnet build` del proyecto MVC: correcto, sin errores ni advertencias, usando una salida separada porque otra instancia mantenía bloqueado el ejecutable habitual.
-- Validador estructural del PBIP: 9 páginas, 45 visuales de datos, 45 tablas TMDL y navegación interna válida. Power BI Desktop y la actualización de datos no se probaron en esta auditoría.
-- `http://localhost:5193/acceso` respondió HTTP 200 y `/modulos/reportes` redirigió al acceso sin sesión. No se verificaron pantallas autenticadas ni nuevas operaciones de escritura en esta auditoría.
-- Los tres archivos de Fase III contienen 15 ejercicios identificados y únicos cada uno. Las pruebas transaccionales E14/E15 constan en la copia aislada `SupermercadosGuate_PRUEBAS`; no se ejecutaron aquí.
+- Compilación local aislada: 0 errores y 0 advertencias; sintaxis del JavaScript propio correcta.
+- M01–M09: cuatro posiciones KPI y cuatro gráficas por módulo. Los 31 KPI calculables coinciden con ocho SELECT independientes. M05 conserva ocho visuales pendientes; M07-E03 y M08-E07 también permanecen pendientes, con su motivo visible.
+- Roles del servidor: Administrador M01–M09, Caja M01–M03 y Bodega M04–M08. Login y cierre de Bodega/Caja, rutas permitidas/prohibidas, filtros y reportes/CSV: 90 comprobaciones HTTP locales sin fallos. Administrador: consultas de inicio y matriz de permisos comprobadas; no se repitió su login HTTP.
+- Catálogos y módulos principales: consultas reales correctas. No se hicieron altas, ediciones, eliminaciones ni pruebas de concurrencia/rollback sobre la base.
+- Se conserva la evidencia anterior de Power BI y Fase III; no se modificó Power BI ni se repitieron operaciones SQL de escritura.
 
-Consulta [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md) para distinguir implementación, evidencia previa y pruebas pendientes. Los documentos originales de los integrantes, la guía 07 y los prototipos se conservan solo localmente y no se distribuyen en el repositorio. Faltan guías posteriores y pruebas finales para certificar toda la entrega.
+Consulta [la preparación de entrega y guía 10](docs/ENTREGA_20261107.md) y [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md). Las guías 09 y las dos alternativas de guía 10 están disponibles localmente; los originales y prototipos se excluyen de Git. La versión pública no se actualizó y los cambios siguen sin commit ni push.
+
+La etapa posterior autorizada de respaldo, subida y actualización se registra en [Publicación de entrega](docs/PUBLICACION_ENTREGA_20261107.md); ese registro prevalece para conocer el resultado final.
 
 ## Documentación
 
@@ -18,6 +21,7 @@ Consulta [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md) para distinguir 
 - [Base de datos y migraciones](docs/BASE_DATOS.md)
 - [Cumplimiento y pruebas](docs/CUMPLIMIENTO_ACADEMICO.md)
 - [Preparación para publicación](docs/PUBLICACION_SEGURIDAD.md)
+- [Inteligencia de Negocios y limitaciones](docs/inteligencia_negocios/README.md)
 - [Comandos usados durante el proyecto](docs/COMANDOS_RAPIDOS.md)
 
 Para preparar una copia local nueva, sigue [Instalación y ejecución](docs/INSTALACION.md). La plantilla [appsettings.example.json](src/SupermercadoMVC/appsettings.example.json) contiene marcadores, no credenciales; la conexión real se configura con .NET User Secrets. Los respaldos SQL, datos importados de Power BI y archivos de conexión locales quedan fuera del repositorio.

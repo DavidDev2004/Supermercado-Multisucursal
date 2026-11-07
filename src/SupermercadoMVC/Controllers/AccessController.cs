@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using SupermercadoMVC.Data;
 using SupermercadoMVC.Models;
+using SupermercadoMVC.Security;
 
 namespace SupermercadoMVC.Controllers;
 
@@ -40,7 +41,7 @@ public sealed class AccessController(
             var user = await usuarios.ObtenerActivoPorNombreAsync(model.Usuario, ct);
             var result = user is null ? PasswordVerificationResult.Failed :
                 hasher.VerifyHashedPassword(user, user.PasswordHash, model.Password);
-            if (user is null || result == PasswordVerificationResult.Failed)
+            if (user is null || result == PasswordVerificationResult.Failed || !RolePermissions.IsKnown(user.Rol))
             {
                 ModelState.AddModelError("", "Credenciales incorrectas.");
                 return View("Index", model);
@@ -53,7 +54,8 @@ public sealed class AccessController(
             }
             var claims = new[] {
                 new Claim(ClaimTypes.NameIdentifier, user.CodigoUsuario.ToString()),
-                new Claim(ClaimTypes.Name, user.Usuario)
+                new Claim(ClaimTypes.Name, user.Usuario),
+                new Claim(ClaimTypes.Role, user.Rol)
             };
             var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme));
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,
@@ -83,7 +85,20 @@ public sealed class AccessController(
         return RedirectToAction(nameof(Index));
     }
 
-    private IActionResult DestinoLocal(string? returnUrl) =>
-        !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
-            ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
+    [HttpGet("/acceso/denegado")]
+    public IActionResult Denied()
+    {
+        if (User.Identity?.IsAuthenticated != true) return RedirectToAction(nameof(Index));
+        Response.StatusCode = StatusCodes.Status403Forbidden;
+        return View();
+    }
+
+    private IActionResult DestinoLocal(string? returnUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+            return LocalRedirect(returnUrl);
+        if (User.IsInRole(RolePermissions.Bodega)) return RedirectToAction("Bodega", "Inicio");
+        if (User.IsInRole(RolePermissions.Caja)) return RedirectToAction("Caja", "Inicio");
+        return RedirectToAction("Index", "Home");
+    }
 }

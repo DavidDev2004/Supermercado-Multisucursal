@@ -1,15 +1,17 @@
 @model InicioPage
 @using System.Globalization
+@using SupermercadoMVC.Security
 @{
     var colors = new[] { "coral", "turquoise", "navy", "sand", "blue" };
 }
 <div class="inicio-dashboard">
     <section class="welcome-row">
         <div><div class="eyebrow">INICIO · TODAS LAS SUCURSALES</div><h1>@Model.Kind</h1><p>Información consolidada de Supermercado GT.@if (Model.Error is null) { <span> Fecha de consulta: @InicioFormat.Date(Model.Today).</span> }</p></div>
-        <a class="button-secondary inicio-link" asp-controller="Home" asp-action="Index">Inicio general</a>
+        <a class="button-secondary inicio-link" asp-controller="Home" asp-action="Index">Mi inicio</a>
     </section>
     <nav class="inicio-switcher" aria-label="Páginas de inicio">
         @foreach (var destination in new[] { "Administrador", "Bodega", "Caja" }) {
+            if (!User.IsInRole(RolePermissions.Administrador) && !User.IsInRole(destination)) continue;
             <a class="button-secondary inicio-link @(destination == Model.Kind ? "inicio-selected" : "")" href="/Inicio/@destination" aria-current="@(destination == Model.Kind ? "page" : null)">@destination</a>
         }
     </nav>

@@ -1,5 +1,6 @@
 @model ReportesPagina
 @using System.Globalization
+@using SupermercadoMVC.Security
 @{
     ViewData["Title"] = "Reportes";
     Layout = "_AppLayout";
@@ -16,6 +17,7 @@
 <nav class="report-tabs" aria-label="Tipos de reporte">
     @foreach (var item in names)
     {
+        if (!RolePermissions.CanViewReport(User, item.Key)) continue;
         <a class="@(Model.Tipo == item.Key ? "active" : "")" asp-controller="Modules" asp-action="Index" asp-route-slug="reportes" asp-route-tipo="@item.Key">@item.Value</a>
     }
 </nav>

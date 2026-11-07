@@ -19,3 +19,37 @@ CREATE TABLE dbo.Tbl_Usuarios
     Estado NVARCHAR(20) NOT NULL CONSTRAINT DF_Usuarios_Estado DEFAULT N'Activo'
 );
 GO
+
+
+USE SupermercadosGuate;
+
+SELECT CodigoUsuario, Usuario, Estado
+FROM dbo.Tbl_Usuarios;
+
+USE SupermercadosGuate;
+
+SELECT Existencia, CostoPromedio
+FROM dbo.Tbl_Inventario
+WHERE CodigoSucursal = 1
+  AND CodigoProducto = 6;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  USE SupermercadosGuate;
+
+SELECT Existencia, CostoPromedio
+FROM dbo.Tbl_Inventario
+WHERE CodigoSucursal = 1
+  AND CodigoProducto = 6;

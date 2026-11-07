@@ -1,4 +1,4 @@
-﻿# Comandos rápidos
+# Comandos rápidos
 
 Registro de comandos reales usados para preparar este proyecto. Las rutas indican el directorio desde el que se ejecutaron. No se incluyen secretos.
 
@@ -201,3 +201,42 @@ Comandos realmente utilizados. La conexión SQL se tomó de User Secrets en memo
 - Misma ruta: csc.dll con @bin/InventarioCheck/ReadOnlyAudit.rsp y dotnet exec --runtimeconfig bin/InventarioCheck/SupermercadoMVC.runtimeconfig.json --depsfile bin/InventarioCheck/SupermercadoMVC.deps.json bin/InventarioCheck/ReadOnlyAudit.dll — diagnóstico en bin ignorado, únicamente SELECT de Inventario y catálogos; KPI, nueve páginas, sucursales, categorías y filtros concordaron con SELECT independientes. No se imprimieron secretos.
 - Misma ruta: ASPNETCORE_ENVIRONMENT=Development temporal y dotnet .\bin\InventarioCheck\SupermercadoMVC.dll --urls http://localhost:5193 — reemplazó solo la instancia temporal anterior de 5193 para navegar; 5192 no fue sustituida.
 - Ruta C:\BaseDatos_2026: HttpClient con AllowAutoRedirect=false a /inventario, /modulos/inventario, rutas anteriores, /css/inventario.css y /acceso — módulos protegidos 302 al login; recurso y acceso 200. Navegador confirmó la redirección a acceso sin sesión válida.
+
+## Inteligencia de Negocios M01–M03 (2026-11-07)
+
+- Ruta C:\BaseDatos_2026: rg --files docs/documentos-oficiales y Get-Content database/01_Crear_Base_Datos.sql — lectura de guías y esquema.
+- Ruta C:\BaseDatos_2026: dotnet build src/SupermercadoMVC/SupermercadoMVC.csproj -c Debug --no-restore -o src/SupermercadoMVC/bin/BiCheck — 0 errores, 0 advertencias.
+- Ruta C:\BaseDatos_2026: node --check src/SupermercadoMVC/wwwroot/js/business-intelligence.js — sintaxis correcta.
+- Ruta C:\BaseDatos_2026\src\SupermercadoMVC: dotnet .\bin\BiCheck\SupermercadoMVC.dll con entorno Development y URL 127.0.0.1:5201 — vista previa aislada; Production sin reiniciar.
+- Ruta C:\BaseDatos_2026: Invoke-WebRequest con WebRequestSession — login demo, GET de M01–M03, filtros y bloqueo 403; contraseña recuperada en memoria desde almacén cifrado, nunca registrada.
+- Ruta C:\BaseDatos_2026: sqlcmd -S <servidor local> -d SupermercadosGuate -U <usuario local> -C -b -h -1 -W -Q <SELECT> — contraste independiente de KPI; SQLCMDPASSWORD temporal en memoria y borrada al terminar. Solo SELECT.
+
+## Inteligencia de Negocios M04–M06 (2026-11-07)
+
+- Desde `C:\BaseDatos_2026`: `rg --files docs/documentos-oficiales docs/inteligencia_negocios` y `Get-Content database/01_Crear_Base_Datos.sql` — localizar la guía 09, matrices y comprobar columnas reales.
+- Desde `C:\BaseDatos_2026`: Python estándar con `zipfile` y `xml.etree.ElementTree` — leer el DOCX oficial del integrante 2 sin extraer ni modificar archivos.
+- Desde `C:\BaseDatos_2026`: `dotnet build src/SupermercadoMVC/SupermercadoMVC.csproj -c Debug --no-restore -o src/SupermercadoMVC/bin/BiCheckM456` — compilación aislada, 0 errores y 0 advertencias. El primer intento a `bin/BiCheck` encontró el DLL ocupado por la vista previa anterior; no se tocó esa instancia.
+- Desde `C:\BaseDatos_2026\src\SupermercadoMVC`: `dotnet .\bin\BiCheckM456\SupermercadoMVC.dll` con `ASPNETCORE_ENVIRONMENT=Development` y `ASPNETCORE_URLS=http://127.0.0.1:5202` temporales — vista previa aislada; se detuvo y reinició únicamente 5202 tras la última compilación.
+- Desde `C:\BaseDatos_2026`: `Invoke-WebRequest` con sesión web — GET autenticados de M04–M06, filtros, roles y validación; credenciales demo recuperadas solo en memoria de almacén local cifrado, nunca registradas.
+- Desde `C:\BaseDatos_2026`: `sqlcmd -S <servidor local> -d SupermercadosGuate -U <usuario local> -C -b -h -1 -W -Q <SELECT>` — diagnóstico de fechas/costos y contraste independiente de KPI. La contraseña se asignó temporalmente a `SQLCMDPASSWORD` y se restauró al finalizar. Solo SELECT, sin DML.
+
+## Inteligencia de Negocios M07–M09 (2026-11-07)
+
+- Ruta `C:\BaseDatos_2026`: `git status --short` — inspeccionar cambios locales; no se hizo commit ni push.
+- Ruta `C:\BaseDatos_2026`: `dotnet restore src/SupermercadoMVC/SupermercadoMVC.csproj --ignore-failed-sources` — reparar `obj/project.assets.json` tras un diagnóstico temporal fallido; sin cambiar orígenes NuGet globales.
+- Ruta `C:\BaseDatos_2026`: `dotnet build src/SupermercadoMVC/SupermercadoMVC.csproj -c Debug --no-restore -o src/SupermercadoMVC/bin/BiCheckM789Final` — verificación final, 0 errores y 0 advertencias.
+- Ruta `C:\BaseDatos_2026`: `node --check src/SupermercadoMVC/wwwroot/js/business-intelligence.js` — validar sintaxis del JavaScript de BI.
+- Ruta `C:\BaseDatos_2026`: `dotnet build src/SupermercadoMVC/SupermercadoMVC.csproj -c Debug --no-restore -o src/SupermercadoMVC/bin/BiCheckM789Final2` — repetir compilación tras corregir la agrupación geográfica de M02, 0 errores y 0 advertencias.
+- Ruta `C:\BaseDatos_2026\src\SupermercadoMVC`: `dotnet .\bin\BiCheckM789Final2\SupermercadoMVC.dll` con `ASPNETCORE_ENVIRONMENT=Development` y `ASPNETCORE_URLS=http://127.0.0.1:5203` temporales — reiniciar solo la vista previa para la comprobación visual; Production no se reinició.
+- Ruta `C:\BaseDatos_2026`: `rg -n "Plazo|Entrega|Days|E08" src/SupermercadoMVC/Data/BusinessIntelligencePurchasing.cs` — revisar la diferencia entre plazo real del KPI y plazo estimado de la gráfica M08.
+
+## Preparación de entrega 2026-11-07
+
+- `dotnet build src/SupermercadoMVC/SupermercadoMVC.csproj -c Debug --no-restore -o src/SupermercadoMVC/bin/RevisionEntrega20261107` — 0 errores y 0 advertencias.
+- Diagnóstico local `DeliveryAudit.cs`, compilado con csc y referencias existentes: consultas de los nueve BI, 31 KPI contra ocho SELECT independientes, catálogos y módulos principales; permisos y antiforgery. Solo lectura SQL.
+- `RunDeliveryAudit.ps1` en la carpeta ignorada anterior: instancia temporal en 5207, hashes demo comprobados en memoria antes de login para evitar rehash; 90 verificaciones HTTP sin fallos. Instancia temporal detenida al terminar.
+- `node --check` de cada script propio — sintaxis correcta.
+- `dotnet publish src/SupermercadoMVC/SupermercadoMVC.csproj -c Release --no-restore -p:OutputPath=bin/EntregaBuild20261107/ -o src/SupermercadoMVC/bin/EntregaPublicable20261107` — candidato local separado; no reemplaza la aplicación activa.
+- `CheckDeliveryPackage.ps1` local: paquete Production separado con login y CSS/JS BI HTTP 200; sin acceso BI anónimo. Escaneo de secretos conocidos sin coincidencias en 441 archivos de texto. Sitio existente con 401 anónimo y 200 con Basic Auth; mismo PID 8632 y hashes privados/User Secrets conservados. No se mostraron claves.
+- `git ls-remote --exit-code origin HEAD` — acceso de lectura correcto; no certifica permiso de push. `git diff --check` y exclusiones locales revisados. Sin commit, push, migraciones, DML ni despliegue.
+- Se extrajo solo texto de las dos guías 10 DOCX con ZipFile/XML. Pendientes y procedimiento de entrega en `docs/ENTREGA_20261107.md`.

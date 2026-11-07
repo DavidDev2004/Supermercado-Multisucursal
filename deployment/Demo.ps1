@@ -97,8 +97,9 @@ switch ($Action) {
     'Start' {
         if (-not (Test-Path -LiteralPath $credentialFile)) { throw 'Faltan las credenciales Basic Auth. Usa -Action PrepareBasic.' }
         if (-not (Test-Path -LiteralPath $tokenFile)) { throw 'Falta el authtoken local. Usa -Action ConfigureToken.' }
-        $sql = @(docker ps --filter 'name=^/sqlserver_basedatos$' --format '{{.Names}}')
-        if ($sql -notcontains 'sqlserver_basedatos') { docker start sqlserver_basedatos | Out-Null }
+        $sqlName = 'sqlserver_basedatos_ipv4_only'
+        $sql = @(docker ps --filter "name=^/$sqlName$" --format '{{.Names}}')
+        if ($sql -notcontains $sqlName) { docker start $sqlName | Out-Null }
         if ((Get-LocalHttpStatus) -ne 200) {
             if (-not (Test-Path -LiteralPath $appDll)) { throw "Falta la compilación Release: $appDll" }
             $projectFile = Join-Path $appDir 'SupermercadoMVC.csproj'

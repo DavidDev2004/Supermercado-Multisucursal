@@ -1,0 +1,23 @@
+# Validación local de Inteligencia de Negocios M07–M09
+
+Fecha: 2026-11-07. Las matrices y diseños SVG siguen identificados como **BORRADOR**. Se utilizó la vista previa local `127.0.0.1:5203`; la aplicación Production y ngrok no se reiniciaron ni actualizaron.
+
+| Módulo | Implementación y datos | Pruebas ejecutadas | Pendiente |
+|---|---|---|---|
+| M07 Compras y Abastecimiento | Cuatro posiciones KPI y cuatro gráficas; tres KPI con cifra real. Total de compras Recibidas Q8,382.50, cinco órdenes y cuatro compras Recibidas en el período inicial. | SELECT independiente para las cifras principales; HTTP autenticado Bodega 200, Caja 403; navegador con Administrador: indicadores, cuatro gráficas, filtro de proveedor y filtro desde gráfica de sucursal. | E03 «Compras Pendientes»: `Borrador` no acredita una orden formal pendiente de recepción. |
+| M08 Proveedores y Costos de Adquisición | Cuatro KPI con cifra real y cuatro posiciones de gráfica; tres gráficas con datos. Seis proveedores activos, 13 productos relacionados, costo neto ponderado Q10.48 y plazo real promedio 2.8 días en la vista inicial. | SELECT independiente para las cifras principales; HTTP autenticado Bodega 200, Caja 403; navegador con Administrador: indicadores, gráficas, filtro de proveedor (el costo pasó a Q17.69 y el plazo real a 2.0 días). | E07 comparación de costos de referencia: no existe moneda ni tipo de cambio en `Tbl_ProductoProveedor`. E08 usa el **plazo estimado** de la relación, distinto del KPI E04 que usa días reales. |
+| M09 Gestión y Desempeño de Sucursales | Cuatro KPI y cuatro gráficas con datos. Cinco sucursales activas, ventas Q4,805.00, compras Recibidas Q3,822.50 y 12 empleados activos en el período inicial. | SELECT independiente para las cifras principales; HTTP autenticado Administrador 200, Bodega y Caja 403; navegador con Administrador: indicadores, gráficas y filtro de departamento. | Revisión académica de la matriz/diseño borrador. |
+
+En el navegador integrado se abrieron **M01–M09** con la sesión de Administrador facilitada por el usuario. Se inspeccionaron capturas de todas las páginas en escritorio (1440 px) y móvil (390 px), incluyendo la zona de gráficas; M08 también se revisó a 768 px y M07 a 1024 px. El menú móvil abrió/cerró y dejó visible «Cerrar sesión». Los filtros M07, M08 y M09 cambiaron la URL y las cifras; una gráfica M07 activó el filtro de sucursal. No se observó desbordamiento horizontal del documento ni errores JavaScript en la consola revisada. No se ejecutó cierre de sesión para conservar la sesión de pruebas.
+
+La revisión detectó que M02 mostraba «Santa Rosa» y «santa rosa» en dos porciones de su gráfica geográfica. Se corrigió solamente la agrupación de esa gráfica para ignorar mayúsculas y minúsculas; el navegador volvió a mostrar una sola porción «Santa Rosa» con dos compradores, conservando el total de nueve. No se modificaron los datos originales.
+
+M05 conserva las ocho posiciones como **Pendiente**: falta un historial confiable de movimientos, fecha de confirmación de ventas y fechas/costos históricos de ajustes antiguos. M07-E03 y M08-E07 también presentan su limitación en la interfaz en vez de mostrar cifras inventadas. Los resultados de las gráficas se revisaron visualmente y por consistencia con los totales; **no** se contrastó cada punto de todas las gráficas con un SELECT independiente. Los diseños siguen pendientes de aprobación académica. No se ejecutó DML, migración, commit ni publicación.
+
+Compilación final: `dotnet build ... -c Debug --no-restore -o .../bin/BiCheckM789Final2`, 0 errores y 0 advertencias. `node --check` del JavaScript de BI finalizó correctamente. Una restauración local de dependencias corrigió un archivo `obj/project.assets.json` alterado por un diagnóstico temporal; la compilación final pasó sin cambiar configuración global ni código de otros módulos.
+
+### Repetición automática final
+
+Se recompiló la misma fuente a `bin/BiCheckM789Final3`: 0 errores, 0 advertencias. `node --check` pasó y `GET /acceso` respondió 200 tanto en la vista previa 5203 como en Production 5197. Sin usar el navegador, dos sesiones HTTP con cuentas demo locales cifradas verificaron: Bodega 200 en M04/M07/M08 y 403 en M01/M09; Caja 200 en M01 y 403 en M04/M07/M08/M09. Todas las páginas permitidas devolvieron cuatro tarjetas KPI, cuatro paneles de gráfica y ningún mensaje de error SQL.
+
+Once SELECT agregados independientes, sin DML, repitieron los valores de M07 (Q8,382.50; 5; 4), M08 (6; 13; Q10.48; 2.8 días) y M09 (5; Q4,805.00; Q3,822.50; 12). Las posiciones pendientes conservan su explicación y no se contabilizan como datos reales. La versión publicada no se reemplazó.

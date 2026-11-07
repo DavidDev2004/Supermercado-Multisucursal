@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
+using System.Security.Claims;
 using SupermercadoMVC.Data;
 using SupermercadoMVC.Models;
+using SupermercadoMVC.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +24,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/acceso";
+        options.AccessDeniedPath = "/acceso/denegado";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
         options.Cookie.Name = ".SupermercadoGT.Auth";
@@ -28,6 +32,33 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.IsEssential = true;
+        options.Events.OnValidatePrincipal = async context =>
+        {
+            var idText = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = context.Principal?.FindFirstValue(ClaimTypes.Role);
+            if (!int.TryParse(idText, out var id) || !RolePermissions.IsKnown(role))
+            {
+                context.RejectPrincipal();
+                await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return;
+            }
+            try
+            {
+                var account = await context.HttpContext.RequestServices
+                    .GetRequiredService<UsuarioRepository>()
+                    .ObtenerActivoPorIdAsync(id, context.HttpContext.RequestAborted);
+                if (account is not null && account.Rol == role &&
+                    account.Usuario == context.Principal?.Identity?.Name) return;
+            }
+            catch (Exception error) when (error is not OperationCanceledException)
+            {
+                context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("CookieValidation")
+                    .LogWarning("No se pudo validar la sesión: {Type}.", error.GetType().Name);
+            }
+            context.RejectPrincipal();
+            await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        };
     });
 builder.Services.AddAuthorization();
 builder.Services.AddScoped<SupermercadoMVC.Data.DatabaseConnectionFactory>();
@@ -41,8 +72,10 @@ builder.Services.AddScoped<SupermercadoMVC.Data.ProductosDataService>();
 builder.Services.AddScoped<SupermercadoMVC.Data.InventarioDataService>();
 builder.Services.AddScoped<SupermercadoMVC.Data.PaymentsDataService>();
 builder.Services.AddScoped<SupermercadoMVC.Data.ReportesDataService>();
+builder.Services.AddScoped<SupermercadoMVC.Data.BusinessIntelligenceDataService>();
 builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<UsuarioInicialProvisioner>();
+builder.Services.AddScoped<DemoUsersProvisioner>();
 builder.Services.AddScoped<IPasswordHasher<UsuarioAuth>, PasswordHasher<UsuarioAuth>>();
 builder.Services.AddScoped<SupermercadoMVC.Filters.DemoSessionFilter>();
 
@@ -52,6 +85,15 @@ if (args.Contains("--crear-usuario-inicial", StringComparer.Ordinal))
 {
     using var scope = app.Services.CreateScope();
     await scope.ServiceProvider.GetRequiredService<UsuarioInicialProvisioner>().CrearAsync();
+    return;
+}
+
+if (args.Contains("--provisionar-demo", StringComparer.Ordinal))
+{
+    var db = args.FirstOrDefault(arg => arg.StartsWith("--esperar-base=", StringComparison.Ordinal))?
+        ["--esperar-base=".Length..] ?? "";
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<DemoUsersProvisioner>().CrearAsync(db);
     return;
 }
 
@@ -81,6 +123,7 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapControllerRoute("access", "acceso", new { controller = "Access", action = "Index" });
+app.MapControllerRoute("access-denied", "acceso/denegado", new { controller = "Access", action = "Denied" });
 app.MapControllerRoute("catalog", "catalogos/{slug}/{action=Index}/{id?}", new { controller = "Catalog" });
 app.MapControllerRoute(
     name: "default",

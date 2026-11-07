@@ -1,6 +1,6 @@
 # Integración del Login (2026-10-25)
 
-> Registro histórico de la etapa inicial. En esa fecha la migración 03 estaba pendiente. Documentación posterior indica que `Tbl_Usuarios` fue instalada y se observó un usuario activo; la auditoría del 2026-10-27 no pudo reconfirmar SQL Server. Para el estado y las pruebas vigentes, consulta [Cumplimiento académico](CUMPLIMIENTO_ACADEMICO.md).
+> Registro histórico de la etapa inicial: sus pasos de instalación pendientes no describen el estado actual. Al 2026-11-07 Login y roles ya existen; se reconfirmaron lectura SQL, login y cierre HTTP de Bodega/Caja. No ejecutar otra vez las migraciones por este documento. Para el estado vigente consulta [Entrega](ENTREGA_20261107.md) y [Roles](ROLES_PERMISOS.md).
 
 ## Procedencia y alcance
 

@@ -1,6 +1,10 @@
+@using SupermercadoMVC.Security
 @{
     var standalone = ViewData["Standalone"] is true;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
+    var admin = User.IsInRole(RolePermissions.Administrador);
+    var bodega = User.IsInRole(RolePermissions.Bodega);
+    var caja = User.IsInRole(RolePermissions.Caja);
 }
 <!DOCTYPE html>
 <html lang="es">
@@ -33,18 +37,47 @@ else
             <div class="sidebar-label">MENÚ PRINCIPAL</div>
             <nav class="side-nav" aria-label="Navegación principal">
                 <a class="side-link @(controller == "Home" ? "active" : "")" asp-controller="Home" asp-action="Index"><span class="nav-icon">⌂</span>Inicio</a>
-                <a class="side-link @(Context.Request.Path.Value?.Contains("sucursales", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="sucursales"><span class="nav-icon">▦</span>Sucursales</a>
+                @if (admin) { <a class="side-link @(Context.Request.Path.Value?.Contains("sucursales", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="sucursales"><span class="nav-icon">▦</span>Sucursales</a> }
+                @if (admin || bodega) {
                 <a class="side-link @(Context.Request.Path.Value?.Contains("categorias", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="categorias"><span class="nav-icon">◇</span>Categorías</a>
                 <a class="side-link @(controller == "Productos" ? "active" : "")" asp-controller="Productos" asp-action="Index"><span class="nav-icon">▣</span>Productos</a>
                 <a class="side-link @(Context.Request.Path.Value?.Contains("proveedores", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="proveedores"><span class="nav-icon">♧</span>Proveedores</a>
+                }
+                @if (admin || caja) {
                 <a class="side-link @(Context.Request.Path.Value?.Contains("clientes", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="clientes"><span class="nav-icon">♙</span>Clientes</a>
-                <a class="side-link @(Context.Request.Path.Value?.Contains("empleados", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="empleados"><span class="nav-icon">♙</span>Empleados</a>
+                }
+                @if (admin) { <a class="side-link @(Context.Request.Path.Value?.Contains("empleados", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Catalog" asp-action="Index" asp-route-slug="empleados"><span class="nav-icon">♙</span>Empleados</a> }
+                @if (admin || bodega) {
                 <a class="side-link @(controller == "Compras" ? "active" : "")" asp-controller="Compras" asp-action="Index"><span class="nav-icon">⇣</span>Compras</a>
+                }
+                @if (admin || caja) {
                 <a class="side-link @(controller == "Sales" ? "active" : "")" asp-controller="Sales" asp-action="Index"><span class="nav-icon">⌁</span>Ventas</a>
                 <a class="side-link @(controller == "Payments" ? "active" : "")" asp-controller="Payments" asp-action="Index"><span class="nav-icon">＄</span>Pagos y saldos</a>
+                }
+                @if (admin || bodega) {
                 <a class="side-link @(controller == "Inventario" ? "active" : "")" asp-controller="Inventario" asp-action="Index"><span class="nav-icon">▤</span>Inventario</a>
                 <a class="side-link @(controller == "Ajustes" ? "active" : "")" asp-controller="Ajustes" asp-action="Index"><span class="nav-icon">⇄</span>Ajustes de inventario</a>
-                <a class="side-link @(controller == "Modules" && Context.Request.Path.Value?.Contains("reportes", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Modules" asp-action="Index" asp-route-slug="reportes"><span class="nav-icon">◷</span>Reportes</a>
+                }
+                <a class="side-link @(controller == "Modules" && Context.Request.Path.Value?.Contains("reportes", StringComparison.OrdinalIgnoreCase) == true ? "active" : "")" asp-controller="Modules" asp-action="Index" asp-route-slug="reportes" asp-route-tipo="@RolePermissions.DefaultReport(User)"><span class="nav-icon">◷</span>Reportes</a>
+                @if (admin || caja || bodega) {
+                <details class="bi-menu" @(controller == "BusinessIntelligence" ? "open" : "")><summary class="side-link @(controller == "BusinessIntelligence" ? "active" : "")"><span class="nav-icon">◫</span>Inteligencia de Negocios</summary>
+                    @if (admin || caja) {
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m01">M01 · Ventas y tendencias</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m02">M02 · Clientes y compras</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m03">M03 · Cobros y pagos</a>
+                    }
+                    @if (admin || bodega) {
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m04">M04 · Existencias</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m05">M05 · Movimientos</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m06">M06 · Reposición</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m07">M07 · Compras</a>
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m08">M08 · Proveedores</a>
+                    }
+                    @if (admin) {
+                    <a class="side-link bi-sub-link" href="/inteligencia-negocios/m09">M09 · Sucursales</a>
+                    }
+                </details>
+                }
             </nav>
             <div class="sidebar-bottom">
                 <div class="demo-chip"><span></span> Sesión activa</div>

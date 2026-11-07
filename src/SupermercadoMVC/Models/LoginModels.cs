@@ -8,6 +8,7 @@ public sealed class UsuarioAuth
     public int CodigoUsuario { get; init; }
     public string Usuario { get; init; } = "";
     public string PasswordHash { get; init; } = "";
+    public string Rol { get; init; } = "";
 }
 
 public sealed class LoginViewModel

@@ -1,0 +1,116 @@
+@model BiPage
+@using System.Globalization
+@{
+    Layout = "_AppLayout";
+    ViewData["Title"] = Model.Title;
+    var gt = CultureInfo.GetCultureInfo("es-GT");
+    var colors = new[] { "#26aa9b", "#fb7868", "#173b54", "#77b9db", "#d7ac60", "#8b80be" };
+    var admin = User.IsInRole("Administrador");
+    var caja = User.IsInRole("Caja");
+    var bodega = User.IsInRole("Bodega");
+    string Format(decimal v, string kind) => kind == "money" ? "Q " + v.ToString("N2", gt) :
+        kind == "days" ? v.ToString("N1", gt) + " días" : v.ToString(kind == "integer" ? "N0" : "N2", gt);
+}
+<link rel="stylesheet" href="~/css/business-intelligence.css" asp-append-version="true" />
+<div class="bi-page">
+    <header class="bi-heading"><div><span class="eyebrow">INTELIGENCIA DE NEGOCIOS · @Model.Module.ToUpperInvariant()</span><h1>@Model.Title</h1><p>@Model.Description</p></div><button type="button" class="button-secondary" onclick="window.print()">Imprimir resumen</button></header>
+    <nav class="bi-tabs" aria-label="Módulos BI">
+        @if(admin || caja){<a class="@(Model.Module == "m01" ? "current" : "")" href="/inteligencia-negocios/m01">M01 · Ventas</a><a class="@(Model.Module == "m02" ? "current" : "")" href="/inteligencia-negocios/m02">M02 · Clientes</a><a class="@(Model.Module == "m03" ? "current" : "")" href="/inteligencia-negocios/m03">M03 · Cobros</a>}
+        @if(admin || bodega){<a class="@(Model.Module == "m04" ? "current" : "")" href="/inteligencia-negocios/m04">M04 · Existencias</a><a class="@(Model.Module == "m05" ? "current" : "")" href="/inteligencia-negocios/m05">M05 · Movimientos</a><a class="@(Model.Module == "m06" ? "current" : "")" href="/inteligencia-negocios/m06">M06 · Reposición</a>}
+        @if(admin || bodega){<a class="@(Model.Module == "m07" ? "current" : "")" href="/inteligencia-negocios/m07">M07 · Compras</a><a class="@(Model.Module == "m08" ? "current" : "")" href="/inteligencia-negocios/m08">M08 · Proveedores</a>}
+        @if(admin){<a class="@(Model.Module == "m09" ? "current" : "")" href="/inteligencia-negocios/m09">M09 · Sucursales</a>}
+    </nav>
+    <form method="get" id="biFilters" class="panel-card bi-filters">
+        @if(Model.Module != "m04"){
+            <label>Desde<input type="date" name="Desde" value="@Model.Filter.Desde?.ToString("yyyy-MM-dd")" /></label>
+            <label>Hasta<input type="date" name="Hasta" value="@Model.Filter.Hasta?.ToString("yyyy-MM-dd")" /></label>
+        }
+        <label>Sucursal<select name="Sucursal"><option value="">Todas</option>@foreach(var o in Model.Sucursales){<option value="@o.Value" selected="@(o.Value == Model.Filter.Sucursal?.ToString())">@o.Label</option>}</select></label>
+        @if(Model.Module is "m01" or "m04" or "m06" or "m07" or "m08"){
+            @if(Model.Module != "m07"){
+            <label>Categoría<select name="Categoria"><option value="">Todas</option>@foreach(var o in Model.Categorias){<option value="@o.Value" selected="@(o.Value == Model.Filter.Categoria?.ToString())">@o.Label</option>}</select></label>
+            }
+            <label>Producto<select name="Producto"><option value="">Todos</option>@foreach(var o in Model.Productos){<option value="@o.Value" selected="@(o.Value == Model.Filter.Producto?.ToString())">@o.Label</option>}</select></label>
+        }
+        @if(Model.Module is "m07" or "m08"){
+            <label>Proveedor<select name="Proveedor"><option value="">Todos</option>@foreach(var o in Model.Proveedores){<option value="@o.Value" selected="@(o.Value == Model.Filter.Proveedor?.ToString())">@o.Label</option>}</select></label>
+        }
+        @if(Model.Module is "m08" or "m09"){
+            <label>Departamento<select name="Departamento"><option value="">Todos</option>@foreach(var o in Model.Departamentos){<option value="@o.Value" selected="@(o.Value == Model.Filter.Departamento)">@o.Label</option>}</select></label>
+        }
+        @if(Model.Module == "m07"){
+            <label>Estado<select name="Estado"><option value="">Todos</option>@foreach(var o in Model.Estados){<option value="@o.Value" selected="@(o.Value == Model.Filter.Estado)">@o.Label</option>}</select></label>
+        }
+        @if(Model.Module is "m01" or "m07" or "m08"){
+            <label>Top<select name="Top"><option value="5" selected="@(Model.Filter.Top==5)">5</option><option value="10" selected="@(Model.Filter.Top==10)">10</option><option value="15" selected="@(Model.Filter.Top==15)">15</option></select></label>
+        }
+        @if(Model.Module == "m04"){
+            <label>Condición de stock<select name="CondicionStock"><option value="">Todas</option>@foreach(var state in new[]{"Normal","Bajo Mínimo","Sin Stock"}){<option value="@state" selected="@(state == Model.Filter.CondicionStock)">@state</option>}</select></label>
+        }
+        @if(Model.Module == "m02"){
+            <label>Departamento<select name="Departamento"><option value="">Todos</option>@foreach(var o in Model.Departamentos){<option value="@o.Value" selected="@(o.Value == Model.Filter.Departamento)">@o.Label</option>}</select></label>
+            <label>Municipio<select name="Municipio"><option value="">Todos</option>@foreach(var o in Model.Municipios){<option value="@o.Value" selected="@(o.Value == Model.Filter.Municipio)">@o.Label</option>}</select></label>
+        }
+        @if(Model.Module == "m03"){
+            <label>Método<select name="Metodo"><option value="">Todos</option>@foreach(var o in Model.Metodos){<option value="@o.Value" selected="@(o.Value == Model.Filter.Metodo)">@o.Label</option>}</select></label>
+            <label>Estado<select name="Estado"><option value="">Todos</option>@foreach(var o in Model.Estados){<option value="@o.Value" selected="@(o.Value == Model.Filter.Estado)">@o.Label</option>}</select></label>
+        }
+        <label>Autoactualizar<select name="ActualizarCada" id="biRefreshSeconds"><option value="0" selected="@(Model.Filter.ActualizarCada==0)">No</option><option value="30" selected="@(Model.Filter.ActualizarCada==30)">30 s</option><option value="60" selected="@(Model.Filter.ActualizarCada==60)">60 s</option><option value="120" selected="@(Model.Filter.ActualizarCada==120)">120 s</option></select></label>
+        <div class="bi-actions"><button type="submit" class="button-primary">Aplicar filtros</button><button type="button" id="biUpdate" class="button-secondary">Actualizar</button></div>
+    </form>
+    <p class="bi-status">Última actualización: @Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm:ss",gt)@if(Model.Module != "m04"){<text> · Período: @Model.Filter.Desde?.ToString("dd/MM/yyyy") – @Model.Filter.Hasta?.ToString("dd/MM/yyyy")</text>}else{<text> · Inventario actual</text>}</p>
+    @if(Model.Module=="m01"){<p class="bi-note">Canal de venta: no disponible en el esquema.</p>}
+    @if(Model.Module=="m05"){<p class="bi-note" role="status">M05 conserva las ocho posiciones del diseño como pendientes: la base no registra la fecha de confirmación de ventas; los ajustes Aplicados existentes carecen de FechaAplicacion y algunos de costo histórico. Los documentos de compra tienen fecha de recepción, pero no representan todo el historial de movimientos.</p>}
+    @if(Model.Error is not null){<div class="system-alert" role="alert">@Model.Error</div>}
+    else {
+        <section class="bi-kpis" aria-label="Indicadores">
+            @foreach(var k in Model.Metrics){<article class="kpi-card bi-kpi"><span class="bi-code">@k.Code</span><h2>@k.Label</h2><strong>@(k.PendingReason is null ? Format(k.Value,k.Format) : "Pendiente")</strong>@if(k.PendingReason is not null){<p>@k.PendingReason</p>}else{if(k.Variation.HasValue){<p>@(k.Variation.Value>=0?"+":"")@k.Variation.Value.ToString("N2",gt) % vs. período anterior</p>}else if(k.Note?.Contains("Variación")==true){<p>Sin base comparable</p>}@if(k.Note is not null && !k.Note.Contains("Variación")){<p>@k.Note</p>}}</article>}
+        </section>
+        <div class="bi-charts">
+        @foreach(var chart in Model.Charts){
+            var total=chart.Points.Sum(p=>p.Value);var max=chart.Points.Count==0?0:chart.Points.Max(p=>Math.Max(p.Value,p.Other??0));
+            if(chart.Series is not null && chart.Series.Count>0){max=Math.Max(max,chart.Series.SelectMany(s=>s.Points).Select(p=>p.Value).DefaultIfEmpty(0).Max());}
+            <section class="panel-card bi-chart"><header><span class="bi-code">@chart.Code</span><h2>@chart.Title</h2></header>
+            @if(chart.PendingReason is not null){<p class="chart-empty">Pendiente: @chart.PendingReason</p>}
+            else if(chart.Points.Count==0 || (chart.Kind=="donut" && total==0) || (chart.Kind=="multi-line" && chart.Series?.Count is null or 0)){<p class="chart-empty">Sin datos para los filtros seleccionados.</p>}
+            else if(chart.Kind=="donut"){
+                decimal cursor=0;var stops=new List<string>();
+                for(var i=0;i<chart.Points.Count;i++){var next=cursor+chart.Points[i].Value*100/total;stops.Add($"{colors[i%colors.Length]} {cursor.ToString("0.###",CultureInfo.InvariantCulture)}% {next.ToString("0.###",CultureInfo.InvariantCulture)}%");cursor=next;}
+                <div class="bi-donut-row"><div class="bi-donut" style="background:conic-gradient(@string.Join(",",stops))"><span>@Format(total,chart.Format)</span></div><ul class="bi-legend">@for(var i=0;i<chart.Points.Count;i++){var p=chart.Points[i];<li><i style="background:@colors[i%colors.Length]"></i><span>@p.Label</span><strong>@Format(p.Value,chart.Format) · @((p.Value*100/total).ToString("N1",gt)) %</strong></li>}</ul></div>
+            }else if(chart.Kind=="multi-line"){
+                <div class="bi-line-scroll"><svg viewBox="0 0 600 180" role="img" aria-label="@chart.Title"><line x1="30" y1="150" x2="570" y2="150" stroke="#cbdadf"/>
+                @for(var si=0;si<chart.Series!.Count;si++){
+                    var series=chart.Series[si];var color=colors[si%colors.Length];
+                    @for(var pi=0;pi<series.Points.Count;pi++){
+                        var point=series.Points[pi];if(point.Detail=="Sin compras")continue;
+                        var x=chart.Points.Count==1?300d:30d+540d*pi/(chart.Points.Count-1);
+                        var y=max==0?150d:150d-(double)(point.Value/max)*120d;
+                        if(pi>0 && series.Points[pi-1].Detail!="Sin compras"){
+                            var prev=series.Points[pi-1];var px=chart.Points.Count==1?300d:30d+540d*(pi-1)/(chart.Points.Count-1);
+                            var py=max==0?150d:150d-(double)(prev.Value/max)*120d;
+                            <line x1="@px.ToString("0.##",CultureInfo.InvariantCulture)" y1="@py.ToString("0.##",CultureInfo.InvariantCulture)" x2="@x.ToString("0.##",CultureInfo.InvariantCulture)" y2="@y.ToString("0.##",CultureInfo.InvariantCulture)" stroke="@color" stroke-width="3" />
+                        }
+                        <circle cx="@x.ToString("0.##",CultureInfo.InvariantCulture)" cy="@y.ToString("0.##",CultureInfo.InvariantCulture)" r="4" fill="@color"><title>@series.Label · @point.Label: @Format(point.Value,chart.Format)</title></circle>
+                    }
+                }
+                </svg><div class="bi-months">@foreach(var p in chart.Points){<span>@(p.Detail??p.Label)</span>}</div></div>
+                <ul class="bi-series-legend">@for(var si=0;si<chart.Series!.Count;si++){<li><i style="background:@colors[si%colors.Length]"></i>@chart.Series[si].Label</li>}</ul>
+            }else if(chart.Kind=="line"){
+                var coords=chart.Points.Select((p,i)=>new{Point=p,X=chart.Points.Count==1?300d:30d+540d*i/(chart.Points.Count-1),Y=max==0?150d:150d-(double)(p.Value/max)*120d}).ToList();
+                <div class="bi-line-scroll"><svg viewBox="0 0 600 180" role="img" aria-label="@chart.Title"><line x1="30" y1="150" x2="570" y2="150" stroke="#cbdadf"/><polyline fill="none" stroke="#26aa9b" stroke-width="3" points="@string.Join(" ",coords.Select(c=>$"{c.X.ToString("0.##",CultureInfo.InvariantCulture)},{c.Y.ToString("0.##",CultureInfo.InvariantCulture)}"))"/>@foreach(var c in coords){<circle cx="@c.X.ToString("0.##",CultureInfo.InvariantCulture)" cy="@c.Y.ToString("0.##",CultureInfo.InvariantCulture)" r="5" fill="#fb7868"><title>@c.Point.Label: @Format(c.Point.Value,chart.Format)</title></circle>}</svg><div class="bi-months">@foreach(var p in chart.Points){<span title="@p.Label: @Format(p.Value,chart.Format)">@p.Label</span>}</div></div>
+            }else if(chart.Kind=="column"){
+                <div class="bi-columns-scroll"><div class="bi-columns">@foreach(var p in chart.Points){var height=max==0?0:p.Value/max*100;<div class="bi-column" title="@p.Label: @Format(p.Value,chart.Format)"><strong>@Format(p.Value,chart.Format)</strong><div class="bi-column-track"><b style="height:@height.ToString("0.##",CultureInfo.InvariantCulture)%"></b></div><span>@p.Label</span></div>}</div></div>
+            }else if(chart.Kind=="grouped-column"){
+                <div class="bi-columns-scroll"><div class="bi-columns bi-grouped-columns">@foreach(var p in chart.Points){var first=max==0?0:p.Value/max*100;var second=max==0?0:(p.Other??0)/max*100;<div class="bi-column" title="@p.Label · @(chart.PrimaryLabel ?? "Primera serie"): @Format(p.Value,chart.Format) · @chart.OtherLabel: @Format(p.Other??0,chart.Format)"><strong>@Format(p.Value,chart.Format) / @Format(p.Other??0,chart.Format)</strong><div class="bi-column-pair"><div class="bi-column-track"><b style="height:@first.ToString("0.##",CultureInfo.InvariantCulture)%"></b></div><div class="bi-column-track"><b class="other" style="height:@second.ToString("0.##",CultureInfo.InvariantCulture)%"></b></div></div><span>@p.Label</span></div>}</div></div>
+            }else{
+                <ul class="bi-bars">@foreach(var p in chart.Points){var width=max==0?0:p.Value/max*100;var other=max==0?0:(p.Other??0)/max*100;<li title="@p.Label: @Format(p.Value,chart.Format) @p.Detail" data-filter="@chart.CrossFilter" data-value="@p.FilterValue" role="@(chart.CrossFilter is null ? null : "button")" tabindex="@(chart.CrossFilter is null ? null : "0")"><div><span>@p.Label</span><strong>@Format(p.Value,chart.Format)@if(p.Other.HasValue){<text> · @Format(p.Other.Value,chart.Format)</text>}</strong></div><aside><b style="width:@width.ToString("0.##",CultureInfo.InvariantCulture)%"></b></aside>@if(p.Other.HasValue){<aside><b class="other" style="width:@other.ToString("0.##",CultureInfo.InvariantCulture)%"></b></aside>}@if(p.Detail is not null){<small>@p.Detail</small>}</li>}</ul>
+                @if(chart.OtherLabel is not null){<p class="bi-note">Turquesa: @(chart.PrimaryLabel ?? "nuevos") · Coral: @chart.OtherLabel</p>}
+            }
+            @if(chart.CrossFilter is not null){<div class="bi-cross"><span>Filtrar:</span>@foreach(var p in chart.Points.Where(p=>p.FilterValue is not null)){<button type="button" data-filter="@chart.CrossFilter" data-value="@p.FilterValue">@p.Label</button>}</div>}
+            @if(chart.Note is not null){<p class="bi-note">@chart.Note</p>}
+            </section>
+        }
+        </div>
+    }
+</div>
+@section Scripts {<script src="~/js/business-intelligence.js" asp-append-version="true"></script>}

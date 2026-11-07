@@ -95,14 +95,15 @@ public sealed class InicioDataService(DatabaseConnectionFactory connections)
         else if (kind == "Bodega")
         {
             m.Links.AddRange([new("Categorías", "/catalogos/categorias"), new("Proveedores", "/catalogos/proveedores"),
-                new("Sucursales", "/catalogos/sucursales"), new("Compras", "/compras"),
-                new("Productos", "/productos"), new("Inventario", "/inventario")]);
+                new("Compras", "/compras"), new("Ajustes", "/ajustes"),
+                new("Productos", "/productos"), new("Inventario", "/inventario"),
+                new("Reportes", "/modulos/reportes?tipo=compras")]);
             m.Notices.Add(new("Movimientos, despachos y transferencias", "El esquema no dispone de un historial de movimientos ni documentos de despacho o transferencia. Las compras y las existencias se consultan por separado; no se reconstruye un historial ficticio."));
         }
         else
         {
             m.Links.AddRange([new("Ventas", "/ventas"), new("Pagos y saldos", "/pagos"),
-                new("Clientes", "/catalogos/clientes"), new("Productos", "/productos")]);
+                new("Clientes", "/catalogos/clientes"), new("Reportes", "/modulos/reportes?tipo=ventas")]);
             m.Notices.Add(new("Ventas por hora", "FechaVenta almacena una fecha sin hora. No es posible distribuir ventas por hora con los datos actuales."));
             m.Notices.Add(new("Estado de caja", "No existen tablas de apertura, cierre, turnos ni arqueo de caja. Los cobros mostrados son pagos Aplicados, no un saldo de efectivo en caja."));
         }

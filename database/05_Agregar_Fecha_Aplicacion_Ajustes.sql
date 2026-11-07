@@ -36,3 +36,15 @@ BEGIN CATCH
     THROW;
 END CATCH;
 GO
+
+
+
+USE SupermercadosGuate;
+
+SELECT
+    COLUMN_NAME,
+    DATA_TYPE,
+    IS_NULLABLE
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'Tbl_AjustesInventario'
+  AND COLUMN_NAME = 'FechaAplicacion';

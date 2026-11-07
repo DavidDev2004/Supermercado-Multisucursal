@@ -12,13 +12,27 @@ public sealed class UsuarioRepository(DatabaseConnectionFactory connections)
         await using var connection = connections.Create();
         await connection.OpenAsync(ct);
         await using var command = new SqlCommand("""
-            SELECT CodigoUsuario, Usuario, PasswordHash
+            SELECT CodigoUsuario, Usuario, PasswordHash, Rol
             FROM dbo.Tbl_Usuarios WHERE Usuario=@Usuario AND Estado=N'Activo';
             """, connection);
         command.Parameters.Add("@Usuario", SqlDbType.NVarChar, 50).Value = nombre;
         await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow, ct);
         if (!await reader.ReadAsync(ct)) return null;
-        return new UsuarioAuth { CodigoUsuario = reader.GetInt32(0), Usuario = reader.GetString(1), PasswordHash = reader.GetString(2) };
+        return new UsuarioAuth { CodigoUsuario = reader.GetInt32(0), Usuario = reader.GetString(1), PasswordHash = reader.GetString(2), Rol = reader.GetString(3) };
+    }
+
+    public async Task<UsuarioAuth?> ObtenerActivoPorIdAsync(int id, CancellationToken ct)
+    {
+        await using var connection = connections.Create();
+        await connection.OpenAsync(ct);
+        await using var command = new SqlCommand("""
+            SELECT CodigoUsuario, Usuario, Rol FROM dbo.Tbl_Usuarios
+            WHERE CodigoUsuario=@Id AND Estado=N'Activo';
+            """, connection);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow, ct);
+        if (!await reader.ReadAsync(ct)) return null;
+        return new UsuarioAuth { CodigoUsuario = reader.GetInt32(0), Usuario = reader.GetString(1), Rol = reader.GetString(2) };
     }
 
     public async Task<bool> ActualizarHashSiNoCambioAsync(UsuarioAuth usuario, string hashNuevo, CancellationToken ct)

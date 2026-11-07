@@ -5,6 +5,7 @@ obj/
 *.user
 *.suo
 TestResults/
+.local/
 node_modules/
 **/.pytest_cache/
 **/__pycache__/
@@ -67,6 +68,7 @@ power-bi/respaldos/
 
 # Material de referencia local sin autorización de redistribución documentada
 docs/07_Dashboard_paginas_Inicio.docx
+docs/documentos-oficiales/
 docs/prototipos/*
 !docs/prototipos/.gitkeep
 power-bi/referencias/

@@ -38,7 +38,7 @@ public sealed class UsuarioInicialProvisioner(
 
         var user = new UsuarioAuth { Usuario = nombre };
         var hash = hasher.HashPassword(user, password);
-        await using var insert = new SqlCommand("INSERT INTO dbo.Tbl_Usuarios(Usuario,PasswordHash) VALUES(@Usuario,@PasswordHash);", connection);
+        await using var insert = new SqlCommand("INSERT INTO dbo.Tbl_Usuarios(Usuario,PasswordHash,Rol) VALUES(@Usuario,@PasswordHash,N'Administrador');", connection);
         insert.Parameters.Add("@Usuario", SqlDbType.NVarChar, 50).Value = nombre;
         insert.Parameters.Add("@PasswordHash", SqlDbType.NVarChar, -1).Value = hash;
         try

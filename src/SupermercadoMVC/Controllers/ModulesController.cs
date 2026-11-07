@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using SupermercadoMVC.Data;
 using SupermercadoMVC.Filters;
 using SupermercadoMVC.Models;
+using SupermercadoMVC.Security;
 using System.Globalization;
 using System.Text;
 
@@ -26,6 +27,7 @@ public sealed class ModulesController(ReportesDataService reportes, ILogger<Modu
         if (!Modules.TryGetValue(slug, out var title)) return NotFound();
         if (slug.Equals("reportes", StringComparison.OrdinalIgnoreCase))
         {
+            tipo = RolePermissions.NormalizeReport(User, tipo);
             var model = BuildQuery(tipo, desde, hasta, sucursal, proveedor, cliente, estado, pagina);
             var error = Validate(model);
             if (error is null)
@@ -51,6 +53,7 @@ public sealed class ModulesController(ReportesDataService reportes, ILogger<Modu
         int? sucursal, int? proveedor, int? cliente, string? estado,
         CancellationToken cancellationToken = default)
     {
+        tipo = RolePermissions.NormalizeReport(User, tipo);
         var model = BuildQuery(tipo, desde, hasta, sucursal, proveedor, cliente, estado, 1);
         var error = Validate(model);
         if (error is not null) return BadRequest(error);
