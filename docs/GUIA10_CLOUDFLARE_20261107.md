@@ -1,6 +1,6 @@
 # Guía 10: publicación web con Cloudflare Tunnel
 
-Estado al 7 de noviembre de 2026: **túnel rápido Cloudflare funcionando para la demostración**. Esta es la alternativa «Publicación Web: Servidor Local y Cloudflare Tunnel» del documento oficial local. No se compró dominio ni se creó una zona Cloudflare. La dirección `trycloudflare.com` es temporal y cambia cuando se reinicia el túnel. La URL actual y las pruebas con fecha se guardan en `deployment/private/cloudflare-publicacion.json` y `deployment/private/cloudflare-http-final.json`; se comparten con el docente por un canal directo, no como dirección permanente en GitHub. [Cloudflare describe esta modalidad y sus límites](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
+Estado al 7 de noviembre de 2026: **túnel rápido Cloudflare funcionando para la demostración; ngrok detenido después de la prueba externa**. Esta es la alternativa «Publicación Web: Servidor Local y Cloudflare Tunnel» del documento oficial local. No se compró dominio ni se creó una zona Cloudflare. La dirección `trycloudflare.com` es temporal y cambia cuando se reinicia el túnel. La URL actual y las pruebas con fecha se guardan en `deployment/private/cloudflare-publicacion.json` y `deployment/private/cloudflare-http-final.json`; se comparten con el docente por un canal directo, no como dirección permanente en GitHub. [Cloudflare describe esta modalidad y sus límites](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/).
 
 ## Sistema y arquitectura comprobados
 
@@ -29,19 +29,20 @@ Copiar la **nueva** URL HTTPS que aparece en la consola. Mantener el proceso y e
 |---|---|
 | Compilación Release aislada y arranque en puerto separado | Correctos; HTTP local `200`, petición pública simulada HTTP `307` a HTTPS y HTTPS `200` con HSTS. |
 | Cloudflare HTTPS por URL pública | **78 comprobaciones, 0 fallos** desde el anfitrión pasando por el extremo de Cloudflare: login/cierre real de Bodega y Caja, dashboards, nueve rutas BI por rol, KPI y gráficas, consultas, filtros, CSV y rutas directas prohibidas. |
-| Ngrok conservado durante la migración | **78 comprobaciones, 0 fallos** después del nuevo despliegue; sirvió como respaldo hasta completar la prueba externa. |
+| Ngrok conservado durante la migración | **78 comprobaciones, 0 fallos** después del nuevo despliegue. Tras la confirmación externa, se detuvo solo su contenedor. Otras 78 pruebas Cloudflare y 14 de exposición pasaron después, con cero fallos. |
 | Invitado | Login y recursos públicos `200`; Inicio, CRUD, BI y reportes protegidos redirigen al acceso. |
 | Bodega | Inicio Bodega, M04–M08 y sus módulos/CSV autorizados `200`; rutas de Caja, Administrador y M09 denegadas `403`. |
 | Caja | Inicio Caja, M01–M03 y sus módulos/CSV autorizados `200`; rutas de Bodega, Administrador y M09 denegadas `403`. |
 | Archivos y diagnósticos | `/swagger`, `/health`, `/.env`, `/appsettings.json`, ruta privada de despliegue, script SQL y ruta inexistente: `404`; no se expone respaldo ni listado. |
 | Exposición de puertos | Kestrel y métricas de `cloudflared` solo en loopback; SQL Server solo `127.0.0.1:1435`; Docker no expone otros puertos del proyecto. |
-| Integridad de usuarios | Estados, roles y huellas de hashes iguales a la referencia anterior; David activo como Administrador. Su login real requiere comprobación manual por David. |
+| Integridad de usuarios | Estados, roles y huellas de hashes iguales a la referencia anterior; David activo como Administrador. El usuario reportó su ingreso real con David desde datos móviles, visualización del dashboard y cierre de sesión con retorno al login. No se manejó su contraseña. |
+| Prueba desde otra red | El usuario reportó login, dashboard y cierre de David en un teléfono con datos móviles y Wi-Fi apagado. No hay captura ni modelo de dispositivo registrado. |
 
-Las 78 pruebas usan HTTP sobre la URL pública desde **el mismo anfitrión**; son evidencia funcional de la ruta por Cloudflare, pero no sustituyen la prueba exigida desde otra red. No se ejecutaron POST de negocio, inserciones, ediciones ni eliminaciones de prueba.
+Las 78 pruebas automatizadas usan HTTP sobre la URL pública desde **el mismo anfitrión**. La prueba desde datos móviles fue realizada y reportada por el usuario; no la observó el agente ni se recibieron capturas. No se ejecutaron POST de negocio, inserciones, ediciones ni eliminaciones de prueba.
 
 ## Evidencia pendiente para cerrar el documento del profesor
 
-1. Desde datos móviles con Wi-Fi apagado u otra red externa: abrir la URL HTTPS actual, iniciar y cerrar sesión, entrar al dashboard propio y anotar fecha, dispositivo, red, rol y resultado. El grupo debe guardar capturas sin contraseñas ni datos personales. Responsable de la prueba remota: **por designar**.
+1. Completar la ficha de la prueba móvil ya reportada: modelo de teléfono, fecha/hora exacta y captura sin contraseñas. Se confirmó login, dashboard y cierre de David por relato del usuario; falta designar formalmente al responsable remoto.
 2. Capturas de acceso anónimo redirigido al login y de acceso directo prohibido (`403`) con Bodega/Caja. El informe HTTP anterior registra las respuestas, pero no hay capturas visuales nuevas.
 3. Probar Android, iPhone, tableta de ~768 px y escritorio; revisar menú, filtros, KPI, gráficas y modales a 360 px, 768 px y escritorio. CSS contiene reglas responsivas, pero falta constatación visual en esos dispositivos.
 4. La guía solicita alta, consulta y edición con datos ficticios, encabezado y detalle, y recuperación/reinicio. Por instrucción del usuario no se altera la base vigente: estas pruebas de escritura y restauración quedan para una copia aislada autorizada. La parada del túnel no se provocó mientras el profesor necesita acceso; [Cloudflare confirma](https://developers.cloudflare.com/tunnel/get-started/quick-tunnels/) que la URL deja de funcionar al parar y cambia al reiniciar.
