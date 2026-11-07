@@ -1,5 +1,7 @@
 # Preparación para GitHub y despliegue
 
+**Actualización de guía 10:** el túnel rápido de Cloudflare funciona sobre el Release con redirección HTTPS pública. Véase [Guía 10: Cloudflare Tunnel](GUIA10_CLOUDFLARE_20261107.md). El procedimiento de ngrok más abajo corresponde a la etapa anterior.
+
 **Estado al 2026-11-07:** la instancia Production en `127.0.0.1:5197`, expuesta por ngrok con Basic Auth y login propio, ya se actualizó con el candidato Release. El respaldo SQL final pasó VERIFYONLY WITH CHECKSUM; 78 comprobaciones HTTPS terminaron sin fallos y se conservaron configuración y cuentas. Se guardó copia nueva para recuperación y no fue necesario activarla. Véase [resultado de publicación y pendientes de guía 10](PUBLICACION_ENTREGA_20261107.md).
 
 ## Archivos y secretos

@@ -12,7 +12,7 @@ Proyecto académico de Base de Datos I: aplicación ASP.NET Core MVC, SQL Server
 
 Consulta [la preparación de entrega y guía 10](docs/ENTREGA_20261107.md) y [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md). Las guías 09 y las dos alternativas de guía 10 están disponibles localmente; los originales y prototipos se excluyen de Git. La actualización posterior autorizada ya se completó: código subido a GitHub, respaldo SQL final verificado y Release público con 78 comprobaciones HTTPS sin fallos. Se conservaron configuración y cuentas.
 
-El resultado y los pendientes, incluidas las limitaciones de BI aceptadas por el usuario, están en [Publicación de entrega](docs/PUBLICACION_ENTREGA_20261107.md). Sigue pendiente la aceptación docente de ngrok frente a las alternativas de guía 10 y la evidencia desde otro dispositivo/red.
+El resultado y los pendientes, incluidas las limitaciones de BI aceptadas por el usuario, están en [Publicación de entrega](docs/PUBLICACION_ENTREGA_20261107.md). La alternativa oficial de [guía 10 con Cloudflare Tunnel](docs/GUIA10_CLOUDFLARE_20261107.md) ya funciona con una URL temporal; faltan la evidencia desde otra red/dispositivos y el cierre académico de las pruebas no realizadas sobre la base vigente.
 
 ## Documentación
 
@@ -21,6 +21,7 @@ El resultado y los pendientes, incluidas las limitaciones de BI aceptadas por el
 - [Base de datos y migraciones](docs/BASE_DATOS.md)
 - [Cumplimiento y pruebas](docs/CUMPLIMIENTO_ACADEMICO.md)
 - [Preparación para publicación](docs/PUBLICACION_SEGURIDAD.md)
+- [Guía 10: Cloudflare Tunnel y evidencia](docs/GUIA10_CLOUDFLARE_20261107.md)
 - [Inteligencia de Negocios y limitaciones](docs/inteligencia_negocios/README.md)
 - [Comandos usados durante el proyecto](docs/COMANDOS_RAPIDOS.md)
 

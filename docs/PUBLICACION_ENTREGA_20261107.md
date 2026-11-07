@@ -1,5 +1,7 @@
 # Publicación de entrega del 7 de noviembre de 2026
 
+**Actualización de guía 10:** el acceso por Cloudflare Tunnel rápido ya está funcionando; se validó el mismo sistema por HTTPS con 78 pruebas adicionales y redirección desde HTTP. La alternativa, sus pruebas y pendientes están en [Guía 10: Cloudflare Tunnel](GUIA10_CLOUDFLARE_20261107.md). El relato de ngrok siguiente documenta la publicación anterior.
+
 El usuario autorizó el respaldo final, commit/push y actualización de la versión pública conservando la configuración. Se aceptan como pendientes M05 (datos históricos), M07-E03 (Compras Pendientes) y M08-E07 (comparación de costos sin moneda). No se inventan fechas, costos ni estados para completarlos. La aprobación académica de las matrices y la modalidad de guía 10 sigue correspondiendo al docente.
 
 ## Respaldo final

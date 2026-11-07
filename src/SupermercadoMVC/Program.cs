@@ -61,6 +61,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         };
     });
 builder.Services.AddAuthorization();
+builder.Services.AddHttpsRedirection(options => options.HttpsPort = 443);
 builder.Services.AddScoped<SupermercadoMVC.Data.DatabaseConnectionFactory>();
 builder.Services.AddScoped<SupermercadoMVC.Data.DashboardDataService>();
 builder.Services.AddScoped<SupermercadoMVC.Data.InicioDataService>();
@@ -111,7 +112,10 @@ if (!app.Environment.IsDevelopment())
     app.UseForwardedHeaders(forwardedHeaders);
 
     app.UseExceptionHandler("/Home/Error");
-    app.UseHttpsRedirection();
+    // Los túneles terminan HTTPS fuera del host. Mantener HTTP local para
+    // diagnóstico, pero redirigir cualquier hostname público a HTTPS.
+    app.UseWhen(context => !IsLoopbackHost(context.Request.Host.Host),
+        branch => branch.UseHttpsRedirection());
     app.UseHsts();
 }
 
@@ -132,3 +136,7 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+static bool IsLoopbackHost(string host) =>
+    string.Equals(host, "localhost", StringComparison.OrdinalIgnoreCase) ||
+    (IPAddress.TryParse(host, out var address) && IPAddress.IsLoopback(address));
