@@ -240,3 +240,11 @@ Comandos realmente utilizados. La conexión SQL se tomó de User Secrets en memo
 - `CheckDeliveryPackage.ps1` local: paquete Production separado con login y CSS/JS BI HTTP 200; sin acceso BI anónimo. Escaneo de secretos conocidos sin coincidencias en 441 archivos de texto. Sitio existente con 401 anónimo y 200 con Basic Auth; mismo PID 8632 y hashes privados/User Secrets conservados. No se mostraron claves.
 - `git ls-remote --exit-code origin HEAD` — acceso de lectura correcto; no certifica permiso de push. `git diff --check` y exclusiones locales revisados. Sin commit, push, migraciones, DML ni despliegue.
 - Se extrajo solo texto de las dos guías 10 DOCX con ZipFile/XML. Pendientes y procedimiento de entrega en `docs/ENTREGA_20261107.md`.
+
+## Publicación autorizada 2026-11-07
+
+- Respaldo SQL final con COPY_ONLY, CHECKSUM y COMPRESSION en archivo nuevo; RESTORE VERIFYONLY WITH CHECKSUM correcto. Nombre, tamaño y huella en `docs/PUBLICACION_ENTREGA_20261107.md`. No se ejecutaron migraciones ni DML.
+- Índice Git e historial revisados en memoria contra secretos conocidos; sin rutas privadas/respaldos/configuraciones locales en el índice. `git commit` de roles y BI: bcf5e98; `git push origin HEAD:main` correcto y HEAD remoto concordante.
+- Activación local con copia nueva de recuperación; se conservó puerto 5197, Production, User Secrets, Basic Auth y ngrok. Candidato y DLL activa concordantes por SHA-256. Sin fallo ni rollback necesario.
+- 78 comprobaciones contra HTTPS público sin fallos: sesiones Bodega/Caja, dashboard, BI, filtros, consultas, CSV y prohibiciones. Sin operaciones CRUD de escritura. Usuarios, roles, estados y huellas de hashes sin cambios; David activo Administrador. Login manual de David pendiente del usuario.
+- Configuración privada, copia web, diagnóstico y respaldo permanecen fuera de Git. Resultado y pendientes de guía 10 en el informe de publicación.

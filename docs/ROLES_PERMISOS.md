@@ -17,6 +17,8 @@ La autorización se aplica en el servidor a rutas GET, operaciones POST y descar
 
 Los módulos BI M01–M09 ya están implementados localmente con la distribución de la guía 09. `DemoSessionFilter` aplica la matriz mediante `RolePermissions`; ocultar un enlace del menú no es la única protección. La revisión final comprobó la matriz de los tres roles y los accesos HTTP permitidos/prohibidos de Bodega y Caja. El login HTTP de Administrador conserva su evidencia anterior. Véase [entrega](ENTREGA_20261107.md).
 
+La actualización pública posterior ya incorpora estos módulos y permisos. Pasaron 78 comprobaciones HTTPS, incluidos login/cierre, dashboards y rutas permitidas/prohibidas de Bodega/Caja. Usuarios, estados, roles y huellas de hashes se conservaron; David sigue activo como Administrador. La comprobación manual de su login queda a cargo del usuario, que no compartió su contraseña. Véase [publicación de entrega](PUBLICACION_ENTREGA_20261107.md).
+
 ## Implementación y verificación de 2026-11-07
 
 - Respaldo completo anterior a la migración: `C:\BASE_DATOS\Docker\Backups\SupermercadosGuate_ANTES_ROLES_20261107_122045.bak`; `RESTORE VERIFYONLY WITH CHECKSUM` aprobado. Copia SQL aislada restaurada con MDF/LDF distintos.

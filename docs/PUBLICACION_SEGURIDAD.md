@@ -1,6 +1,6 @@
 # Preparación para GitHub y despliegue
 
-**Estado al 2026-11-07:** ya existe una instancia Production local en `127.0.0.1:5197`, expuesta por el contenedor ngrok con Basic Auth y login propio. Esta preparación no la reemplazó ni reinició. El código local incorpora roles y BI y dispone de un candidato Release separado. Véase [plan de entrega y guía 10](ENTREGA_20261107.md).
+**Estado al 2026-11-07:** la instancia Production en `127.0.0.1:5197`, expuesta por ngrok con Basic Auth y login propio, ya se actualizó con el candidato Release. El respaldo SQL final pasó VERIFYONLY WITH CHECKSUM; 78 comprobaciones HTTPS terminaron sin fallos y se conservaron configuración y cuentas. Se guardó copia nueva para recuperación y no fue necesario activarla. Véase [resultado de publicación y pendientes de guía 10](PUBLICACION_ENTREGA_20261107.md).
 
 ## Archivos y secretos
 
@@ -10,7 +10,7 @@ La preparación final comparó en memoria los secretos conocidos de SQL, ngrok, 
 
 `.gitignore` excluye `database/CONEXION.md`, `MEMORY.md`, configuraciones locales `appsettings.*.json`, `.env`, perfiles de publicación, claves, `bin/`, `obj/`, el perfil temporal de navegador, registros, cachés `.pbi`, respaldos y `.pbix` con posibles datos importados. También excluye copias de bases SQL y exportaciones tabulares. Los SQL académicos, el PBIP editable y `appsettings.example.json` sin credenciales permanecen como fuentes del proyecto. Antes de publicar, revisar de nuevo el contenido candidato, en particular datos de prueba, prototipos, consultas y documentos. Un patrón de exclusión no retira automáticamente archivos ya rastreados.
 
-El repositorio ya tiene historial y remoto `origin` en GitHub; la rama local es `main`. La lectura del HEAD remoto respondió el 2026-11-07. Hay cambios locales modificados y archivos nuevos de roles/BI que todavía deben incluirse en un commit revisado. Leer el remoto no certifica permiso de escritura ni el resultado de un futuro push. No se creó commit ni se hizo push en esta preparación.
+El repositorio tiene historial y remoto `origin` en GitHub; la rama es `main`. El commit revisado de roles/BI y preparación de entrega se subió correctamente y se confirmó por lectura del identificador remoto. El respaldo, configuración privada, credenciales y paquete Release permanecen excluidos de Git.
 
 `database/02_Datos_Prueba.sql` conserva el conjunto académico y sus relaciones. Los nombres de 13 clientes y 10 empleados, seis contactos, 10 DPI, 19 NIT, 34 teléfonos y 24 correos se sustituyeron únicamente en el script fuente por marcadores inequívocos de prueba; los correos usan `@example.com`. No se cambiaron registros de SQL Server.
 

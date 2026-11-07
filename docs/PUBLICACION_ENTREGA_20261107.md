@@ -18,4 +18,29 @@ Los 31 KPI calculables volvieron a coincidir con SELECT independientes. Los nuev
 
 La consulta de diagnóstico incluida en la migración 03 ahora lista solo código, usuario y estado, sin mostrar PasswordHash. Esto solo modifica el archivo fuente: no se ejecutó la migración.
 
-El resultado de actualización pública, verificaciones y commit se registrará al finalizar. Los documentos de preparación previos conservan su carácter de evidencia anterior a la autorización.
+## Resultado de publicación
+
+La rama `main` de GitHub recibió el commit de código `bcf5e987871fbb414ec59751b88b2f359c61b441` y se confirmó el mismo identificador en el remoto. Se revisaron 459 archivos de texto del índice, rutas excluidas e historial: sin coincidencias de los secretos conocidos ni patrones de claves detectados. No se subieron respaldos, archivos privados, configuraciones locales, documentos originales ni binarios de publicación. La revisión no equivale a certificar que todo dato de todo el historial sea público.
+
+La versión Release candidata se activó correctamente en el puerto 5197, manteniendo el túnel ngrok existente, entorno Production, conexión SQL, User Secrets, Basic Auth y archivos cifrados. El proceso nuevo es PID 50036; SQL Server sigue expuesto solo en 127.0.0.1:1435. Los hashes de configuración se conservaron. La DLL activa coincide con el candidato: SHA-256 `794716F8DD349233CA20E2F0D4855AF4D299DAC9BC36371A17E4206A343020EA`.
+
+Antes de reemplazar el proceso se guardó una copia nueva en `deployment/private/entrega-rollback-final-20261107-a1853565/`. Se verificó su DLL contra la versión anterior. No hubo fallo de publicación y no fue necesario activar el rollback. La versión anterior permanece recuperable; el túnel no se detuvo ni se cambiaron credenciales.
+
+## Comprobación del sistema publicado
+
+- **78 comprobaciones HTTPS, cero fallos**, usando la URL pública con Basic Auth y sesiones propias de Bodega/Caja. El acceso sin Basic Auth devuelve 401; sin sesión MVC las rutas protegidas redirigen al login.
+- Login y cierre de sesión de Bodega/Caja correctos. Bodega accede a M04–M08 y Caja a M01–M03; los demás módulos BI, M09 y los inicios/catálogos ajenos quedan prohibidos según el rol.
+- Dashboards propios, consultas de catálogos accesibles, productos/relaciones, compras, ventas, pagos, inventario, ajustes y reportes/CSV permitidos respondieron sin mensajes de error SQL. Los filtros funcionaron y los ilegibles mostraron validación.
+- M05 conserva sus ocho posiciones pendientes. M07-E03 y M08-E07 mantienen la explicación correspondiente. No se rellenaron cifras, moneda ni historia inexistente.
+- Usuarios, estados, roles y huellas de hashes coinciden con la referencia anterior a la publicación. **David continúa activo como Administrador**. Su contraseña no se cambió. El usuario se comprometió a comprobar manualmente el login real de David; no se manejó su contraseña ni se simuló una sesión de ese usuario.
+- Las pruebas se ejecutaron por HTTP desde el anfitrión contra el enlace HTTPS público; no equivalen a prueba desde un segundo dispositivo/red ni a una revisión visual nueva. No se hicieron operaciones CRUD de escritura ni movimientos de inventario.
+
+## Pendientes que se entregan declarados
+
+1. M05, M07-E03 y M08-E07 permanecen pendientes por decisión del usuario; falta cierre académico de esas limitaciones y aprobación de las matrices/diseños.
+2. La guía 10 ofrece **Tailscale o Cloudflare**, como alternativas. El sistema actual usa **ngrok**: falta aceptación del docente de esa modalidad o una configuración posterior autorizada de una de las opciones oficiales. No se instalaron ni sustituyeron túneles.
+3. Completar evidencia desde un segundo equipo/red, teléfono/tableta y confirmar el login manual de David. Las evidencias visuales anteriores se conservan; no se generaron nuevas.
+4. Guardar una copia del respaldo final fuera del anfitrión; realizar restauración de prueba aislada de este archivo si se exige. El respaldo final sí pasó VERIFYONLY WITH CHECKSUM.
+5. Las pruebas de escritura, errores, concurrencia y rollback de negocio siguen pendientes en una copia aislada autorizada; no se hicieron sobre información real. El reinicio y rollback web no se provocaron como prueba porque la publicación fue correcta.
+
+El repositorio de código es `DavidDev2004/Supermercado-Multisucursal`. La URL vigente y los registros operativos se mantienen en los archivos privados de despliegue y se comunican al usuario por el chat; no se publican las claves de acceso. El anfitrión, Docker, SQL y el túnel deben permanecer disponibles durante la entrega. Los documentos de preparación previos describen la etapa anterior; este registro prevalece para el resultado de publicación.

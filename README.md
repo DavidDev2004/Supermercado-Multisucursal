@@ -10,9 +10,9 @@ Proyecto académico de Base de Datos I: aplicación ASP.NET Core MVC, SQL Server
 - Catálogos y módulos principales: consultas reales correctas. No se hicieron altas, ediciones, eliminaciones ni pruebas de concurrencia/rollback sobre la base.
 - Se conserva la evidencia anterior de Power BI y Fase III; no se modificó Power BI ni se repitieron operaciones SQL de escritura.
 
-Consulta [la preparación de entrega y guía 10](docs/ENTREGA_20261107.md) y [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md). Las guías 09 y las dos alternativas de guía 10 están disponibles localmente; los originales y prototipos se excluyen de Git. La versión pública no se actualizó y los cambios siguen sin commit ni push.
+Consulta [la preparación de entrega y guía 10](docs/ENTREGA_20261107.md) y [el estado académico](docs/CUMPLIMIENTO_ACADEMICO.md). Las guías 09 y las dos alternativas de guía 10 están disponibles localmente; los originales y prototipos se excluyen de Git. La actualización posterior autorizada ya se completó: código subido a GitHub, respaldo SQL final verificado y Release público con 78 comprobaciones HTTPS sin fallos. Se conservaron configuración y cuentas.
 
-La etapa posterior autorizada de respaldo, subida y actualización se registra en [Publicación de entrega](docs/PUBLICACION_ENTREGA_20261107.md); ese registro prevalece para conocer el resultado final.
+El resultado y los pendientes, incluidas las limitaciones de BI aceptadas por el usuario, están en [Publicación de entrega](docs/PUBLICACION_ENTREGA_20261107.md). Sigue pendiente la aceptación docente de ngrok frente a las alternativas de guía 10 y la evidencia desde otro dispositivo/red.
 
 ## Documentación
 

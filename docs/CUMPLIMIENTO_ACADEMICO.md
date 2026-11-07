@@ -1,5 +1,7 @@
 # Cumplimiento académico y estado de pruebas
 
+**Actualización posterior autorizada:** respaldo final verificado, código subido a GitHub y Release público actualizado con 78 comprobaciones HTTPS sin fallos, conservando configuración y cuentas. M05, M07-E03 y M08-E07 se entregan como pendientes aceptados por el usuario. El estado vigente y las limitaciones de guía 10 constan en [Publicación de entrega](PUBLICACION_ENTREGA_20261107.md). Las secciones de preparación que siguen describen la evidencia anterior al despliegue.
+
 **Corte vigente:** 7 de noviembre de 2026. La preparación de entrega no ejecutó DML, migraciones ni cambios en SQL Server. Compilación aislada sin errores ni advertencias; 90 comprobaciones HTTP locales sin fallos y contraste de los 31 KPI calculables de BI mediante ocho SELECT independientes. No se repitieron escrituras CRUD ni concurrencia/rollback. [Detalle de resultados y entrega](ENTREGA_20261107.md).
 
 Las tablas de módulos y de pruebas del 27 de octubre que siguen se conservan como evidencia histórica; sus pendientes de conexión y compilación quedan superados por la comprobación anterior. Los pendientes de escritura y de evaluación académica se conservan. Login, roles y BI sí están implementados.
